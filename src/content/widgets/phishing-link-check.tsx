@@ -26,7 +26,7 @@ export default function PhishingLinkCheck() {
   return (
     <div className="card space-y-3 p-4" data-testid="phishing-link-check">
       <p className="m-0 font-semibold">লিংকের লেখা বনাম আসল ঠিকানা</p>
-      <p className="m-0 text-sm">নিচের প্রতিটি লিংকের ওপর মাউস নিন (ফোনে আঙুল চেপে ধরে রাখুন, বা ট্যাব করে যান)। তখন পর্দার নিচে আসল ঠিকানা ভেসে ওঠে। এটি অনুশীলন — আসলে কোথাও যাচ্ছে না।</p>
+      <p className="m-0 text-sm">নিচের প্রতিটি লিংকের ওপর মাউসের তীর রাখুন (ফোনে আঙুল চেপে ধরে রাখুন, বা কিবোর্ডে Tab চেপে যান)। তখন পর্দার নিচে আসল ঠিকানা ভেসে ওঠে। এটি অনুশীলন — আসলে কোথাও যাচ্ছে না।</p>
       <ul className="m-0 list-none space-y-2 p-0">
         {SAMPLES.map((s) => {
           const r = checkLink(s.real)

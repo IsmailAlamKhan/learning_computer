@@ -74,7 +74,7 @@ export function register() {
   registerApp({
     id: 'forcequit',
     title: () => 'Force Quit Applications',
-    descriptionBn: 'আটকে যাওয়া প্রোগ্রাম জোর করে বন্ধ করার জানালা',
+    descriptionBn: 'আটকে যাওয়া প্রোগ্রাম জোর করে বন্ধ করার উইন্ডো',
     icon: ({ size }) => <TaskManagerIcon size={size} />,
     component: ForceQuit,
     defaultSize: { w: 420, h: 340 },

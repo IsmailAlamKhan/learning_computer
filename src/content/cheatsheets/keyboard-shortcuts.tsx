@@ -21,7 +21,7 @@ function Component() {
   const cols = [SYMBOLS.slice(0, half), SYMBOLS.slice(half)]
   return (
     <div className="space-y-4">
-      <p className="m-0">Windows-এ <strong>Ctrl</strong>, Mac-এ <strong>Command (⌘)</strong> — বাকি অক্ষর একই। কী-গুলো একসাথে চেপে ধরতে হয়, প্রথমে মডিফায়ার, তারপর অক্ষর।</p>
+      <p className="m-0">Windows-এ <strong>Ctrl</strong>, Mac-এ <strong>Command (⌘)</strong> — বাকি অক্ষর একই। কী-গুলো একসাথে চেপে ধরতে হয় — আগে Ctrl বা Command চেপে ধরুন, তারপর অক্ষরটি চাপুন।</p>
       <table>
         <thead>
           <tr><th>কাজ</th><th>Windows</th><th>Mac</th></tr>

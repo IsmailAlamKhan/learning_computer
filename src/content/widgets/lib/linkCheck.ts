@@ -102,16 +102,16 @@ export function checkLink(url: string, official: string[] = OFFICIAL_DOMAINS): L
   const look = isLookalike(domain, official)
   if (look) findings.push({ id: 'lookalike', severity: 'danger', textBn: `ডোমেইন ${domain} দেখতে ${look}-এর মতো, কিন্তু আসলে আলাদা — এটি নকল ঠিকানার চেনা কৌশল।` })
   if (!look && !official.includes(domain) && official.some((o) => host.includes(brandOf(o)))) {
-    findings.push({ id: 'brand-elsewhere', severity: 'danger', textBn: `নামটি ঠিকানার শুরুতে বসানো আছে, কিন্তু আসল মালিক ${domain}। ঠিকানার শেষ দিকের অংশই আসল মালিক বোঝায়।` })
+    findings.push({ id: 'brand-elsewhere', severity: 'danger', textBn: `নামটি ঠিকানার শুরুতে বসানো আছে, কিন্তু আসল মালিক ${domain}। প্রথম “/” চিহ্নের ঠিক আগের শেষ নামটিই আসল মালিক বোঝায়।` })
   }
   if (/^[a-z][a-z0-9+.-]*:\/\/[^/]*@/i.test(raw)) findings.push({ id: 'at-sign', severity: 'danger', textBn: 'ঠিকানার মাঝে “@” চিহ্ন আছে — এর আগের অংশটি ফাঁকি, আসল ঠিকানা “@”-এর পরে।' })
   if (/^\d{1,3}(\.\d{1,3}){3}$/.test(host)) findings.push({ id: 'ip', severity: 'danger', textBn: 'নামের বদলে শুধু সংখ্যার ঠিকানা (IP) — সাধারণ প্রতিষ্ঠান এমন লিংক দেয় না।' })
   if (host.split('.').some((l) => l.startsWith('xn--'))) findings.push({ id: 'punycode', severity: 'warn', textBn: 'ঠিকানায় অদ্ভুত বিদেশি অক্ষরের কোড (xn--) আছে — অক্ষর নকল করার কৌশল হতে পারে।' })
   if (SHORTENERS.includes(domain)) findings.push({ id: 'shortener', severity: 'warn', textBn: 'এটি ছোট করা লিংক — আসল গন্তব্য লুকানো থাকে। অচেনা মানুষের এমন লিংকে ক্লিক করবেন না।' })
-  if (/^http:\/\//i.test(raw)) findings.push({ id: 'no-https', severity: 'warn', textBn: 'ঠিকানা “http://” দিয়ে শুরু — তালা-চিহ্নওয়ালা “https://” নয়। (https থাকলেই নিরাপদ, তা নয়; তবে না থাকাটা ভালো লক্ষণ নয়।)' })
+  if (/^http:\/\//i.test(raw)) findings.push({ id: 'no-https', severity: 'warn', textBn: 'ঠিকানা “http://” দিয়ে শুরু — তালা-চিহ্নওয়ালা “https://” নয়। (https থাকলেই যে নিরাপদ, তা নয়; তবে না থাকাটা ভালো লক্ষণ নয়।)' })
   const bait = BAIT_WORDS.filter((w) => host.includes(w))
   if (bait.length && !official.includes(domain)) findings.push({ id: 'bait', severity: 'warn', textBn: `ঠিকানায় “${bait[0]}”-এর মতো ভরসা-জাগানো শব্দ আছে — প্রতারকেরা এমন শব্দ ঢোকায়।` })
-  if (host.split('.').length - registrableDomain(host).split('.').length >= 2) findings.push({ id: 'many-sub', severity: 'info', textBn: 'ঠিকানায় অনেকগুলো অংশ আছে — শুধু শেষ দিকের অংশটি দেখুন।' })
+  if (host.split('.').length - registrableDomain(host).split('.').length >= 2) findings.push({ id: 'many-sub', severity: 'info', textBn: 'ঠিকানায় অনেকগুলো অংশ আছে — প্রথম “/” চিহ্নের ঠিক আগের শেষ নামটি দেখুন।' })
 
   const bad = findings.some((f) => f.severity === 'danger' || f.severity === 'warn')
   const verdict = bad ? 'suspicious' : 'looksOk'

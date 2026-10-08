@@ -183,7 +183,7 @@ export function register() {
   registerApp({
     id: 'installer',
     title: () => 'App Installer',
-    descriptionBn: 'নতুন প্রোগ্রাম নামানো ও ইনস্টল করার নকল প্রোগ্রাম (শুধু প্র্যাকটিসের জন্য)',
+    descriptionBn: 'নতুন প্রোগ্রাম নামানো ও ইনস্টল করার নকল প্রোগ্রাম (শুধু অনুশীলনের জন্য)',
     icon: ({ size }) => <AppFileIcon size={size} />,
     component: Installer,
     defaultSize: { w: 560, h: 440 },

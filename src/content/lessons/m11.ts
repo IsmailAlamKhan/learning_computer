@@ -27,7 +27,7 @@ const lesson: Lesson = {
     },
     { kind: 'widget', widget: 'screenshot-keys' },
     { kind: 'note', textBn: 'নিয়ম মনে রাখুন: পেনড্রাইভ কখনো সরাসরি টেনে খুলবেন না। আগে Eject (Windows-এ “Safely Remove”) করুন, তারপর খুলুন — না হলে ভেতরের ফাইল নষ্ট হয়ে যেতে পারে।' },
-    { kind: 'note', textBn: 'আপনার কম্পিউটারে একটু আলাদা দেখাতে পারে — কোনো কোনো ল্যাপটপে PrtScn কী-এর সাথে Fn চাপতে হয়। আর Mac-এ iPhone থেকে ছবি আনতে সাধারণত Photos বা Image Capture প্রোগ্রাম লাগে; Android ফোনের জন্য আলাদা একটি ট্রান্সফার টুল দরকার হয়। এই অনুশীলনে সহজ করে ফোনটিকে একটি ড্রাইভের মতো দেখানো হয়েছে।' },
+    { kind: 'note', textBn: 'আপনার কম্পিউটারে একটু আলাদা দেখাতে পারে — কোনো কোনো ল্যাপটপে PrtScn কী-এর সাথে Fn চাপতে হয়, আর কোনো কোনো কম্পিউটারে PrtScn চাপলে সরাসরি Snipping Tool খুলে যায়। আর Mac-এ iPhone থেকে ছবি আনতে সাধারণত Photos বা Image Capture প্রোগ্রাম লাগে; Android ফোনের জন্য আলাদা একটি ট্রান্সফার টুল দরকার হয়। এই অনুশীলনে সহজ করে ফোনটিকে একটি ড্রাইভের মতো দেখানো হয়েছে।' },
   ],
 
   setup: {
@@ -163,13 +163,13 @@ const lesson: Lesson = {
     },
     {
       id: 'w-print-key', osVariant: 'windows', titleBn: 'প্রিন্টের শর্টকাট', target: 'editor-text', expectedAction: { type: 'keyCombo', keys: 'mod+p' },
-      explanationBn: 'একসাথে Ctrl + P চাপুন (P মানে Print)। প্রিন্টের জানালা খুলবে। (File মেনু থেকে Print… বেছে নিলেও একই হয়।)',
+      explanationBn: 'একসাথে Ctrl + P চাপুন (P মানে Print)। প্রিন্টের ডায়ালগ (ছোট উইন্ডো) খুলবে। (File মেনু থেকে Print… বেছে নিলেও একই হয়।)',
       hintBn: 'Ctrl চেপে ধরে P চাপুন। কিবোর্ডে না হলে শর্টকাট প্যাড ব্যবহার করুন।',
     },
     {
       id: 'w-print-go', osVariant: 'windows', titleBn: 'প্রিন্ট দিন', target: 'print-go', expectedAction: { type: 'click', target: 'print-go' },
-      explanationBn: 'জানালায় প্রিন্টারের নাম (Practice Printer), কপির সংখ্যা (Copies) আর কোন পাতা (Pages) ছাপবেন তা ঠিক করা যায়। আপাতত যেমন আছে তেমনই রেখে Print বোতামে ক্লিক করুন।',
-      hintBn: 'জানালার নিচের ডান দিকের নীল Print বোতাম।',
+      explanationBn: 'ডায়ালগে প্রিন্টারের নাম (Practice Printer), কপির সংখ্যা (Copies) আর কোন পাতা (Pages) ছাপবেন তা ঠিক করা যায়। আপাতত যেমন আছে তেমনই রেখে Print বোতামে ক্লিক করুন।',
+      hintBn: 'ডায়ালগের নিচের ডান দিকের নীল Print বোতাম।',
     },
     {
       id: 'w-print-queue', osVariant: 'windows', titleBn: 'প্রিন্ট কিউ খুলুন', target: 'tray-printer', expectedAction: { type: 'click', target: 'tray-printer' },
@@ -258,7 +258,7 @@ const lesson: Lesson = {
     },
     {
       id: 'm-usb-drive', osVariant: 'mac', titleBn: 'পেনড্রাইভটি খুলুন', target: 'fm-sidebar-USB DRIVE', expectedAction: { type: 'click', target: 'fm-sidebar-USB DRIVE' },
-      explanationBn: 'বাঁ তালিকার নিচে “Locations”-এর নিচে “USB DRIVE” এসেছে। এতে ক্লিক করে ভেতরের ফাইল দেখুন।',
+      explanationBn: 'বাঁ তালিকার “Locations” অংশে “USB DRIVE” নামটি এসেছে। এতে ক্লিক করে ভেতরের ফাইল দেখুন।',
       hintBn: 'বাঁ তালিকায় ইউএসবি আইকনওয়ালা নামটি।',
     },
     {
@@ -299,13 +299,13 @@ const lesson: Lesson = {
     },
     {
       id: 'm-print-key', osVariant: 'mac', titleBn: 'প্রিন্টের শর্টকাট', target: 'editor-text', expectedAction: { type: 'keyCombo', keys: 'mod+p' },
-      explanationBn: 'একসাথে Command + P চাপুন (P মানে Print)। প্রিন্টের জানালা খুলবে। (ওপরের Print… বোতামেও একই হয়।)',
+      explanationBn: 'একসাথে Command + P চাপুন (P মানে Print)। প্রিন্টের ডায়ালগ (ছোট উইন্ডো) খুলবে। (File মেনু থেকে Print… বেছে নিলেও একই হয়।)',
       hintBn: 'Command চেপে ধরে P চাপুন। কিবোর্ডে না হলে শর্টকাট প্যাড ব্যবহার করুন।',
     },
     {
       id: 'm-print-go', osVariant: 'mac', titleBn: 'প্রিন্ট দিন', target: 'print-go', expectedAction: { type: 'click', target: 'print-go' },
-      explanationBn: 'জানালায় প্রিন্টারের নাম (Practice Printer), কপির সংখ্যা (Copies) আর কোন পাতা (Pages) ছাপবেন তা ঠিক করা যায়। আপাতত যেমন আছে তেমনই রেখে Print বোতামে ক্লিক করুন।',
-      hintBn: 'জানালার নিচের ডান দিকের নীল Print বোতাম।',
+      explanationBn: 'ডায়ালগে প্রিন্টারের নাম (Practice Printer), কপির সংখ্যা (Copies) আর কোন পাতা (Pages) ছাপবেন তা ঠিক করা যায়। আপাতত যেমন আছে তেমনই রেখে Print বোতামে ক্লিক করুন।',
+      hintBn: 'ডায়ালগের নিচের ডান দিকের নীল Print বোতাম।',
     },
     {
       id: 'm-print-queue', osVariant: 'mac', titleBn: 'প্রিন্ট কিউ খুলুন', target: 'dock-printer', expectedAction: { type: 'click', target: 'dock-printer' },
@@ -429,7 +429,7 @@ const lesson: Lesson = {
   },
 
   teacherTipBn:
-    'এই মডিউলে সবচেয়ে গুরুত্বপূর্ণ অভ্যাস হলো পেনড্রাইভ Eject করে খোলা — এটি বারবার অনুশীলন করান। আসল কম্পিউটারে আগে পেনড্রাইভে অপ্রয়োজনীয় ফাইল রেখে অভ্যাস করতে দিন, দরকারি ফাইলে নয়। প্রিন্ট বাতিলের অনুশীলন আসল প্রিন্টারে না করে এখানকার সিমুলেশনেই করতে দিন, যাতে কাগজ নষ্ট না হয়। শর্টকাটে সমস্যা হলে ল্যাপটপের Fn কী লাগছে কিনা দেখবেন। ফোনের ক্ষেত্রে iPhone আর Android-এর নিয়ম আলাদা — আসল ফোনে একবার দেখিয়ে দিন।',
+    'এই মডিউলে সবচেয়ে গুরুত্বপূর্ণ অভ্যাস হলো পেনড্রাইভ Eject করে খোলা — এটি বারবার অনুশীলন করান। আসল কম্পিউটারে আগে পেনড্রাইভে দরকারি নয় এমন ফাইল রেখে অভ্যাস করতে দিন, জরুরি ফাইলে নয়। প্রিন্ট বাতিলের অনুশীলন আসল প্রিন্টারে না করে এখানকার সিমুলেশনেই করতে দিন, যাতে কাগজ নষ্ট না হয়। শর্টকাটে সমস্যা হলে ল্যাপটপের Fn কী লাগছে কিনা দেখবেন। ফোনের ক্ষেত্রে iPhone আর Android-এর নিয়ম আলাদা — আসল ফোনে একবার দেখিয়ে দিন।',
 }
 
 export default lesson

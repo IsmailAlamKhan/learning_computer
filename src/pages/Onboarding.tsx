@@ -41,7 +41,7 @@ export default function Onboarding() {
                 maxLength={60}
                 autoFocus
               />
-              <span className="block text-sm text-muted">নামটি শুধু এই কম্পিউটারেই থাকবে। সনদপত্রে এই নাম ছাপা হবে।</span>
+              <span className="block text-sm text-muted">নামটি শুধু এই কম্পিউটারেই থাকবে। সনদে এই নাম ছাপা হবে।</span>
             </label>
           </>
         )}

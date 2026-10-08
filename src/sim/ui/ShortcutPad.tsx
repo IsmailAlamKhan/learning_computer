@@ -29,7 +29,7 @@ export function ShortcutPad() {
         <strong>কিবোর্ড শর্টকাট প্যাড:</strong> আগে নিচের Ctrl/Alt/Cmd-এর মতো বোতাম বেছে নিন, তারপর একটি অক্ষর বা কী-তে ক্লিক করুন।
         <span className="ml-1 text-muted">{mods.length ? `বাছাই: ${comboLabel(mods.join('+'), d.os)} + …` : ''}</span>
       </div>
-      <div className="flex flex-wrap gap-1.5" role="group" aria-label="মডিফায়ার কী">
+      <div className="flex flex-wrap gap-1.5" role="group" aria-label="Ctrl, Alt, Cmd-এর মতো কী">
         {mk.map((m) => (
           <button key={m.id} aria-pressed={mods.includes(m.id)} data-coach={`pad-${m.id}`} onClick={() => toggle(m.id)} className="min-h-11 min-w-14 rounded-lg border-2 px-3 text-sm font-medium aria-pressed:border-brand aria-pressed:bg-brand-soft" style={{ borderColor: 'var(--c-line)' }}>
             {m.label}

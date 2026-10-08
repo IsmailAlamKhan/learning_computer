@@ -128,7 +128,7 @@ export default function SpotTheScam({ cards = CARDS }: { cards?: ScamCard[] }) {
         <span className="chip">{card.captionBn}</span>
       </div>
       <p className="m-0 text-sm" style={{ color: 'var(--c-muted)' }}>
-        নিচের কার্ডটি একটি কল্পিত নমুনা — নাম, নম্বর ও লিংক সবই বানানো। যে অংশগুলো সন্দেহজনক মনে হয় সেগুলোতে ট্যাপ করুন, তারপর নিচে আপনার সিদ্ধান্ত জানান। কিছু বার্তা কিন্তু একদম ঠিকও থাকতে পারে।
+        নিচের কার্ডটি একটি কল্পিত নমুনা — নাম, নম্বর ও লিংক সবই বানানো। যে অংশগুলো সন্দেহজনক মনে হয় সেগুলোতে ক্লিক (বা ট্যাপ) করুন, তারপর নিচে আপনার সিদ্ধান্ত জানান। কিছু বার্তা কিন্তু একদম ঠিকও থাকতে পারে।
       </p>
       <Mock card={card} tapped={tapped} locked={answered} reveal={answered} tap={tap} />
       {!answered ? (
@@ -138,14 +138,14 @@ export default function SpotTheScam({ cards = CARDS }: { cards?: ScamCard[] }) {
         </div>
       ) : (
         <div className="space-y-2 rounded-xl p-3" style={{ background: ev!.correct ? 'var(--c-ok-soft)' : 'var(--c-accent-soft)' }} aria-live="polite" data-testid="scam-feedback" data-correct={ev!.correct ? 'yes' : 'no'}>
-          <p className="m-0 font-semibold">{ev!.correct ? (card.isScam ? 'ঠিক ধরেছেন!' : 'ঠিক! এটি সত্যিই নিরাপদ।') : card.isScam ? 'এবার ফসকে গেছে, তবে এতে ক্ষতি নেই — এখানেই শেখা।' : 'একটু বেশি সাবধান হয়ে গেছেন — এটি আসলে ঠিক ছিল। সাবধান থাকা ভালো, তবে সবকিছুকে ভয় পাওয়ার দরকার নেই।'}</p>
+          <p className="m-0 font-semibold">{ev!.correct ? (card.isScam ? 'ঠিক ধরেছেন!' : 'ঠিক! এটি সত্যিই নিরাপদ।') : card.isScam ? 'এবার একটু ফসকে গেছে — ঠিক আছে, ভুল থেকেই তো শেখা।' : 'একটু বেশি সাবধান হয়ে গেছেন — এটি আসলে ঠিক ছিল। সাবধান থাকা ভালো, তবে সবকিছুকে ভয় পাওয়ার দরকার নেই।'}</p>
           <p className="m-0">{card.explanationBn}</p>
           {card.hotspots.length > 0 && (
             <ul className="m-0 list-disc space-y-1 pl-5 text-sm">
               {card.hotspots.map((h) => (
                 <li key={h.id}>
                   <strong>{h.labelBn}</strong>
-                  {ev!.foundHotspots.includes(h.id) ? ' ✓ আপনি ধরেছেন' : ' — এটি চোখ এড়িয়ে গিয়েছিল'}: {h.whyBn}
+                  {ev!.foundHotspots.includes(h.id) ? ' ✓ আপনি ধরেছেন' : ' — এটি এবার চোখ এড়িয়ে গেছে'}: {h.whyBn}
                 </li>
               ))}
             </ul>

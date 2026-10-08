@@ -14,7 +14,7 @@ const entries: GlossaryEntry[] = [
   { id: 'public-wifi', termBn: 'পাবলিক ওয়াই-ফাই', termEn: 'Public Wi‑Fi', meaningBn: 'ক্যাফে, স্টেশন বা দোকানের মতো সবার জন্য খোলা ওয়াই-ফাই। এতে ব্যাংকিং বা গোপন কাজ না করাই ভালো।', module: 9 },
   { id: 'lock-screen', termBn: 'স্ক্রিন লক', termEn: 'Lock Screen', meaningBn: 'কম্পিউটারের পর্দা সাময়িক তালা দেওয়া, যাতে আপনি সরে গেলে অন্য কেউ ব্যবহার করতে না পারে। Windows-এ Win+L, Mac-এ Control+Command+Q।', module: 9 },
   { id: 'privacy', termBn: 'গোপনীয়তা', termEn: 'Privacy', meaningBn: 'নিজের ব্যক্তিগত তথ্য কে কতটা দেখবে তা নিজে ঠিক করার অধিকার ও অভ্যাস।', module: 9 },
-  { id: 'permission', termBn: 'অনুমতি', termEn: 'Permission', meaningBn: 'কোনো অ্যাপ বা ওয়েবসাইট আপনার ক্যামেরা, লোকেশন, ছবি ইত্যাদি ব্যবহার করতে চাইলে যে অনুমতি চায়। প্রয়োজন না হলে “না” বলা যায়।', module: 9 },
+  { id: 'permission', termBn: 'অনুমতি', termEn: 'Permission', meaningBn: 'কোনো অ্যাপ বা ওয়েবসাইট আপনার ক্যামেরা, লোকেশন, ছবি ইত্যাদি ব্যবহার করতে চাইলে যে অনুমতি চায়। দরকার না হলে “না” বলা যায়।', module: 9 },
   { id: 'fake-link', termBn: 'ভুয়া লিংক', termEn: 'Fake link', meaningBn: 'যে লিংকের লেখা এক রকম, কিন্তু আসলে অন্য ওয়েবসাইটে নিয়ে যায়। ক্লিকের আগে আসল ঠিকানা দেখে নিতে হয়।', module: 9 },
 ]
 

@@ -143,7 +143,7 @@ const win: Step[] = [
   },
   {
     id: 'w-download', osVariant: 'windows', titleBn: 'Download চাপুন', target: 'installer-download', expectedAction: { type: 'click', target: 'installer-download' },
-    explanationBn: 'এটি আসল ইনস্টল নয় — শুধু প্র্যাকটিসের জন্য নকল। নিচের হলুদ সতর্কবার্তাটি পড়ুন, তারপর “Calculator Plus”-এর পাশের “Download” চাপুন।',
+    explanationBn: 'এটি আসল ইনস্টল নয় — শুধু অনুশীলনের জন্য নকল। নিচের হলুদ সতর্কবার্তাটি পড়ুন, তারপর “Calculator Plus”-এর পাশের “Download” চাপুন।',
     hintBn: 'ডান পাশের নীল Download বোতাম।',
   },
   {
@@ -332,7 +332,7 @@ const mac: Step[] = [
   },
   {
     id: 'm-download', osVariant: 'mac', titleBn: 'Download চাপুন', target: 'installer-download', expectedAction: { type: 'click', target: 'installer-download' },
-    explanationBn: 'এটি আসল ইনস্টল নয় — শুধু প্র্যাকটিসের জন্য নকল। (আসল Mac-এ অনেক প্রোগ্রাম অ্যাপ স্টোর (App Store) থেকে নামে, কিছু আবার নামানো ফাইল খুলে Applications ফোল্ডারে টেনে রাখতে হয়।) নিচের হলুদ সতর্কবার্তাটি পড়ুন, তারপর “Calculator Plus”-এর পাশের “Download” চাপুন।',
+    explanationBn: 'এটি আসল ইনস্টল নয় — শুধু অনুশীলনের জন্য নকল। (আসল Mac-এ অনেক প্রোগ্রাম অ্যাপ স্টোর (App Store) থেকে নামে, কিছু আবার নামানো ফাইল খুলে Applications ফোল্ডারে টেনে রাখতে হয়।) নিচের হলুদ সতর্কবার্তাটি পড়ুন, তারপর “Calculator Plus”-এর পাশের “Download” চাপুন।',
     hintBn: 'ডান পাশের নীল Download বোতাম।',
   },
   {

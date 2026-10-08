@@ -5,7 +5,7 @@
 | 1 | Scaffold, brief, schema, app shell, progress store | DONE |
 | 2 | Simulation engine + Module 2 benchmark | DONE |
 | 3 | Modules 1, 3, 4, 5, 6 | DONE |
-| 4 | Modules 7–13 | NOT STARTED |
+| 4 | Modules 7–13 | DONE |
 | 5 | Terminal, editor, runners | NOT STARTED |
 | 6 | Part 2 (Modules 14–20) | NOT STARTED |
 | 7 | Hardening, PWA, QA, docs | NOT STARTED |
@@ -36,6 +36,15 @@
 - Tests: 209 unit/component tests; 27 Playwright e2e (every guided step on both OSes, widgets, quizzes) all green; tsc/lint(build) clean.
 - Bengali review by a separate reviewer pass: ~70 fixes (see docs/BENGALI_REVIEW.md). Duplicate glossary id `restore` fixed (`restore-window`).
 - Known: lessons 4 (27/23 steps) and 6 (38/32 steps) exceed the 3–7 minute guideline; kept as complete walk-throughs with the teacher tip suggesting two sittings (candidate for splitting in final QA).
+
+### Stage 4 — DONE (2026-10-09)
+- Playable: all of Part 1 (Modules 1–13) on Windows and Mac. Part 2 shows "শীঘ্রই আসছে".
+- M7: simulated mini-internet (search engine with keyword ranking + ads, Rannaghor recipes, Khobor news, fake prize/wallet scam pages with look-alike URL, official download page with ad trap), browser padlock/Downloads panel. M8: Mail app (folders, compose, attachments from VFS, reply/forward/spam, save attachment) + signup widget. M9: password-strength, spot-the-scam (9 fictional cards), phishing-link-check widgets, safety cheat sheet, lock/unlock steps. M10: full Settings flows (wallpaper, zoom, dark mode, Wi-Fi with practice password, Bluetooth pairing, printer, timezone). M11: Media Player, screenshots (PrtScn/Win+Shift+S/Win+PrtScn, Cmd+Shift+3/4/5), USB drive mount/eject, phone copy, print dialog + queue with cancel. M12: Task Manager / Force Quit, frozen app scenario, error search forum, decision-tree widget. M13: capstone with progress checklist + printable Bengali certificate page (`/certificate/1`).
+- Infra: system-shortcut registry, auto-registered browser sites/extra apps/widgets, `Lesson.checklist`, `Lesson.certificatePart`, content-integrity tests (`src/content/content.test.ts`).
+- Tests: 371 unit/component tests, ~51 Playwright walkthroughs (all pass; Module 8/12 Mac occasionally flake under CPU load → config uses 2 workers + 1 retry).
+- Bengali reviewed by a separate pass for 7–13 (docs/BENGALI_REVIEW.md).
+- Guided step counts exceed the 3–7 minute guideline in M4 (27/23), M6 (38/32), M10 (31/26), M11 (26/26): kept complete; teacher tips suggest two sittings. Candidate to split in final QA if time permits.
+- Main JS bundle > 500 kB: code-splitting of sim apps/widgets is a stage 7 task.
 
 ## Decisions and assumptions
 

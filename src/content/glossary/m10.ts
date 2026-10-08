@@ -12,7 +12,7 @@ const entries: GlossaryEntry[] = [
   { id: 'set-bluetooth', module: 10, termBn: 'ব্লুটুথ', termEn: 'Bluetooth', meaningBn: 'কাছাকাছি যন্ত্র (স্পিকার, হেডফোন, কিবোর্ড) তার ছাড়া জুড়ে নেওয়ার ব্যবস্থা। ওয়াই-ফাইয়ের চেয়ে কম দূরত্বে কাজ করে।' },
   { id: 'set-pairing', module: 10, termBn: 'পেয়ার করা (জোড়া লাগানো)', termEn: 'Pairing', meaningBn: 'দুটি ব্লুটুথ যন্ত্রের প্রথমবার পরিচয় করানো। একবার পেয়ার হলে পরের বার কাছে এলেই নিজে থেকে যুক্ত হয়।' },
   { id: 'set-printer', module: 10, termBn: 'প্রিন্টার', termEn: 'Printer', meaningBn: 'কম্পিউটারের লেখা বা ছবি কাগজে ছেপে দেওয়ার যন্ত্র। ব্যবহারের আগে কম্পিউটারে একবার “যোগ” (Add) করে নিতে হয়।' },
-  { id: 'set-timezone', module: 10, termBn: 'টাইমজোন', termEn: 'Time zone', meaningBn: 'কোন দেশ বা অঞ্চলের সময় ঘড়িতে দেখাবে তার সেটিং। বাংলাদেশের জন্য Dhaka (UTC+6)। ভুল হলে ঘড়ি ঘণ্টা-ঘণ্টা আগে বা পরে দেখায়।' },
+  { id: 'set-timezone', module: 10, termBn: 'টাইমজোন', termEn: 'Time zone', meaningBn: 'কোন দেশ বা অঞ্চলের সময় ঘড়িতে দেখাবে তার সেটিং। বাংলাদেশের জন্য Dhaka (UTC+6)। ভুল হলে ঘড়ি কয়েক ঘণ্টা আগে বা পরে দেখায়।' },
   { id: 'set-display', module: 10, termBn: 'ডিসপ্লে (পর্দা)', termEn: 'Display', meaningBn: 'কম্পিউটারের পর্দা। এর সেটিংসে আলো, লেখা-আইকনের আকার ইত্যাদি ঠিক করা যায়। Mac-এ নাম Displays।' },
   { id: 'set-zoom', module: 10, termBn: 'জুম / স্কেল', termEn: 'Zoom / Scale', meaningBn: 'পর্দার সবকিছু (লেখা, আইকন, বোতাম) একসাথে বড় বা ছোট করা। শতকরায় লেখা হয়: ১০০% স্বাভাবিক, ১৫০% দেড় গুণ বড়। Windows-এ নাম Scale।' },
   { id: 'set-text-size', module: 10, termBn: 'লেখার আকার', termEn: 'Text size', meaningBn: 'শুধু লেখাগুলো বড় বা ছোট করা। চোখে কম দেখলে বা পর্দা ছোট লাগলে এটি সাহায্য করে। Accessibility বিভাগে থাকে।' },

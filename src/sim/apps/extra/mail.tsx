@@ -295,7 +295,7 @@ export function register() {
   registerApp({
     id: 'mail',
     title: () => 'Mail',
-    descriptionBn: 'ইমেইল পড়া, লেখা আর পাঠানোর প্রোগ্রাম (শুধু প্র্যাকটিসের জন্য)',
+    descriptionBn: 'ইমেইল পড়া, লেখা আর পাঠানোর প্রোগ্রাম (শুধু অনুশীলনের জন্য)',
     icon: ({ size }) => <MailIcon size={size} />,
     component: MailApp,
     defaultSize: { w: 900, h: 540 },

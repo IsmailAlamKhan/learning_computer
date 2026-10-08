@@ -81,7 +81,7 @@ export function register() {
   registerApp({
     id: STUCK_ID,
     title: () => STUCK_TITLE,
-    descriptionBn: 'একটি কাল্পনিক ছবির অ্যালবাম প্রোগ্রাম — এক ক্লিকেই আটকে যায় (শুধু প্র্যাকটিসের জন্য)',
+    descriptionBn: 'একটি কাল্পনিক ছবির অ্যালবাম প্রোগ্রাম — এক ক্লিকেই আটকে যায় (শুধু অনুশীলনের জন্য)',
     icon: StuckIcon,
     component: StuckApp,
     defaultSize: { w: 520, h: 340 },

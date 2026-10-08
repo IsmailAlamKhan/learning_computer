@@ -162,7 +162,7 @@ function LessonView({ lesson }: { lesson: Lesson }) {
                 <p className="text-lg font-bold">🎉 এই পাঠ সম্পন্ন হয়েছে!</p>
                 {lesson.certificatePart && (
                   <Link to={`/certificate/${lesson.certificatePart}`} className="btn btn-lg">
-                    🏆 আপনার সনদপত্র দেখুন ও ছাপুন
+                    🏆 আপনার সনদ দেখুন ও ছাপুন
                   </Link>
                 )}
                 <Link to="/" className="btn btn-outline">

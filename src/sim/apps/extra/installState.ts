@@ -35,7 +35,7 @@ export function installCalc(vfs: VirtualFileSystem, os: OsFlavor) {
   registerApp({
     id: CALC_ID,
     title: () => CALC_NAME,
-    descriptionBn: 'ছোট একটি ক্যালকুলেটর প্রোগ্রাম (প্র্যাকটিসের জন্য নকল)',
+    descriptionBn: 'ছোট একটি ক্যালকুলেটর প্রোগ্রাম (অনুশীলনের জন্য নকল)',
     icon: CalcPlusIcon,
     component: CalcPlus,
     defaultSize: { w: 300, h: 380 },
