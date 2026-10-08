@@ -18,13 +18,13 @@ export const MODULES: ModuleMeta[] = [
   { module: 11, part: 1, icon: '📷', titleBn: 'ছবি, মিডিয়া, স্ক্রিনশট ও ডিভাইস', oneLineBn: 'ছবি দেখি, গান-ভিডিও চালাই, স্ক্রিনশট নিই, পেনড্রাইভ ও প্রিন্টার ব্যবহার করি।', status: 'playable' },
   { module: 12, part: 1, icon: '🔧', titleBn: 'সমস্যায় পড়লে কী করবেন', oneLineBn: 'আটকে যাওয়া প্রোগ্রাম, ভুলে মুছে ফেলা ফাইল — শান্তভাবে সমাধান ও খুঁজে দেখার কৌশল।', status: 'playable' },
   { module: 13, part: 1, icon: '🏆', titleBn: 'পর্ব ১-এর সমাপনী প্রকল্প', oneLineBn: 'এ পর্যন্ত যা শিখেছেন তা দিয়ে একটি বাস্তব কাজ শেষ করে সনদ নিন।', status: 'playable' },
-  { module: 14, part: 2, icon: '🧠', titleBn: 'কম্পিউটার আসলে কীভাবে কাজ করে', oneLineBn: 'ইনপুট, প্রসেসিং, মেমোরি, স্টোরেজ এবং বিট-বাইটের ধারণা — রান্নাঘরের উদাহরণে।', status: 'soon' },
-  { module: 15, part: 2, icon: '🧭', titleBn: 'প্রোগ্রামিং কী ও কেন', oneLineBn: 'প্রোগ্রামিং কী, প্রোগ্রামাররা কী করেন, কোন পথে শুরু করবেন।', status: 'soon' },
-  { module: 16, part: 2, icon: '🧩', titleBn: 'কম্পিউটেশনাল চিন্তা', oneLineBn: 'কোড ছাড়াই ধাপে ধাপে ভাবা — ক্রম, শর্ত ও পুনরাবৃত্তি।', status: 'soon' },
-  { module: 17, part: 2, icon: '⬛', titleBn: 'টার্মিনালের প্রথম পাঠ', oneLineBn: 'টার্মিনালে কমান্ড লিখে ফোল্ডার ঘুরি, ফাইল বানাই ও পড়ি।', status: 'soon' },
-  { module: 18, part: 2, icon: '🛠️', titleBn: 'প্রোগ্রামিং টুলস সেটআপ', oneLineBn: 'কোড এডিটর, Python/Node.js — নিরাপদে ইনস্টলের পুরো ধাপ।', status: 'soon' },
-  { module: 19, part: 2, icon: '📖', titleBn: 'টেক ইংরেজি পড়া ও আটকে গেলে করণীয়', oneLineBn: 'এরর মেসেজ পড়া, ডকুমেন্টেশন ও এআই সহায়ক ব্যবহার এবং নিজের নোটবুক।', status: 'soon' },
-  { module: 20, part: 2, icon: '🚀', titleBn: 'প্রথম কোড', oneLineBn: 'HTML, CSS ও প্রথম প্রোগ্রাম লিখে ফল দেখি — এবং পর্ব ২-এর সনদপত্র।', status: 'soon' },
+  { module: 14, part: 2, icon: '🧠', titleBn: 'কম্পিউটার আসলে কীভাবে কাজ করে', oneLineBn: 'ইনপুট, প্রসেসিং, মেমোরি, স্টোরেজ এবং বিট-বাইটের ধারণা — রান্নাঘরের উদাহরণে।', status: 'playable' },
+  { module: 15, part: 2, icon: '🧭', titleBn: 'প্রোগ্রামিং কী ও কেন', oneLineBn: 'প্রোগ্রামিং কী, প্রোগ্রামাররা কী করেন, কোন পথে শুরু করবেন।', status: 'playable' },
+  { module: 16, part: 2, icon: '🧩', titleBn: 'কম্পিউটারের মতো ভাবা (কোড ছাড়া)', oneLineBn: 'কোড ছাড়াই ধাপে ধাপে ভাবা — ক্রম, সিদ্ধান্ত ও বারবার করা (লুপ)।', status: 'playable' },
+  { module: 17, part: 2, icon: '⬛', titleBn: 'টার্মিনালের প্রথম পাঠ', oneLineBn: 'টার্মিনালে কমান্ড লিখে ফোল্ডার ঘুরি, ফাইল বানাই ও পড়ি।', status: 'playable' },
+  { module: 18, part: 2, icon: '🛠️', titleBn: 'প্রোগ্রামিংয়ের টুল সাজানো', oneLineBn: 'কোড এডিটর, Python/Node.js — নিরাপদে ইনস্টলের পুরো ধাপ।', status: 'playable' },
+  { module: 19, part: 2, icon: '📖', titleBn: 'টেক ইংরেজি পড়া ও আটকে গেলে করণীয়', oneLineBn: 'এরর মেসেজ পড়া, ডকুমেন্টেশন ও এআই সহকারী ব্যবহার এবং নিজের নোটবুক।', status: 'playable' },
+  { module: 20, part: 2, icon: '🚀', titleBn: 'প্রথম কোড', oneLineBn: 'HTML, CSS ও প্রথম প্রোগ্রাম লিখে ফল দেখি — এবং পর্ব ২-এর সনদপত্র।', status: 'playable' },
 ]
 
 export const PARTS = {

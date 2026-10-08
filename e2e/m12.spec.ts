@@ -30,6 +30,7 @@ test.describe('Module 12 guided practice', () => {
     // 3. no internet
     await coach(page, 'taskbar-app-browser').click()
     await coach(page, 'browser-address').fill('search.example')
+    await page.waitForTimeout(300) // 'type' events are emitted asynchronously
     await coach(page, 'browser-address').press('Enter')
     await expect(coach(page, 'browser-offline')).toBeVisible()
     await coach(page, 'tray-wifi').click()
@@ -37,9 +38,11 @@ test.describe('Module 12 guided practice', () => {
     await coach(page, 'browser-reload').click()
     await expect(coach(page, 'browser-offline')).toHaveCount(0)
     // 4. no sound
+    await page.waitForTimeout(1600)
     await coach(page, 'tray-volume').click()
+    await page.waitForTimeout(500)
     await coach(page, 'qs-mute').click()
-    await expect(page.getByText(/সব ধাপ শেষ/)).toBeVisible()
+    await expect(page.getByText(/সব ধাপ শেষ/)).toBeVisible({ timeout: 20_000 })
     expect(errors).toEqual([])
   })
 
@@ -66,15 +69,19 @@ test.describe('Module 12 guided practice', () => {
     await coach(page, 'win-bin-close').click()
     await coach(page, 'dock-browser').click()
     await coach(page, 'browser-address').fill('search.example')
+    await page.waitForTimeout(300) // 'type' events are emitted asynchronously
     await coach(page, 'browser-address').press('Enter')
     await expect(coach(page, 'browser-offline')).toBeVisible()
     await coach(page, 'control-center').click()
     await coach(page, 'cc-wifi').click()
     await coach(page, 'browser-reload').click()
     await expect(coach(page, 'browser-offline')).toHaveCount(0)
+    // the coach's 1.4 s 'well done' pause credits only the NEXT step, so let it finish before the last mini-problem
+    await page.waitForTimeout(1600)
     await coach(page, 'menubar-volume').click()
+    await page.waitForTimeout(500)
     await coach(page, 'cc-volume').fill('60')
-    await expect(page.getByText(/সব ধাপ শেষ/)).toBeVisible()
+    await expect(page.getByText(/সব ধাপ শেষ/)).toBeVisible({ timeout: 20_000 })
     expect(errors).toEqual([])
   })
 

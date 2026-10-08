@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import type { OsFlavor, Step } from '../types'
-import type { SimBus } from '../../sim/bus'
+import type { SimBus, SimEvent } from '../../sim/bus'
 import { advance, feed, initialRunner, pickPraise, type RunnerState } from '../runner'
 
 export const HINT_MS = 10_000
@@ -58,25 +58,47 @@ export function useGuidedRun({ steps, bus, os, enabled = true, onStepDone, onFin
   const counter = useRef(0)
   const timer = useRef<number | undefined>(undefined)
 
+  /** State-based steps (`previewContains`, `fileContains`, `fileExists`) describe what is true NOW: when the step starts and it
+   *  already holds (e.g. she typed ahead before the previous step finished) there may be no further event, so check once. */
+  const probeRef = useRef<(st: RunnerState) => void>(() => {})
+
+  const advanceRef = useRef<() => void>(() => {})
+  advanceRef.current = () => {
+        const next = advance(stateRef.current, steps)
+        stateRef.current = next
+        setState(next)
+        setPhase('waiting')
+        phaseRef.current = 'waiting'
+        setLevel(0)
+        setSimplerOpen(false)
+        if (next.finished) cb.current.onFinished?.()
+        else window.setTimeout(() => probeRef.current(next), 0)
+  }
+
   const succeed = useCallback(
     (step: Step) => {
       setPhase('success')
+      phaseRef.current = 'success'
       const p = pickPraise(counter.current++ * 7 + step.id.length, lastPraise.current)
       lastPraise.current = p
       setPraise(step.successMessageBn ?? p)
       cb.current.onStepDone?.(step)
       window.clearTimeout(timer.current)
-      timer.current = window.setTimeout(() => {
-        const next = advance(stateRef.current, steps)
-        setState(next)
-        setPhase('waiting')
-        setLevel(0)
-        setSimplerOpen(false)
-        if (next.finished) cb.current.onFinished?.()
-      }, successMs)
+      timer.current = window.setTimeout(() => advanceRef.current(), successMs)
     },
     [steps, successMs],
   )
+
+  probeRef.current = (st: RunnerState) => {
+    if (phaseRef.current !== 'waiting' || st.finished) return
+    const step = steps[st.index]
+    if (!step) return
+    const a = step.expectedAction
+    let ev: SimEvent | undefined
+    if (a.type === 'previewContains' && bus.lastPreview) ev = { type: 'preview', ...bus.lastPreview }
+    else if (a.type === 'fileContains' || a.type === 'fileExists') ev = { type: 'custom', event: 'recheck' }
+    if (ev && feed(st, steps, ev, os, { vfs: bus.vfs }).matched) succeed(step)
+  }
 
   useEffect(() => {
     if (!enabled) return

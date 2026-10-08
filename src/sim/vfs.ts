@@ -28,6 +28,8 @@ export interface VNode {
   content: string
   /** Display flavor for non-text files (image/pdf/audio/video/exe…) — pure decoration. */
   media?: 'image' | 'pdf' | 'audio' | 'video' | 'app' | 'zip'
+  /** Optional display size in bytes for media files whose `content` is empty/short (lessons only; copies keep it). */
+  sizeBytes?: number
   createdAt: number
   modifiedAt: number
   protected?: boolean
@@ -532,7 +534,7 @@ export class VirtualFileSystem {
     if (node.kind === 'folder' && this.isDescendant(dest, node)) throw new VfsError('intoSelf', node.name)
     const name = this.nameTaken(dest, node.name) ? this.copyName(dest, node.name) : node.name
     const clone = (src: VNode, parent: VNode, nm: string): VNode => {
-      const c = this.mk(nm, src.kind, parent, { content: src.content, media: src.media, hidden: src.hidden })
+      const c = this.mk(nm, src.kind, parent, { content: src.content, media: src.media, hidden: src.hidden, sizeBytes: src.sizeBytes })
       src.children.forEach((k) => clone(k, c, k.name))
       return c
     }

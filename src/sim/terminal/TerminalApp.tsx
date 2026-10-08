@@ -3,6 +3,7 @@ import { useCallback, useLayoutEffect, useRef, useState, type KeyboardEvent } fr
 import { useDesktop } from '../DesktopContext'
 import type { WinState } from '../windowManager'
 import { createSession, type LineKind, type Session } from './engine'
+import { isToolInstalled } from '../apps/extra-support/toolState'
 import { freshCursor, stepHistory, type HistoryCursor } from './history'
 
 interface Entry {
@@ -31,7 +32,15 @@ export function TerminalApp({ win }: { win: WinState }) {
   const [session] = useState<Session>(() => {
     const cwdProp = typeof win.props?.cwd === 'string' ? win.props.cwd : undefined
     const start = cwdProp ? d.vfs.resolve(cwdProp) : null
-    return createSession(d.vfs, d.os, undefined, (e) => dRef.current.emit(e), start && start.kind === 'folder' ? start : undefined)
+    return createSession(d.vfs, d.os, undefined, (e) => dRef.current.emit(e), start && start.kind === 'folder' ? start : undefined, {
+      // Module 18: tools only count as installed once the learner has installed them (never gated elsewhere)
+      isInstalled: (tool) => isToolInstalled(dRef.current.vfs, tool === 'code' ? 'vscode' : tool),
+      openEditor: (node) => {
+        const v = dRef.current.vfs
+        const folder = node.kind === 'folder' ? node : (node.parent ?? v.home)
+        dRef.current.openApp('code', { props: { folder: v.canonPath(folder), ...(node.kind === 'file' ? { file: v.canonPath(node) } : {}) }, newWindow: true })
+      },
+    })
   })
   const [entries, setEntries] = useState<Entry[]>(() => session.banner().map((l) => ({ id: nextId(), text: l.text, kind: l.kind })))
   const [value, setValue] = useState('')

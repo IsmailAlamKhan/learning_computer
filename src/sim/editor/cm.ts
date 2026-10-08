@@ -14,7 +14,8 @@ import { fileKindOf } from './logic'
 export function languageExtension(name: string): Extension {
   switch (fileKindOf(name)) {
     case 'html':
-      return [html(), indentUnit.of('  ')]
+      // autoCloseTags is off on purpose: beginners type both tags themselves (typing </h1> by hand would otherwise leave a stray duplicate)
+      return [html({ autoCloseTags: false }), indentUnit.of('  ')]
     case 'css':
       return [css(), indentUnit.of('  ')]
     case 'javascript':

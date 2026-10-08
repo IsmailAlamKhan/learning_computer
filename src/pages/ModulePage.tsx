@@ -166,6 +166,11 @@ function LessonView({ lesson }: { lesson: Lesson }) {
                     🏆 আপনার সনদ দেখুন ও ছাপুন
                   </Link>
                 )}
+                {lesson.certificatePart === 2 && (
+                  <Link to="/next-steps" className="btn btn-lg btn-outline">
+                    🚀 এরপর কোথায় যাব
+                  </Link>
+                )}
                 <Link to="/" className="btn btn-outline">
                   হোমে ফিরে পরের পাঠ দেখুন
                 </Link>

@@ -128,3 +128,79 @@ Scope reviewed: lessons m07–m13, glossary m07–m13 (plus a cross-check of all
 | `pages/Certificate.tsx` | "আনন্দের সাথে জানানো হচ্ছে যে" … "সনদপত্র" heading | Warmer than "প্রত্যয়ন", but check it still reads as a proper certificate. |
 | `pages/Home.tsx`, `Teacher.tsx` (carried over from the first review) | "✓ সম্পন্ন", "শীঘ্রই আসছে", "তালা দেওয়া" | Still unchanged; "শেষ হয়েছে" / "শিগগিরই" may sound warmer. |
 | `lessons/m09.ts` | "পিছনে" (m07) vs "পেছনে"/"পেছনের" (m09–m12) | Both spellings are in use across the app (24 vs 13 in my count); pick one (the glossary uses "পিছনে"). |
+
+
+## Modules 14–20 and tools
+
+Scope reviewed: lessons m14–m20, glossary m14–m20 (plus a duplicate scan of all glossary files), widgets and `widgets/lib` data for modules 14–20, the four cheat sheets (terminal-commands, setup-checklist, html-basics, python-basics), `pages/NextSteps.tsx` + `lib/nextSteps.ts`, `pages/Notebook.tsx` + `lib/notebook.ts`, `pages/Certificate.tsx`, `sim/runner/errors.ts`, `sim/terminal/messages.ts` + engine hints, `sim/editor/*`, `sim/apps/extra/*` (m18-setup, m18-extensions, installers), `sim/apps/browser/sites/m18-*` and `m19-*`, `pages/ToolsDemo.tsx`, and the m14–m20 rows of `content/modules.ts`. The text was already in good spoken চলিত with "আপনি"; changes are small. No ids, `data-coach` targets, `expectedAction`s, code or commands were changed. `npx tsc -b` and `npx vitest run` pass (69 files, 738 tests); no test needed updating.
+
+### Changes by category
+
+1. Spelling / consistency
+   - `সঙ্গে` → `সাথে`, `উপরে/উপরের` → `ওপরে/ওপরের`, `পুরনো` → `পুরোনো` (m17, m19, m20, glossary m17/m19, nextSteps, errors.ts, engine.ts, messages.ts, ToolsDemo).
+   - `কী-বোর্ড` → `কিবোর্ড` (m15); `RAM এ` → `RAM-এ`; `Anika> এর` → `Anika>-এর`; `<!-- --> এর`, `{ } এর` → "চিহ্নের"; `যে কোনো` → `যেকোনো`; `বাংলা সহ` → `বাংলাসহ`; `না সেভ করলে` → `সেভ না করলে`; `এক-দু সপ্তাহ` → `এক-দুই সপ্তাহ`.
+   - "পাঠ ১৯/১৮" (a module reference) → "মডিউল ১৯/১৮" in m20 and nextSteps, matching the "মডিউল ৯" style of m15–m19.
+   - "চাবি" for a keyboard key → "কী" (m15 myth list).
+2. Natural phrasing
+   - Bookish → spoken: "গ্রন্থাগার/গ্রন্থাগারিক" → "লাইব্রেরি/লাইব্রেরিয়ান" (m14 lesson, `ioFlow.ts`, kitchen-analogy widget); "অভিবাদন" → "শুভেচ্ছা"; "নথি" → "লেখা, ছবি বা গান"; "অনুমোদিত সীমা" → "সীমা"; "সংরক্ষিত" → "জমা"; "স্মরণের জন্য" → "মনে রাখার জন্য"; "ছাপার উপযোগী চিট শিট" → "ছাপিয়ে নেওয়ার মতো চিট শিট"; "অনুগ্রহ করে একটু অপেক্ষা করুন" → "একটু অপেক্ষা করুন, ঘাবড়াবেন না".
+   - Wrong subject fixed: "সে যা বলবেন ঠিক তাই করে" → "আপনি যা বলবেন, রোবট ঠিক তাই করে" (m15, m16).
+   - Unclear sentences rewritten: m15 "ডান পাশে তার সাথে সাথে ছবিটিও (প্রিভিউ)"; m15 "এই পথের প্রথম ধাপ আপনার পায়ে"; m16 infinite-loop analogy ("ভাত কখনো নরম না হওয়ার ব্যবস্থা"); m18 free-practice sentence ("ডাউনলোড করা ফাইল ছাড়া কিছু ইনস্টল হয় না"); m20 "ঠিক-ঠিক লাইনগুলো দেওয়া আছে"; m19 error line "ঠিক করা (define)" → "তৈরি করা (define)".
+   - Teacher tips: "ছাত্রী নির্দেশ দিক" / "সে ভয় না পায়" → "তিনি নির্দেশ দিন" / "তিনি ভয় না পান" (m16).
+   - Glossary/lib: "অসংজ্ঞায়িত" → "তৈরি করা হয়নি (undefined)"; "অগ্রহণযোগ্য" → "ঠিক নয় (নিয়ম মেলেনি)"; "হালনাগাদ" → "আপডেট (নতুন করা)"; "গৃহীত উত্তর" → "মেনে নেওয়া উত্তর (Accepted)"; "ঝালাই" → "ঝালিয়ে নেওয়া".
+   - m19 "সারকথা" → "মনে রাখুন" card (what the app actually shows).
+3. Terminology
+   - Certificate sentence "…পর্ব ২: প্রোগ্রামিংয়ের প্রস্তুতি-এ" → "… অংশে" (suffix glued to a long title); "কোডিং টুলস" → "কোডিংয়ের টুল সাজানো".
+   - `modules.ts` titles now match the lesson titles: m16 "কম্পিউটেশনাল চিন্তা" → "কম্পিউটারের মতো ভাবা (কোড ছাড়া)", m18 "প্রোগ্রামিং টুলস সেটআপ" → "প্রোগ্রামিংয়ের টুল সাজানো", m19 "এআই সহায়ক" → "এআই সহকারী" (also in nextSteps).
+   - m18 glossary `tool-path`: added "(এটি ফাইলের “পথ” নয়, আলাদা জিনিস)", because m04 uses "পথ" for the file path and m18 "পাথ" for the PATH setting.
+   - m18 "আপনার কম্পিউটারের নাম (Windows/macOS)" → "কম্পিউটারের ধরন" (cheat sheet, lesson).
+4. Religion-specific wording: none found (grepped নমস্কার, সালাম, আদাব, প্রণাম, ঈদ, পূজা, রমজান, আল্লাহ, ঈশ্বর, ধর্ম, দোয়া, প্রার্থনা, etc.). Code greetings are neutral ("Hello, world", "স্বাগতম", "Hello, Python!"). Names in examples (Rumi, Anika, রুমা) are neutral.
+5. Technical accuracy (certain fixes only)
+   - VS Code for Mac: the official download is normally a `.zip` containing the app (not a `.dmg`); lesson m18, summary, real-world task and the setup cheat sheet now say "সাধারণত .zip, কখনো .dmg" and still tell her to drag the app to Applications. (The simulated installer file stays `.dmg`; Python/Node `.pkg`, Windows `.exe`/`.msi` are right.)
+   - m19 `broken.py` hint was wrong/confusing ("e-র আগে একটি s") → "mes-এর পর আরেকটি s: mes + s + age" (message vs mesage).
+   - m14: Movie.mp4 is 700 MB, text said "প্রায় আধা জিবি" → "প্রায় ৭০০ এমবি, মানে এক জিবির কাছাকাছি".
+   - m17: "Mac-এ বড়-ছোট হাতের অক্ষর মিলিয়ে লিখতে হয়" (default macOS volumes are case-insensitive) → "…মিলিয়ে লেখাই নিরাপদ"; "টার্মিনাল আপনাকে ‘নিশ্চিত?’ বলে না" → "অনেক সময় জিজ্ঞেস করে না" (PowerShell sometimes asks).
+   - m18Logic address-check note for `python.org.fast-setup.example` reworded to read the name part from the right (same rule as the module-9 fix).
+   - m18: added "(আসল সাইটে সংস্করণের সংখ্যা আরও নতুন হতে পারে)" because the practice site shows Python 3.12.4.
+   - m20: View page source is "Chrome বা Edge". bits.ts digit-code note ("এটি সংখ্যা ৫ নয়…") simplified.
+   - Verified OK (mentally, and with python3): all Python lesson examples and stated outputs (`print(2 + 3)` → 5, `price * count` → 100, `2 ** 3` → 8, `7 / 2` → 3.5, `print("Hello", i)` → `Hello 0`, `int(input())` + 1, `age >= 18`, `range(3)`); HTML/CSS snippets (void `<img>`, `<meta charset>`, `<link rel="stylesheet">`, comment syntax, `h1 { color: teal; }`); Unicode (A = 65, a = 97, অ = 2437 = U+0985); PowerShell `pwd` output with `Path` header; `ni`, `type`, `cls`, `cd ~`, `-Force`; zsh prompt `anika@Mac ~ %`; Windows PATH checkbox "Add python.exe to PATH"; official addresses code.visualstudio.com, www.python.org, nodejs.org; Node LTS vs Current; Ctrl+Shift+X / Cmd+Shift+X (Extensions); Windows `python hello.py` / `py hello.py`, Mac `python3`.
+6. Wrong-answer hints softened
+   - tech-words quiz: "আরেকটু ভাবুন — এটি নয়" → "আরেকবার ভেবে দেখুন, অন্য একটি বেছে নিন"; tool-address-check: "এটি নয়" → "এটি আসল ঠিকানা নয়। … দেখুন"; m19 popup hint: "বিশ্বাস করা যায় না" → "ভরসা না করাই ভালো". Robot, flowchart, order-puzzle, loop-counter and quiz hints were already gentle (they point to a clue, never say "wrong").
+7. Safety messages for blocked terminal commands (`messages.ts`): already protective ("চিন্তার কিছু নেই, আপনি কিছু ভুল করেননি — এটা শুধু আপনাকে নিরাপদ রাখার জন্য", then reasons and a safe alternative). Only the spelling was normalised; the tone was kept. `errors.ts` is calm and blame-free ("এটা খুব সাধারণ একটি সমস্যা, প্রোগ্রামিংয়ে সবারই হয়"); only "পেজটি রিফ্রেশ" → "পাতাটি রিফ্রেশ (Refresh)" was touched.
+
+### Glossary duplicates (ids not changed)
+
+- Same Bengali term, two ids, consistent meaning (fine, but they appear twice in the search list): হার্ডওয়্যার (m01 `hardware` / m14 `hw-hardware`), কপি/পেস্ট/কাট (m04 / m05), লিংক (m07 / m20), স্ক্রিনশট (m11 / m12), স্টোরেজ (m11 / m14), ইনপুট, আউটপুট (m14 / m20), সার্ভার (m14 / m19), সিএসএস (m15 / m20), পাইথন (m15 / m18), বাগ (m15 / m20), শর্ত (m16 / m20). Suggest merging into one entry each, or making `glossaryIds` list only one.
+- Same English term, different Bengali spelling/wording: `path` (m04 "পথ" vs m18 "পাথ" — different concepts, now cross-referenced), `install` ("ইনস্টল" vs "ইনস্টল করা"), `update` ("আপডেট" vs "আপডেট (নতুন করা)"), `download` ("ডাউনলোড" vs "ডাউনলোড (প্রোগ্রাম নামানো)"), `algorithm` (m15 "অ্যালগরিদম" vs m16 with a gloss), `syntax`, `error`, `undo`, `restore`, `tab`, `desktop` (see earlier notes).
+
+### Uncertain items (not changed)
+
+- VS Code "Bangla language pack": I am not sure an official pack exists (community ones do); text now says "পাওয়া গেলে / যদি পাওয়া যায়" in m18 and the setup cheat sheet.
+- Windows legacy console may not render Bengali output of `print("স্বাগতম")` in an old PowerShell window (Windows Terminal is fine); the m20 real-world task does not warn about it.
+- Node.js Windows installer: real page order (Welcome → License → Destination → Custom Setup → Tools for Native Modules → Install) has one more page than the simulation; steps are correct as far as they go.
+- Mac Python installer page names (Introduction, Read Me, License, Destination, Installation Type) match the simulation; real pages vary slightly by version.
+- "বেশিরভাগ" (m15–m20) vs "বেশির ভাগ": left as is.
+
+### Phrases a native speaker should double-check
+
+| File | Phrase | Why |
+|---|---|---|
+| `lessons/m14.ts` | "বাড়ির ব্যবস্থাপক" for the operating system; "লাইব্রেরিয়ান" | New analogy wording; check it reads naturally. |
+| `lessons/m14.ts` | "RAM… একদম সাফ হয়ে যায়, ঠিক কাউন্টারের জিনিস শেষে সরিয়ে ফেলার মতো" | Analogy sentence is long. |
+| `lessons/m15.ts` | "কেউ সাত দিনে ওস্তাদ হয় না", "আজ কেবল সুর বেঁধে নেওয়া" | Idiomatic; check tone is warm, not old-fashioned. |
+| `lessons/m15.ts` | "পথের প্রথম ধাপ আপনি পার হয়ে গেছেন" | Replaces a calque; confirm. |
+| `lessons/m16.ts` | "হাতে-কলমে চালিয়ে দেখা", "আক্ষরিক হোন!" | Check "আক্ষরিক" is understood as "literally". |
+| `lessons/m17.ts` | "ভাবুন, রেস্তোরাঁয় … ফোনে গলা দিয়ে বলা, “দুটো খিচুড়ি পাঠান”" | Analogy; confirm it feels natural. |
+| `lessons/m17.ts` | "টার্মিনাল রাগ করে না" | Warm personification; confirm it is not childish. |
+| `lessons/m18.ts` | "নামা শেষ", "নামানো" for download | Used with "ডাউনলোড" in parentheses; check clarity. |
+| `lessons/m18.ts` | "ডাউনলোড-তালিকায় ফাইলের নাম আর নামার বার" | Same. |
+| `lessons/m18.ts`, cheat sheet | "VS Code… সাধারণত .zip, কখনো .dmg" | Technical claim: please confirm on a real Mac download page. |
+| `lessons/m19.ts` | "মেনে নেওয়া (Accepted) উত্তর" | Replaces "গৃহীত"; check it is understood. |
+| `lessons/m19.ts`, glossary | "তৈরি করা হয়নি (undefined)" for "not defined" | Plain wording; check it does not mislead. |
+| `lessons/m19.ts` | "ঠিক নয় (নিয়ম মেলেনি)" for "invalid" | Plain wording for an abstract word. |
+| `lessons/m20.ts` | "পাইথনের একটি ভাইয়ের মতো" (JavaScript) | Warm but unusual; may be cut. |
+| `lessons/m20.ts` | "মডিউল ১৯", "সনদপত্র" vs "সনদ" | Both "সনদ" and "সনদপত্র" appear in the UI; pick one. |
+| `lib/nextSteps.ts` | "ঝালিয়ে নেওয়া (Review)", "পথচলায় আপনি একা নন" | Check tone and idiom. |
+| `pages/Certificate.tsx` | "…পর্ব ২: প্রোগ্রামিংয়ের প্রস্তুতি অংশে… শেষ করেছেন" | Sentence assembled from a title + text; check it reads as one sentence. |
+| `sim/terminal/messages.ts` | "আপনি কিছু ভুল করেননি — এটা শুধু আপনাকে নিরাপদ রাখার জন্য" | Intended to be protective; confirm it does not sound patronising. |
+| `sim/runner/errors.ts` | "চাবি (key)" for a dictionary key | Natural for dictionary, but different from "কী" used for keyboard keys. |
+| `content/widgets/lib/m19Logic.ts` | "আপডেট করা (নতুন করা)" | Check the gloss. |

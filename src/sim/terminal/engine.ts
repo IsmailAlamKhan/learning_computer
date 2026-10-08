@@ -38,6 +38,14 @@ export interface CompleteResult {
   cursor: number
   candidates: string[]
 }
+/** Programming tools the practice terminal can pretend are (not) installed. `code` = the editor's command-line launcher. */
+export type SessionTool = 'python' | 'node' | 'git' | 'code'
+/** Optional hooks supplied by the host (all default to "everything is installed" / "no `code` command"). */
+export interface SessionTools {
+  isInstalled?: (tool: SessionTool) => boolean
+  /** open the code editor on this folder (or file); enables the `code .` command */
+  openEditor?: (node: VNode) => void
+}
 export interface Session {
   readonly vfs: VirtualFileSystem
   readonly flavor: OsFlavor
@@ -94,11 +102,11 @@ const WIN_ALIAS: Record<string, string> = {
   mv: 'mv', move: 'mv', mi: 'mv', 'move-item': 'mv',
   cp: 'cp', copy: 'cp', cpi: 'cp', 'copy-item': 'cp',
   python: 'python', python3: 'python', py: 'python',
-  node: 'node', git: 'git', help: 'help', '?': 'help', exit: 'exit',
+  node: 'node', git: 'git', code: 'code', help: 'help', '?': 'help', exit: 'exit',
 }
 const MAC_ALIAS: Record<string, string> = {
   pwd: 'pwd', ls: 'ls', cd: 'cd', mkdir: 'mkdir', touch: 'touch', cat: 'cat', echo: 'echo', clear: 'clear', mv: 'mv', cp: 'cp',
-  python: 'python', python3: 'python', node: 'node', git: 'git', help: 'help', '?': 'help', exit: 'exit',
+  python: 'python', python3: 'python', node: 'node', git: 'git', code: 'code', help: 'help', '?': 'help', exit: 'exit',
 }
 /** commands of the other OS and what to type here instead */
 const CROSS_WIN: Record<string, string> = { touch: 'ni', open: 'ii', python3: 'python', which: 'Get-Command' }
@@ -125,8 +133,9 @@ const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', '
 const bytes = (s: string) => new TextEncoder().encode(s).length
 const contentLines = (c: string) => (c === '' ? [] : c.replace(/\r?\n$/, '').split(/\r?\n/))
 
-export function createSession(vfs: VirtualFileSystem, flavor: OsFlavor, runner?: Runner, emit?: (e: SimEvent) => void, startCwd?: VNode): Session {
+export function createSession(vfs: VirtualFileSystem, flavor: OsFlavor, runner?: Runner, emit?: (e: SimEvent) => void, startCwd?: VNode, tools?: SessionTools): Session {
   const win = flavor === 'windows'
+  const installed = (t: SessionTool) => tools?.isInstalled?.(t) ?? true
   const run: Runner = runner ?? lazyRunner
   const alias = win ? WIN_ALIAS : MAC_ALIAS
   const history: string[] = []
@@ -248,7 +257,7 @@ export function createSession(vfs: VirtualFileSystem, flavor: OsFlavor, runner?:
         if (/^-(force|hidden)$/i.test(f)) showHidden = true
         else {
           err(r, `Get-ChildItem : A parameter cannot be found that matches parameter name '${f.slice(1)}'.`)
-          hint(r, 'Windows PowerShell-এ ls বা dir-এর সঙ্গে -l, -a লাগে না। শুধু ls লিখুন। লুকানো ফাইলও দেখতে চাইলে ls -Force লিখুন।')
+          hint(r, 'Windows PowerShell-এ ls বা dir-এর সাথে -l, -a লাগে না। শুধু ls লিখুন। লুকানো ফাইলও দেখতে চাইলে ls -Force লিখুন।')
           return
         }
       }
@@ -373,7 +382,7 @@ export function createSession(vfs: VirtualFileSystem, flavor: OsFlavor, runner?:
       else if (l === '-force') continue
       else if (isFlag(a)) {
         err(r, `New-Item : A parameter cannot be found that matches parameter name '${a.slice(1)}'.`)
-        hint(r, 'ni-এর সঙ্গে ফাইলের নাম দিন, যেমন: ni notes.txt। ফোল্ডার বানাতে: ni নাম -ItemType Directory')
+        hint(r, 'ni-এর সাথে ফাইলের নাম দিন, যেমন: ni notes.txt। ফোল্ডার বানাতে: ni নাম -ItemType Directory')
         return
       } else pos.push(a)
     }
@@ -522,6 +531,7 @@ export function createSession(vfs: VirtualFileSystem, flavor: OsFlavor, runner?:
 
   async function cmdProgram(lang: CodeLanguage, cmdName: string, args: string[], r: Run): Promise<Pending | void> {
     const l = cmdName.toLowerCase()
+    if (!installed(lang === 'python' ? 'python' : 'node')) return notInstalled(r, cmdName, lang === 'python' ? 'python' : 'node')
     if (args[0] === '--version' || args[0] === '-V' || args[0] === '-v' || args[0] === '-version') {
       out(r, lang === 'python' ? VERSIONS.python : VERSIONS.node)
       return
@@ -549,6 +559,7 @@ export function createSession(vfs: VirtualFileSystem, flavor: OsFlavor, runner?:
   }
 
   function cmdGit(args: string[], r: Run) {
+    if (!installed('git')) return notInstalled(r, 'git', 'git')
     if (args[0] === '--version' || args[0] === '-v') out(r, win ? VERSIONS.gitWindows : VERSIONS.gitMac)
     else {
       err(r, 'git: this practice terminal only supports: git --version')
@@ -556,7 +567,32 @@ export function createSession(vfs: VirtualFileSystem, flavor: OsFlavor, runner?:
     }
   }
 
-  const enabledNames = () => Object.keys(alias).filter((k) => k !== '?')
+  /** The tool is not installed (yet) on this practice computer: the same kind of message a real computer prints. */
+  function notInstalled(r: Run, name: string, tool: SessionTool) {
+    if (win) err(r, `${name} : The term '${name}' is not recognized as the name of a cmdlet, function, script file, or operable program.`)
+    else if (tool === 'git') err(r, 'xcode-select: note: No developer tools were found, requesting install.')
+    else err(r, `zsh: command not found: ${name}`)
+    const what = tool === 'python' ? 'পাইথন' : tool === 'node' ? 'Node.js' : tool === 'code' ? 'কোড এডিটর' : 'Git'
+    hint(r, `মানে ${what} এই কম্পিউটারে এখনও ইনস্টল করা হয়নি — অথবা কম্পিউটার সেটাকে খুঁজে পাচ্ছে না। কমান্ডে ভুল নেই।`)
+    if (win && tool === 'python') hint(r, 'ইনস্টল করার সময় “Add python.exe to PATH” টিক দেওয়া না থাকলেও এমন হয়। ইনস্টলার আবার চালিয়ে টিক দিয়ে নিন।')
+    if (!win && tool === 'git') hint(r, 'আসল Mac-এ এই পর্যায়ে সাধারণত একটি পপ-আপ এসে ডেভেলপার টুলস ইনস্টল করতে চায় — আপনার ম্যাকে একটু আলাদা দেখাতে পারে। এখনই ইনস্টল করার দরকার নেই।')
+    if (tool === 'code') hint(r, 'আগে কোড এডিটর ইনস্টল করুন।')
+  }
+
+  function cmdCode(args: string[], r: Run) {
+    if (!installed('code')) return notInstalled(r, 'code', 'code')
+    const target = args.find((a) => !isFlag(a)) ?? '.'
+    const node = res(target)
+    if (!node) {
+      err(r, win ? `code : Path '${full(target)}' does not exist.` : `code: ${target}: No such file or directory`)
+      hint(r, `“${target}” নামে কিছু এখানে নেই। ${win ? 'dir' : 'ls'} লিখে নাম আর ফোল্ডার দেখে নিন।`)
+      return
+    }
+    tools?.openEditor?.(node)
+    info(r, 'কোড এডিটর খুলছে… (কমান্ড লিখলে আসল কম্পিউটারেও সাধারণত কিছু ছাপা হয় না, শুধু এডিটর খোলে)')
+  }
+
+  const enabledNames = () => Object.keys(alias).filter((k) => k !== '?' && (k !== 'code' || !!tools?.openEditor))
 
   function unknown(r: Run, name: string) {
     if (win) err(r, `${name} : The term '${name}' is not recognized as the name of a cmdlet, function, script file, or operable program.`)
@@ -589,7 +625,7 @@ export function createSession(vfs: VirtualFileSystem, flavor: OsFlavor, runner?:
       return
     }
     const id = win ? alias[lname] : alias[rawName]
-    if (!id) return unknown(r, rawName)
+    if (!id || (id === 'code' && !tools?.openEditor)) return unknown(r, rawName)
     switch (id) {
       case 'pwd':
         if (win) ['', 'Path', '----', vfs.displayPath(cwd), ''].forEach((t) => out(r, t))
@@ -608,9 +644,10 @@ export function createSession(vfs: VirtualFileSystem, flavor: OsFlavor, runner?:
       case 'python': return cmdProgram('python', rawName, args, r)
       case 'node': return cmdProgram('javascript', rawName, args, r)
       case 'git': return cmdGit(args, r)
+      case 'code': return cmdCode(args, r)
       case 'help': helpLines(flavor).forEach((t) => info(r, t)); return
       case 'exit':
-        hint(r, 'এই অনুশীলন-টার্মিনাল বন্ধ করতে জানালার উপরের ✕ বোতামে চাপ দিন।')
+        hint(r, 'এই অনুশীলন-টার্মিনাল বন্ধ করতে জানালার ওপরের ✕ বোতামে চাপ দিন।')
         return
     }
   }

@@ -9,7 +9,7 @@ import type { WinState } from '../windowManager'
 import { SimDialog } from '../ui/SimDialog'
 import { BackGlyph, ForwardGlyph, FolderIcon, NodeIcon, PlusGlyph, RecycleBinIcon, RefreshGlyph, SearchGlyph, UpGlyph, UsbIcon } from '../ui/icons'
 import { getDevices } from '../devices/store'
-import { attached, byteLength, findNode, fmtDate, fmtSize, isTypingTarget, kindLabel, splitExt } from './util'
+import { attached, nodeBytes, findNode, fmtDate, fmtSize, isTypingTarget, kindLabel, splitExt } from './util'
 import { useFmPrefs } from './fmPrefs'
 
 type View = 'grid' | 'list'
@@ -47,7 +47,7 @@ const payloadIds = (p: unknown): string[] => {
   return o.ids ?? (o.id ? [o.id] : [])
 }
 
-const nodeSize = (n: VNode) => (n.kind === 'file' ? byteLength(n.content) : 0)
+const nodeSize = (n: VNode) => (n.kind === 'file' ? nodeBytes(n) : 0)
 
 function sortEntries(list: Entry[], key: SortKey, asc: boolean): Entry[] {
   const nm = (a: VNode, b: VNode) => a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: 'base' })
@@ -200,7 +200,7 @@ function FmItem({ entry, view, cols, mac, os, showExt, selected, renaming, setRe
       case 'type':
         return kindLabel(node, os)
       case 'size':
-        return node.kind === 'file' ? fmtSize(byteLength(node.content), os) : ''
+        return node.kind === 'file' ? fmtSize(nodeBytes(node), os) : ''
       case 'location':
         return entry.location ?? ''
       default:
@@ -1040,7 +1040,7 @@ export function FileManager({ win, bin = false }: { win: WinState; bin?: boolean
       {selNodes.length > 0 && (
         <span>
           {selNodes.length} item{selNodes.length === 1 ? '' : 's'} selected
-          {selNodes.length === 1 && selNodes[0].kind === 'file' ? `  ${fmtSize(byteLength(selNodes[0].content), os)}` : ''}
+          {selNodes.length === 1 && selNodes[0].kind === 'file' ? `  ${fmtSize(nodeBytes(selNodes[0]), os)}` : ''}
         </span>
       )}
     </div>
@@ -1123,7 +1123,7 @@ export function FileManager({ win, bin = false }: { win: WinState; bin?: boolean
         <dt className="text-gray-500">{mac ? 'Where' : 'Location'}</dt>
         <dd className="break-all">{props.parent ? vfs.displayPath(props.parent) : vfs.displayPath(props)}</dd>
         <dt className="text-gray-500">Size</dt>
-        <dd>{props.kind === 'file' ? `${fmtSize(byteLength(props.content), os)} (${byteLength(props.content)} bytes)` : `${props.children.length} item${props.children.length === 1 ? '' : 's'}`}</dd>
+        <dd>{props.kind === 'file' ? `${fmtSize(nodeBytes(props), os)} (${nodeBytes(props)} bytes)` : `${props.children.length} item${props.children.length === 1 ? '' : 's'}`}</dd>
         <dt className="text-gray-500">{mac ? 'Created' : 'Created'}</dt>
         <dd>{fmtDate(props.createdAt, os)}</dd>
         <dt className="text-gray-500">Modified</dt>

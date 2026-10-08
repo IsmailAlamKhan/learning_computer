@@ -18,6 +18,7 @@ import {
 import type { OsFlavor } from '../engine/types'
 import { SimBus, type SimEvent } from './bus'
 import { VirtualFileSystem, type VNode } from './vfs'
+import { installerFor } from './installerRegistry'
 import { activeWindow, initialWm, wmReducer, type Bounds, type WinState, type WmAction, type WmState } from './windowManager'
 import { getApp } from './apps/registry'
 import { normalizeCombo, systemAction, type ShortcutAction } from './shortcuts'
@@ -270,6 +271,10 @@ export function DesktopProvider({ os, userName = 'Anika', bus, vfsFactory, inset
       if (node.kind === 'folder') return openApp('files', { props: { path: vfs.canonPath(node) } })
       if (node.media === 'image') return openApp('photos', { props: { nodeId: node.id }, newWindow: true })
       if (node.media === 'audio' || node.media === 'video') return openApp('media', { props: { nodeId: node.id }, newWindow: true })
+      if (node.media === 'app') {
+        const inst = installerFor(node.name)
+        if (inst) return openApp(inst.appId, { props: inst.props, newWindow: true })
+      }
       if (node.media === 'pdf' || node.media === 'app' || node.media === 'zip') {
         toastRef.current(`“${node.name}” can’t be opened in this practice computer.`)
         return

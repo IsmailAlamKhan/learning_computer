@@ -82,6 +82,16 @@ export default function Home() {
         )}
       </section>
 
+      {data.modules[20]?.completed && (
+        <Link to="/next-steps" className="card flex items-center gap-4 hover:border-brand" data-testid="home-next-steps">
+          <span aria-hidden="true" className="text-3xl">🚀</span>
+          <span className="flex-1">
+            <span className="block text-lg font-bold">এরপর কোথায় যাব</span>
+            <span className="block text-sm text-muted">কোর্স শেষ করেছেন! এবার পরের পথ, বিনামূল্যের উৎস আর রোজকার অভ্যাস-ছক দেখুন।</span>
+          </span>
+        </Link>
+      )}
+
       {([1, 2] as const).map((p) => (
         <section key={p} aria-labelledby={`part-${p}`} className="space-y-3">
           <div>

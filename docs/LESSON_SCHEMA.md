@@ -130,3 +130,5 @@ A long module can be split into independent chapters: `chapters: [{ id, titleBn,
 The guided section then shows a list of chapters; each chapter starts a fresh simulated computer using its own `setup`, so
 steps never depend on a previous chapter's state. The module counts as "hands-on done" when every chapter's steps (for the
 learner's OS) are completed. Step ids must be unique across the whole module. Module 20 uses chapters.
+
+The Code Editor also emits `custom` events `code-saved`, `code-edited`, `code-run-ok` and `code-run-error` (use these when the output depends on what she typed). State-based steps (`previewContains`, `fileContains`, `fileExists`) are re-checked once when they become the current step, so typing ahead never stalls the coach.

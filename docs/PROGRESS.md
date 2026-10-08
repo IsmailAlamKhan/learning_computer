@@ -7,7 +7,7 @@
 | 3 | Modules 1, 3, 4, 5, 6 | DONE |
 | 4 | Modules 7–13 | DONE |
 | 5 | Terminal, editor, runners | DONE |
-| 6 | Part 2 (Modules 14–20) | NOT STARTED |
+| 6 | Part 2 (Modules 14–20) | DONE |
 | 7 | Hardening, PWA, QA, docs | NOT STARTED |
 
 ## Stage details
@@ -54,6 +54,13 @@
 - Demo page `/#/demo/tools` (linked from the teacher page) shows terminal + editor on both flavors.
 - Tests: 552 unit/component tests (incl. real Pyodide under Node), new Playwright specs for terminal and editor. Python run verified in real Chrome against the production build.
 - For stage 7: service worker must precache `pyodide/*` (6 files) and `assets/pythonWorker-*.js` (see docs/RUNNER.md).
+
+### Stage 6 — DONE (2026-10-09)
+- All 20 modules are playable. New in Part 2: M14 (toggle-bits, input-process-output, kitchen-analogy widgets; file sizes via `sizeBytes`), M15 (exact-instructions robot, language-cards, path-chooser), M16 (order-puzzle, flowchart-builder with graph validation, if-else-explorer, loop-counter), M17 (terminal lesson with typeCommand/fileExists/fileContains steps, prompt-anatomy widget, terminal cheat sheet), M18 (fictional official download sites with ad traps, simulated installers incl. PATH checkbox, Extensions marketplace, terminal gating of python/node/git until installed, `code .`), M19 (tech-words, error-reader, question-builder widgets; fake Q&A sites; **notebook** page `/notebook` with autosave/search/export and an "add to notebook" button on every summary card), M20 (11 chapters: HTML ×3, CSS ×2, Python ×4, 2 mini-projects; Part 2 certificate; `/next-steps` roadmap + printable 30-minute habit sheet; HTML and Python cheat sheets).
+- Engine: `Lesson.chapters` micro-lessons; state-based steps re-checked when they become current; editor emits `code-run-ok/error`.
+- Cheat sheets: shortcuts, safety, terminal commands, setup checklist, HTML basics, Python basics.
+- Tests: 738 unit/component tests (incl. real Pyodide checks of every Python output in M20); Playwright walkthroughs for every module.
+- Bengali review for 14–20 + tools appended to docs/BENGALI_REVIEW.md (e.g. VS Code Mac download is normally a .zip).
 
 ## Decisions and assumptions
 

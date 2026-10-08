@@ -34,6 +34,8 @@ export function attached(node: VNode, root: VNode): boolean {
 }
 
 export const byteLength = (s: string): number => new TextEncoder().encode(s).length
+/** Size shown for a file: the optional `sizeBytes` override, else the content length. */
+export const nodeBytes = (n: { content: string; sizeBytes?: number }): number => n.sizeBytes ?? byteLength(n.content)
 
 export function fmtSize(bytes: number, os: OsFlavor): string {
   if (os === 'mac') {

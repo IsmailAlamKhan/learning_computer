@@ -405,6 +405,8 @@ export function CodeEditor({ win }: { win: WinState }) {
       const friendly = result.error ? errs.translateError(language, result.error) : undefined
       setRunUi({ status: 'done', result, friendly, language, fileName })
       dRef.current.emit({ type: 'codeRun', language, output: result.output, ok: result.ok, ...(result.error ? { error: describeError(result.error) } : {}) })
+      // generic "she ran it" signals for lessons whose output depends on what she typed (any answer is fine)
+      emitCustom(result.ok ? 'code-run-ok' : 'code-run-error')
       const view = viewRef.current
       if (result.error?.line && view && currentRef.current === id) view.dispatch({ effects: setErrorLine.of(result.error.line) })
     } catch (e) {
@@ -641,7 +643,7 @@ function OutputBody({ runUi, pending, answer, setAnswer, submit, dark }: { runUi
     return (
       <div className="space-y-3">
         <p>চলছে…</p>
-        {runUi.slowStart && !pending && <p style={{ color: mute }}>পাইথন প্রথমবার চালু হতে একটু সময় নেয়। অনুগ্রহ করে একটু অপেক্ষা করুন।</p>}
+        {runUi.slowStart && !pending && <p style={{ color: mute }}>পাইথন প্রথমবার চালু হতে একটু সময় নেয়। একটু অপেক্ষা করুন, ঘাবড়াবেন না।</p>}
         {pending && (
           <div className="space-y-2 rounded-lg border p-3" style={{ borderColor: dark ? '#3b5a9a' : '#93c5fd', background: dark ? '#202942' : '#eff6ff' }} data-coach="code-input-box">
             <label className="block" htmlFor="code-input-field">

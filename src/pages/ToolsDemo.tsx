@@ -79,7 +79,7 @@ export default function ToolsDemo() {
           <li>
             টার্মিনালে টাইপ করুন: <code>pwd</code>, <code>ls</code>, <code>cd coding</code>, <code>python hello.py</code>
           </li>
-          <li>কোড এডিটরের বাঁ দিকের তালিকা থেকে <code>index.html</code> খুলুন — ডান পাশে সঙ্গে সঙ্গে প্রিভিউ দেখা যাবে। লেখা বদলান, প্রিভিউও বদলে যাবে।</li>
+          <li>কোড এডিটরের বাঁ দিকের তালিকা থেকে <code>index.html</code> খুলুন — ডান পাশে সাথে সাথে প্রিভিউ দেখা যাবে। লেখা বদলান, প্রিভিউও বদলে যাবে।</li>
           <li><code>hello.js</code> বা <code>hello.py</code> খুলে ▶ Run চাপুন। <code>broken.py</code> চালিয়ে দেখুন ভুল হলে কেমন সহজ বাংলায় বোঝানো হয়।</li>
           <li>সেভ করতে {os === 'mac' ? 'Cmd+S' : 'Ctrl+S'} চাপুন বা Save বোতাম টিপুন।</li>
         </ul>

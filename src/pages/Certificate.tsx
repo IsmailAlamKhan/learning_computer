@@ -5,7 +5,7 @@ import { useFmt } from '../ui/useFmt'
 
 const PARTS = {
   1: { title: 'পর্ব ১: কম্পিউটারের ভিত্তি', text: 'কম্পিউটার চালানোর মৌলিক সব পাঠ — ডেস্কটপ, ফাইল-ফোল্ডার, কিবোর্ড, ইন্টারনেট, ইমেইল, নিরাপত্তা ও সমস্যা সমাধান — সফলভাবে শেষ করেছেন।', modules: [1, 13] },
-  2: { title: 'পর্ব ২: প্রোগ্রামিংয়ের প্রস্তুতি', text: 'কম্পিউটার কীভাবে কাজ করে, প্রোগ্রামিং কী, টার্মিনাল, কোডিং টুলস এবং প্রথম HTML, CSS ও প্রোগ্রাম লেখা সফলভাবে শেষ করেছেন।', modules: [14, 20] },
+  2: { title: 'পর্ব ২: প্রোগ্রামিংয়ের প্রস্তুতি', text: 'কম্পিউটার কীভাবে কাজ করে, প্রোগ্রামিং কী, টার্মিনাল, কোডিংয়ের টুল সাজানো এবং নিজের হাতে প্রথম HTML, CSS ও পাইথন প্রোগ্রাম লেখা সফলভাবে শেষ করেছেন।', modules: [14, 20] },
 } as const
 
 /** Printable A4 landscape certificate ("সনদপত্র"). Shown once the part's last module is completed (or by the teacher preview). */
@@ -38,6 +38,7 @@ export default function Certificate() {
       <div className="no-print flex flex-wrap gap-3">
         <Link to="/" className="btn btn-outline">← হোম</Link>
         <button className="btn" onClick={() => window.print()}>🖨️ ছাপুন (A4, আড়াআড়ি)</button>
+        {p === 2 && <Link to="/next-steps" className="btn btn-outline">🚀 এরপর কোথায় যাব</Link>}
       </div>
       <p className="no-print text-sm text-muted">ছাপার সময় প্রিন্ট ডায়ালগে “Landscape (আড়াআড়ি)” বেছে নিন আর “Background graphics” চালু করুন।</p>
       <section
@@ -53,7 +54,7 @@ export default function Certificate() {
         <p className="text-lg">আনন্দের সাথে জানানো হচ্ছে যে</p>
         <p className="border-b-2 px-10 text-4xl font-bold" style={{ borderColor: '#9a3412' }}>{name}</p>
         <p className="max-w-2xl text-lg">
-          “কম্পিউটার শিখি” কোর্সের <strong>{info.title}</strong>-এ {info.text}
+          “কম্পিউটার শিখি” কোর্সের <strong>{info.title}</strong> অংশে {info.text}
         </p>
         <p className="mt-2 text-base">তারিখ: {date(issued)}</p>
         <p className="text-sm" style={{ color: '#4b5563' }}>অভিনন্দন! শেখার এই যাত্রা চালিয়ে যান।</p>

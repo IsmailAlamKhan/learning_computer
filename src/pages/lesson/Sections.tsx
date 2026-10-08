@@ -4,6 +4,8 @@ import { filterByOs } from '../../engine/filter'
 import { WIDGETS } from '../../content/widgets'
 import { getGlossaryEntry } from '../../content/glossary'
 import { store } from '../../state/store'
+import { AddToNotebook } from '../../ui/AddToNotebook'
+import { summaryToNote } from '../../lib/notebook'
 import type { ModuleProgress } from '../../state/progress'
 
 export function Block({ b }: { b: ExplanationBlock }) {
@@ -88,6 +90,7 @@ export function SummarySection({ lesson }: { lesson: Lesson }) {
         ))}
       </ul>
       {c.extraBn && <p className="text-muted">{c.extraBn}</p>}
+      <AddToNotebook {...summaryToNote(c.titleBn, c.pointsBn, c.extraBn)} />
     </div>
   )
 }
