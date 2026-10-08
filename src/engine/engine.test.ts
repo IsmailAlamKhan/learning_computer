@@ -115,3 +115,42 @@ describe('quiz grading', () => {
     expect(scoreQuiz(['a', 'b', 'c'], { a: 0, b: 2 })).toEqual({ score: 2, total: 3, wrongByQuestion: { a: 0, b: 2 } })
   })
 })
+
+import { VirtualFileSystem } from '../sim/vfs'
+
+describe('stage 5 actions', () => {
+  const cmd = (command: string) => ({ type: 'command' as const, command, cwd: '~', ok: true, output: '' })
+  it('typeCommand normalises whitespace and supports alternatives and modes', () => {
+    expect(matchAction({ type: 'typeCommand', command: 'ls' }, cmd('  ls  '), 'mac')).toBe(true)
+    expect(matchAction({ type: 'typeCommand', command: ['ls', 'dir'] }, cmd('dir'), 'windows')).toBe(true)
+    expect(matchAction({ type: 'typeCommand', command: 'cd Documents' }, cmd('cd   Documents'), 'mac')).toBe(true)
+    expect(matchAction({ type: 'typeCommand', command: 'cd Documents' }, cmd('cd documents'), 'mac')).toBe(false)
+    expect(matchAction({ type: 'typeCommand', command: 'mkdir', match: 'prefix' }, cmd('mkdir coding'), 'mac')).toBe(true)
+    expect(matchAction({ type: 'typeCommand', command: 'python', match: 'contains' }, cmd('python3 hello.py'), 'mac')).toBe(true)
+    expect(matchAction({ type: 'typeCommand', command: 'ls' }, { type: 'click', target: 'x' }, 'mac')).toBe(false)
+  })
+  it('fileExists / fileContains read the virtual file system', () => {
+    const vfs = new VirtualFileSystem('mac', 'Anika')
+    const ev = { type: 'custom' as const, event: 'x' }
+    expect(matchAction({ type: 'fileExists', path: '~/coding' }, ev, 'mac', { vfs })).toBe(false)
+    vfs.mkdir(vfs.home, 'coding')
+    expect(matchAction({ type: 'fileExists', path: '~/coding', kind: 'folder' }, ev, 'mac', { vfs })).toBe(true)
+    expect(matchAction({ type: 'fileExists', path: '~/coding', kind: 'file' }, ev, 'mac', { vfs })).toBe(false)
+    vfs.saveAs(vfs.resolve('~/coding')!, 'hello.py', 'print("হ্যালো")')
+    expect(matchAction({ type: 'fileContains', path: '~/coding/hello.py', text: 'print(' }, ev, 'mac', { vfs })).toBe(true)
+    expect(matchAction({ type: 'fileContains', path: '~/coding/hello.py', text: 'nope' }, ev, 'mac', { vfs })).toBe(false)
+    expect(matchAction({ type: 'fileExists', path: '~/x' }, ev, 'mac')).toBe(false)
+  })
+  it('codeOutputEquals, previewContains, predictOutput', () => {
+    const run = (output: string, ok = true, language: 'python' | 'javascript' = 'python') => ({ type: 'codeRun' as const, language, output, ok })
+    expect(matchAction({ type: 'codeOutputEquals', output: 'Hello' }, run('Hello\n'), 'windows')).toBe(true)
+    expect(matchAction({ type: 'codeOutputEquals', output: ['a', 'b'] }, run('b'), 'windows')).toBe(true)
+    expect(matchAction({ type: 'codeOutputEquals', output: 'Hello' }, run('Hello', false), 'windows')).toBe(false)
+    expect(matchAction({ type: 'codeOutputEquals', output: 'Hello', language: 'javascript' }, run('Hello'), 'windows')).toBe(false)
+    expect(matchAction({ type: 'previewContains', text: 'স্বাগতম' }, { type: 'preview', html: '<h1>স্বাগতম</h1>', text: 'স্বাগতম' }, 'mac')).toBe(true)
+    expect(matchAction({ type: 'previewContains', text: 'color: red' }, { type: 'preview', html: '<p style="color: red">x</p>', text: 'x' }, 'mac')).toBe(true)
+    expect(matchAction({ type: 'predictOutput', acceptedAnswers: ['8'] }, { type: 'predict', answer: ' 8 ' }, 'mac')).toBe(true)
+    expect(matchAction({ type: 'predictOutput', acceptedAnswers: ['Hi'], ignoreCase: true }, { type: 'predict', answer: 'hi' }, 'mac')).toBe(true)
+    expect(matchAction({ type: 'predictOutput', acceptedAnswers: ['8'] }, { type: 'predict', answer: '9' }, 'mac')).toBe(false)
+  })
+})

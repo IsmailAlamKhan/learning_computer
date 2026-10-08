@@ -204,7 +204,10 @@ export function DesktopProvider({ os, userName = 'Anika', bus, vfsFactory, inset
   const apiRef = useRef<DesktopApi | null>(null)
 
   // forward file-system events to the bus
-  useEffect(() => vfs.onEvent(bus.emit), [vfs, bus])
+  useEffect(() => {
+    bus.vfs = vfs
+    return vfs.onEvent(bus.emit)
+  }, [vfs, bus])
 
   const emit = bus.emit
 

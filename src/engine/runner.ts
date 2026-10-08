@@ -1,4 +1,4 @@
-import type { ExpectedAction, OsFlavor, Step } from './types'
+import type { ExpectedAction, MatchContext, OsFlavor, Step } from './types'
 import { matchAction } from './actions'
 import type { SimEvent } from '../sim/bus'
 import { filterByOs } from './filter'
@@ -15,11 +15,11 @@ export const initialRunner = (): RunnerState => ({ index: 0, done: [], finished:
 export const stepsFor = (steps: Step[], os: OsFlavor): Step[] => filterByOs(steps, os)
 
 /** Result of feeding an event to the runner: did the current step complete? */
-export function feed(state: RunnerState, steps: Step[], ev: SimEvent, os: OsFlavor): { matched: boolean } {
+export function feed(state: RunnerState, steps: Step[], ev: SimEvent, os: OsFlavor, ctx: MatchContext = {}): { matched: boolean } {
   if (state.finished) return { matched: false }
   const step = steps[state.index]
   if (!step) return { matched: false }
-  return { matched: matchAction(step.expectedAction, ev, os) }
+  return { matched: matchAction(step.expectedAction, ev, os, ctx) }
 }
 
 /** Mark the current step done and move to the next (or finish). */
@@ -38,6 +38,7 @@ export type DemoPlan =
   | { kind: 'drag'; target?: string; dropTarget?: string }
   | { kind: 'type'; target?: string; text: string }
   | { kind: 'keys'; keys: string }
+  | { kind: 'command'; command: string }
   | { kind: 'none' }
 
 export function demoPlan(a: ExpectedAction): DemoPlan {
@@ -52,6 +53,8 @@ export function demoPlan(a: ExpectedAction): DemoPlan {
       return { kind: 'type', target: a.target, text: a.text }
     case 'keyCombo':
       return { kind: 'keys', keys: a.keys }
+    case 'typeCommand':
+      return { kind: 'command', command: Array.isArray(a.command) ? a.command[0] : a.command }
     default:
       return { kind: 'none' }
   }

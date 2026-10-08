@@ -22,6 +22,8 @@ export interface GuidedRun {
   showDemo: () => void
   /** for `continue` steps */
   complete: () => void
+  /** for `predictOutput` steps: she submitted an answer */
+  submitPrediction: (answer: string) => void
   reset: () => void
 }
 
@@ -83,7 +85,7 @@ export function useGuidedRun({ steps, bus, os, enabled = true, onStepDone, onFin
       if (phaseRef.current !== 'waiting') {
         // she was quick: the "well done" pause is still showing, but she already did the NEXT step
         const nextState = advance(st, steps)
-        if (!nextState.finished && feed(nextState, steps, ev, os).matched) {
+        if (!nextState.finished && feed(nextState, steps, ev, os, { vfs: bus.vfs }).matched) {
           window.clearTimeout(timer.current)
           stateRef.current = nextState
           setState(nextState)
@@ -93,7 +95,7 @@ export function useGuidedRun({ steps, bus, os, enabled = true, onStepDone, onFin
         return
       }
       setActivity((a) => a + 1)
-      if (feed(st, steps, ev, os).matched) succeed(steps[st.index])
+      if (feed(st, steps, ev, os, { vfs: bus.vfs }).matched) succeed(steps[st.index])
     })
   }, [bus, steps, os, enabled, succeed])
 
@@ -138,6 +140,7 @@ export function useGuidedRun({ steps, bus, os, enabled = true, onStepDone, onFin
     demoKey,
     showDemo: () => setDemoKey((k) => k + 1),
     complete,
+    submitPrediction: (answer: string) => bus.emit({ type: 'predict', answer }),
     reset,
   }
 }

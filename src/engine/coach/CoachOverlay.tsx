@@ -45,6 +45,31 @@ function useTargetRect(wrapperRef: RefObject<HTMLElement | null>, id: string | u
   return rect
 }
 
+function PredictBox({ run, step }: { run: GuidedRun; step: NonNullable<GuidedRun['step']> }) {
+  const [ans, setAns] = useState('')
+  const [tries, setTries] = useState(0)
+  const exp = step.expectedAction
+  if (exp.type !== 'predictOutput') return null
+  const submit = () => {
+    if (!ans.trim()) return
+    const ok = exp.acceptedAnswers.some((x) => (exp.ignoreCase ? x.trim().toLowerCase() === ans.trim().toLowerCase() : x.trim() === ans.trim()))
+    if (!ok) setTries((t) => t + 1)
+    run.submitPrediction(ans)
+  }
+  return (
+    <div className="mt-2 space-y-2">
+      <label className="block">
+        <span className="text-sm font-medium">আপনার মনে হয় কী ছাপা হবে?</span>
+        <input className="field mt-1 font-mono" value={ans} onChange={(e) => setAns(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && submit()} />
+      </label>
+      <button className="btn" onClick={submit} disabled={!ans.trim()}>
+        উত্তর দিন
+      </button>
+      {tries > 0 && <p className="rounded-lg px-3 py-2 text-sm" style={{ background: 'var(--c-accent-soft)' }}>প্রায় হয়েছে! একটু আবার ভেবে দেখুন — কোড লাইন ধরে ধরে পড়ুন। আন্দাজ ভুল হলেও দোষ নেই, চালিয়ে দেখলেই শেখা হয়।</p>}
+    </div>
+  )
+}
+
 export function Keycaps({ keys, os }: { keys: string; os: OsFlavor }) {
   return (
     <span className="inline-flex flex-wrap items-center gap-1 align-middle">
@@ -139,7 +164,17 @@ export function CoachOverlay({ run, os, wrapperRef }: Props) {
     const t = center(w, 'target' in plan ? targetId(plan.target) : undefined) ?? center(w, targetKey)
     setDemoText('')
     setCursor({ x: startX, y: startY, ripple: 0, visible: true })
-    if (plan.kind === 'keys' || plan.kind === 'none' || !t) {
+    if (plan.kind === 'command') {
+      let i = 0
+      const text = plan.command
+      const iv = window.setInterval(() => {
+        i++
+        setDemoText(text.slice(0, i))
+        if (i >= text.length) window.clearInterval(iv)
+      }, 120)
+      timers.push(iv)
+      setCursor((c) => ({ ...c, visible: false }))
+    } else if (plan.kind === 'keys' || plan.kind === 'none' || !t) {
       at(2500, () => setCursor((c) => ({ ...c, visible: false })))
     } else if (plan.kind === 'type') {
       at(50, () => setCursor((c) => ({ ...c, x: t.x, y: t.y })))
@@ -212,6 +247,12 @@ export function CoachOverlay({ run, os, wrapperRef }: Props) {
             </div>
             <p className="font-bold">{step.titleBn}</p>
             <p className="mt-1">{text}</p>
+            {plan.kind === 'command' && (
+              <p className="mt-2 rounded-lg px-3 py-2" style={{ background: 'var(--c-sunken)' }}>
+                টার্মিনালে এটি লিখে Enter চাপুন: <code className="font-bold">{Array.isArray((step.expectedAction as { command: string | string[] }).command) ? (step.expectedAction as { command: string[] }).command[0] : (step.expectedAction as { command: string }).command}</code>
+              </p>
+            )}
+            {step.expectedAction.type === 'predictOutput' && <PredictBox run={run} step={step} />}
             {plan.kind === 'keys' && (
               <p className="mt-2">
                 <Keycaps keys={plan.keys} os={os} />

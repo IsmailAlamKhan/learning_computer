@@ -16,16 +16,35 @@ export type SimEvent =
   | { type: 'navigate'; path: string }
   | { type: 'selectOption'; target: string; value: string }
   | { type: 'custom'; event: string }
+  /** A terminal command finished. `cwd` is canonical. */
+  | { type: 'command'; command: string; cwd: string; ok: boolean; output: string }
+  /** Code was run (terminal `python x.py`, editor Run button). */
+  | { type: 'codeRun'; language: 'python' | 'javascript'; output: string; ok: boolean; error?: string }
+  /** The HTML/CSS preview pane was (re)rendered; `html` is the full document, `text` its visible text. */
+  | { type: 'preview'; html: string; text: string }
+  /** The learner answered a "predict the output" step. */
+  | { type: 'predict'; answer: string }
 
 export type SimEventType = SimEvent['type']
 export type SimListener = (e: SimEvent) => void
 
+import type { VirtualFileSystem } from './vfs'
+
 export class SimBus {
+  /** the file system of the simulated computer currently attached (set by DesktopProvider) */
+  vfs?: VirtualFileSystem
+  /** last code run output, for `codeOutputEquals` */
+  lastRun?: { language: string; output: string; ok: boolean }
+  /** last rendered preview */
+  lastPreview?: { html: string; text: string }
+
   private listeners = new Set<SimListener>()
   /** Last N events, handy for tests and the teacher/debug views. */
   readonly log: SimEvent[] = []
 
   emit = (e: SimEvent) => {
+    if (e.type === 'codeRun') this.lastRun = { language: e.language, output: e.output, ok: e.ok }
+    if (e.type === 'preview') this.lastPreview = { html: e.html, text: e.text }
     this.log.push(e)
     if (this.log.length > 200) this.log.shift()
     this.listeners.forEach((l) => l(e))

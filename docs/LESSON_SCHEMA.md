@@ -108,3 +108,18 @@ so Windows and Mac progress are independent. Export/import is plain JSON from th
 - Keyboard shortcuts: write `mod+c`; `mod` is Ctrl on Windows and Cmd on Mac. Real keys and the on-screen
   "শর্টকাট প্যাড" (for combos browsers swallow, like Alt+Tab) both count.
 - Lesson text must be religion-neutral (no নমস্কার/সালাম etc.).
+
+## Stage 5 action types (terminal / editor / code)
+
+| type | fields | completes when |
+|---|---|---|
+| `typeCommand` | `command: string \| string[]`, `match?: 'exact' \| 'prefix' \| 'contains'` | she runs that command in the practice terminal (whitespace-normalised, case-sensitive); list several accepted forms |
+| `fileExists` | `path`, `kind?: 'file' \| 'folder'` | the path exists in the virtual file system (checked after every event) |
+| `fileContains` | `path`, `text` | the file contains the text (e.g. after saving in the editor) |
+| `codeOutputEquals` | `output: string \| string[]`, `language?` | the last successful code run printed exactly this (trimmed) |
+| `previewContains` | `text` | the live HTML/CSS preview contains this text or markup |
+| `predictOutput` | `acceptedAnswers: string[]`, `ignoreCase?` | she typed an accepted answer in the coach bubble (shown as a small input; wrong answers get a gentle nudge, never a red error) |
+
+State-based actions (`fileExists`, `fileContains`) are evaluated on every simulator event, so the step completes right after the
+file is created/saved. Use `target` to point the coach at the terminal (`terminal-input`) or editor (`code-editor`, `code-run`, `code-save`).
+Terminal ids: `terminal-input`, `terminal-output`; editor ids: `code-editor`, `code-run`, `code-save`, `code-tab-<name>`, `code-explorer-<name>`, `code-output`, `code-preview`.

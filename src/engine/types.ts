@@ -28,8 +28,26 @@ export type ExpectedAction =
   | { type: 'selectOption'; target: string; value: string }
   | { type: 'custom'; event: string }
   | { type: 'continue' }
+  // ----- stage 5: terminal / editor / code -----
+  /** She runs a command in the practice terminal. `command` = accepted forms (whitespace-normalised, case-sensitive). */
+  | { type: 'typeCommand'; command: string | string[]; match?: 'exact' | 'prefix' | 'contains' }
+  /** A file/folder exists in the virtual file system (canonical path like `~/coding/hello.py`). Checked after every event. */
+  | { type: 'fileExists'; path: string; kind?: 'file' | 'folder' }
+  /** A file's content contains `text` (checked after every event, e.g. after saving in the editor). */
+  | { type: 'fileContains'; path: string; text: string }
+  /** The last code run printed exactly this output (trimmed). */
+  | { type: 'codeOutputEquals'; output: string | string[]; language?: 'python' | 'javascript' }
+  /** The live preview of HTML/CSS currently contains this text (or CSS declaration like `color: red`). */
+  | { type: 'previewContains'; text: string }
+  /** She predicts what some code prints: she types an answer in the coach bubble. */
+  | { type: 'predictOutput'; acceptedAnswers: string[]; ignoreCase?: boolean }
 
 export type ExpectedActionType = ExpectedAction['type']
+
+/** Simulator state the engine may need to evaluate state-based expectations. */
+export interface MatchContext {
+  vfs?: import('../sim/vfs').VirtualFileSystem
+}
 
 export interface Step {
   id: string
