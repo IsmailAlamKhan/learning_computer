@@ -9,11 +9,13 @@ import { DesktopSurface, type SpecialIcon } from '../ui/DesktopSurface'
 import { WindowLayer } from '../ui/WindowLayer'
 import { Tooltip } from '../ui/Tooltip'
 import { errorMessageEn, type VNode } from '../vfs'
+import { PowerScreen, usePower } from '../ui/PowerScreen'
 import { BatteryGlyph, BluetoothGlyph, BrowserIcon, NodeIcon, PowerGlyph, RecycleBinIcon, SearchGlyph, StartMark, VolumeGlyph, WifiGlyph } from '../ui/icons'
 
 export const WINDOWS_INSET = { top: 0, bottom: 48 }
 
 import { wallpaperCss } from '../wallpapers'
+import { InputIndicator } from '../ui/InputIndicator'
 
 /** CSS backgrounds for the 4 selectable wallpapers (Settings previews use these too). */
 export const WINDOWS_WALLPAPERS: string[] = [
@@ -183,6 +185,7 @@ function Tray({ qs, setQs, trayRef }: { qs: boolean; setQs: (v: boolean) => void
   const { time, date } = fmtClock(now, d.sim.timezone, d.sim.clock24)
   return (
     <div ref={trayRef} className="relative flex h-full items-center gap-0.5 pr-1">
+      <InputIndicator mac={false} />
       <Tooltip text="Quick settings" bn="ওয়াই-ফাই, আওয়াজ ও আলো এখানে ঠিক করা যায়">
         <button
           type="button"
@@ -248,18 +251,7 @@ function QuickSettings() {
 
 // ---------------------------------------------------------------- start menu
 
-function PowerOverlay({ onOn }: { onOn: () => void }) {
-  return (
-    <div data-coach="power-overlay" className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-black" style={{ zIndex: 20000 }}>
-      <p className="text-sm text-white/50">The computer is turned off.</p>
-      <button type="button" data-coach="power-on-button" autoFocus onClick={onOn} className="flex h-12 items-center gap-2 rounded-full border border-white/30 px-6 text-white hover:bg-white/10">
-        <PowerGlyph size={20} /> Press to turn on
-      </button>
-    </div>
-  )
-}
-
-function StartMenu({ onShutdown }: { onShutdown: () => void }) {
+function StartMenu({ onShutdown, onSleep, onRestart }: { onShutdown: () => void; onSleep: () => void; onRestart: () => void }) {
   const d = useDesktop()
   const th = useTheme()
   const [q, setQ] = useState('')
@@ -286,7 +278,8 @@ function StartMenu({ onShutdown }: { onShutdown: () => void }) {
     setPowerOpen(false)
     d.setUi({ startOpen: false })
     if (kind === 'Shut down') onShutdown()
-    else d.toast(kind === 'Sleep' ? 'The computer would go to sleep now.' : 'The computer would restart now.')
+    else if (kind === 'Sleep') onSleep()
+    else onRestart()
   }
 
   return (
@@ -390,7 +383,7 @@ function binDrop(d: DesktopApi) {
 
 export default function WindowsShell() {
   const d = useDesktop()
-  const [off, setOff] = useState(false)
+  const power = usePower()
   const startRef = useRef<HTMLDivElement>(null)
   const startMenuRef = useRef<HTMLDivElement>(null)
   const trayRef = useRef<HTMLDivElement>(null)
@@ -411,11 +404,11 @@ export default function WindowsShell() {
       <WindowLayer />
       {d.ui.startOpen && (
         <div ref={startMenuRef}>
-          <StartMenu onShutdown={() => setOff(true)} />
+          <StartMenu onShutdown={power.shutdown} onSleep={power.sleep} onRestart={power.restart} />
         </div>
       )}
       <Taskbar startRef={startRef} trayRef={trayRef} />
-      {off && <PowerOverlay onOn={() => setOff(false)} />}
+      <PowerScreen mode={power.mode} onTurnOn={power.turnOn} onWake={power.wake} />
     </>
   )
 }

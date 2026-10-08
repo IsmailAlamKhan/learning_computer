@@ -4,14 +4,18 @@ import { useDesktop, type SimSettings } from '../DesktopContext'
 import type { WinState } from '../windowManager'
 import { WifiGlyph } from '../ui/icons'
 import { WALLPAPERS } from '../wallpapers'
+import { InstalledApps } from './extra/installedApps'
+import { LanguageRegion, MacKeyboard, TimeTabs } from './extra/keyboardSettings'
 
-const NAV: { id: string; win: string; mac: string; macOnly?: boolean }[] = [
+const NAV: { id: string; win: string; mac: string; macOnly?: boolean; winOnly?: boolean }[] = [
   { id: 'display', win: 'Display', mac: 'Displays' },
   { id: 'sound', win: 'Sound', mac: 'Sound' },
   { id: 'network', win: 'Network & internet', mac: 'Wi-Fi' },
   { id: 'bluetooth', win: 'Bluetooth & devices', mac: 'Bluetooth' },
   { id: 'personalization', win: 'Personalization', mac: 'Wallpaper' },
   { id: 'appearance', win: 'Appearance', mac: 'Appearance', macOnly: true },
+  { id: 'apps', win: 'Apps', mac: 'Apps', winOnly: true },
+  { id: 'keyboard', win: 'Keyboard', mac: 'Keyboard', macOnly: true },
   { id: 'time', win: 'Time & language', mac: 'Date & Time' },
   { id: 'about', win: 'About', mac: 'About' },
 ]
@@ -70,7 +74,8 @@ export function Settings({ win }: { win: WinState }) {
   const { sim, setSim } = d
   const initial = typeof win.props?.section === 'string' ? win.props.section : 'display'
   const [section, setSection] = useState(initial)
-  const nav = NAV.filter((n) => !n.macOnly || mac)
+  const [timeTab, setTimeTab] = useState<'date' | 'language'>('date')
+  const nav = NAV.filter((n) => (!n.macOnly || mac) && (!n.winOnly || !mac))
   const set = (p: Partial<SimSettings>) => setSim(p)
   const sel = 'min-h-9 rounded border border-gray-300 bg-white px-2'
 
@@ -153,9 +158,15 @@ export function Settings({ win }: { win: WinState }) {
             <Toggle mac={mac} coach="settings-darkMode" label="Dark mode" checked={sim.darkMode} onChange={(v) => set({ darkMode: v })} />
           </Row>
         )
+      case 'apps':
+        return <InstalledApps />
+      case 'keyboard':
+        return <MacKeyboard />
       case 'time':
+        if (!mac && timeTab === 'language') return <><TimeTabs tab={timeTab} setTab={setTimeTab} /><LanguageRegion /></>
         return (
           <>
+            {!mac && <TimeTabs tab={timeTab} setTab={setTimeTab} />}
             <Row label="Time zone">
               <select data-coach="settings-timezone" aria-label="Time zone" value={sim.timezone} onChange={(e) => set({ timezone: e.target.value })} className={sel}>
                 {ZONES.map((z) => (

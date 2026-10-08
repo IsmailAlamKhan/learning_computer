@@ -1,5 +1,7 @@
 /** Simulated macOS-style desktop: wallpaper, menu bar, Dock, Launchpad, Spotlight. Generic look-alike, no logos. */
+import { InputIndicator } from '../ui/InputIndicator'
 import { useEffect, useState } from 'react'
+import { PowerScreen, usePower } from '../ui/PowerScreen'
 import { useDesktop, type MenuItem } from '../DesktopContext'
 import { getApp } from '../apps/registry'
 import { DesktopSurface } from '../ui/DesktopSurface'
@@ -92,7 +94,7 @@ function ControlCenter() {
 export default function MacShell() {
   const d = useDesktop()
   const now = useNow()
-  const [off, setOff] = useState(false)
+  const power = usePower()
   const { setUi } = d
   const menuOpen = d.ui.openMenu !== null
   // clicking anywhere outside the menu bar closes an open menu (no backdrop, so the click still reaches what is underneath)
@@ -116,9 +118,9 @@ export default function MacShell() {
     { separator: true },
     { id: 'system-settings', label: 'System Settings…', onSelect: () => d.openApp('settings') },
     { separator: true },
-    { id: 'sleep', label: 'Sleep', onSelect: soon('The screen would go to sleep now.') },
-    { id: 'restart', label: 'Restart…', onSelect: soon('The computer would restart now.') },
-    { id: 'shutdown', label: 'Shut Down…', onSelect: () => setOff(true) },
+    { id: 'sleep', label: 'Sleep', onSelect: power.sleep },
+    { id: 'restart', label: 'Restart…', onSelect: power.restart },
+    { id: 'shutdown', label: 'Shut Down…', onSelect: power.shutdown },
     { separator: true },
     { id: 'lock-screen', label: 'Lock Screen', shortcut: '⌃⌘Q', onSelect: () => d.setUi({ locked: true }) },
     { id: 'log-out', label: `Log Out ${d.userName}…`, onSelect: soon('You would be logged out now.') },
@@ -180,6 +182,7 @@ export default function MacShell() {
           <BarMenu id="menu-help" label="Help" items={helpItems} />
         </div>
         <div className="flex h-full items-center gap-0.5 text-[13px]">
+          <InputIndicator mac />
           <button type="button" data-coach="menubar-battery" aria-label="Battery 100%" className="flex h-full items-center px-1.5" onClick={() => d.setUi({ openMenu: null })}>
             <BatteryGlyph size={18} />
           </button>
@@ -203,15 +206,7 @@ export default function MacShell() {
       {d.ui.launchpadOpen && <Launchpad />}
       {d.ui.spotlightOpen && <Spotlight />}
 
-      {off && (
-        <div className="absolute inset-0 z-[25000] flex items-center justify-center bg-black">
-          <button type="button" data-coach="power-on-button" aria-label="Power on" className="flex h-16 w-16 items-center justify-center rounded-full border-2 border-white/60 text-white/80 hover:bg-white/10" onClick={() => setOff(false)}>
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
-              <path d="M12 3v9M6.5 7a8 8 0 1 0 11 0" />
-            </svg>
-          </button>
-        </div>
-      )}
+      <PowerScreen mode={power.mode} onTurnOn={power.turnOn} onWake={power.wake} />
     </>
   )
 }

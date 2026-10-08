@@ -41,7 +41,9 @@ export function Frame({ Shell, insetTop, insetBottom }: { Shell: ComponentType; 
     const inp = (e: Event) => {
       const t = coach(e)
       const v = (e.target as HTMLInputElement).value
-      if (t && typeof v === 'string') dRef.current.emit({ type: 'type', target: t, value: v })
+      // Emit after the event has finished dispatching: advancing a guided step synchronously re-renders the sim
+      // and made controlled inputs (Start search, Save As name…) drop the last typed character.
+      if (t && typeof v === 'string') window.setTimeout(() => dRef.current.emit({ type: 'type', target: t, value: v }), 0)
     }
     el.addEventListener('click', c, true)
     el.addEventListener('dblclick', dc, true)

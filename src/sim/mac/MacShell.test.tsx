@@ -105,4 +105,17 @@ describe('MacShell', () => {
     act(() => fireEvent.click(q('power-on-button')!))
     expect(q('power-on-button')).toBeNull()
   })
+
+  it('Sleep and Restart emit events and show overlays', () => {
+    const bus = setup()
+    const ev = () => bus.log.filter((e) => e.type === 'custom').map((e) => (e as { event: string }).event)
+    fireEvent.click(q('menu-system')!)
+    fireEvent.click(q('menu-item-sleep')!)
+    expect(q('wake-button')).toBeTruthy()
+    act(() => fireEvent.click(q('wake-button')!))
+    fireEvent.click(q('menu-system')!)
+    fireEvent.click(q('menu-item-restart')!)
+    expect(q('power-restarting')).toBeTruthy()
+    expect(ev()).toEqual(expect.arrayContaining(['power-sleep', 'power-wake', 'power-restart']))
+  })
 })

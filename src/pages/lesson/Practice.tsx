@@ -57,7 +57,7 @@ export function GuidedPractice({ lesson, os, alreadyDone, onFinished }: { lesson
             </div>
           )}
           <div ref={wrapperRef} className="relative">
-            <SimStage key={`${os}`} os={os} bus={bus} onReset={onReset} setup={lesson.setup} />
+            <SimStage key={`${os}`} os={os} bus={bus} onReset={onReset} setup={lesson.setup} defaultPadOpen={steps.some((s) => s.expectedAction.type === 'keyCombo')} />
             {!finished && <CoachOverlay run={run} os={os} wrapperRef={wrapperRef} />}
           </div>
         </>

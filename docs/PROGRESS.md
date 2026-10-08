@@ -52,3 +52,5 @@
 - oxlint shows only `only-export-components`/`refs` warnings in src/sim (accepted).
 - Display zoom in sim Settings stores a value but shells don't apply it yet (Module 10).
 - Module 2 Bengali: native-speaker double-check suggested for the "কন্ট্রোল সেন্টার" and "সিস্টেম ট্রে" wording.
+
+- Module 6 has ~38 Windows / 32 Mac guided steps (exceeds the 10–18 guideline): consider splitting into two sub-lessons (6a write/save, 6b install/uninstall) in the final QA. Mac 'Save As… hidden until Option held' claim needs native/Mac verification.

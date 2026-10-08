@@ -20,6 +20,8 @@ interface Props {
   /** Called after the learner presses "রিসেট" (so a lesson can restart its guided steps). */
   onReset?: () => void
   showPad?: boolean
+  /** Start with the on-screen shortcut pad already open (used when a guided step needs a key combo). */
+  defaultPadOpen?: boolean
   initialSettings?: Partial<SimSettings>
   vfsFactory?: () => VirtualFileSystem
   /** Extra controls shown in the toolbar above the desktop. */
@@ -46,9 +48,9 @@ function OpenAtStart({ apps }: { apps: string[] }) {
 }
 
 /** A complete simulated computer with its own bus, reset button and shortcut pad. */
-export function SimStage({ os, bus, userName = 'Anika', onReset, showPad = true, initialSettings, vfsFactory, toolbarExtra, setup }: Props) {
+export function SimStage({ os, bus, userName = 'Anika', onReset, showPad = true, defaultPadOpen = false, initialSettings, vfsFactory, toolbarExtra, setup }: Props) {
   const [resetKey, setResetKey] = useState(0)
-  const [pad, setPad] = useState(false)
+  const [pad, setPad] = useState(defaultPadOpen)
   const { Shell, top, bottom } = SHELLS[os]
   return (
     <div className="space-y-3">
@@ -59,7 +61,7 @@ export function SimStage({ os, bus, userName = 'Anika', onReset, showPad = true,
         <div className="flex flex-wrap gap-2">
           {toolbarExtra}
           {showPad && (
-            <button className="btn btn-outline" aria-expanded={pad} onClick={() => setPad((p) => !p)}>
+            <button className="btn btn-outline" data-coach="pad-toggle" aria-expanded={pad} onClick={() => setPad((p) => !p)}>
               ⌨ শর্টকাট প্যাড
             </button>
           )}

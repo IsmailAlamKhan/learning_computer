@@ -24,7 +24,7 @@ export function ShortcutPad() {
     setMods([])
   }
   return (
-    <div className="space-y-2 rounded-xl border p-3" style={{ borderColor: 'var(--c-line)', background: 'var(--c-surface)' }} data-testid="shortcut-pad">
+    <div className="space-y-2 rounded-xl border p-3" style={{ borderColor: 'var(--c-line)', background: 'var(--c-surface)' }} data-testid="shortcut-pad" data-coach="shortcut-pad">
       <div className="text-sm">
         <strong>কিবোর্ড শর্টকাট প্যাড:</strong> আগে নিচের Ctrl/Alt/Cmd-এর মতো বোতাম বেছে নিন, তারপর একটি অক্ষর বা কী-তে ক্লিক করুন।
         <span className="ml-1 text-muted">{mods.length ? `বাছাই: ${comboLabel(mods.join('+'), d.os)} + …` : ''}</span>

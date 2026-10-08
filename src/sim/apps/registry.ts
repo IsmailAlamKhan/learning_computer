@@ -22,5 +22,8 @@ const apps = new Map<string, AppDef>()
 export function registerApp(def: AppDef) {
   apps.set(def.id, def)
 }
+export function unregisterApp(id: string) {
+  apps.delete(id)
+}
 export const getApp = (id: string) => apps.get(id)
 export const appsFor = (os: OsFlavor) => [...apps.values()].filter((a) => !a.os || a.os === 'both' || a.os === os)

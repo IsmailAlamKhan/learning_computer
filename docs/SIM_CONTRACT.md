@@ -27,3 +27,5 @@ Settings: `settings-nav-<id>`, `settings-<key>` (controls).
 
 ## Combos handled by Frame/DesktopContext (system) — see `shortcuts.ts`
 Windows: Alt+Tab, Alt+F4, Win+D, Win+Up/Down, Win (Start), Ctrl+Esc, Win+L. Mac: Cmd+Tab, Cmd+W, Cmd+M, Cmd+Q, Cmd+Space, Ctrl+Cmd+Q, F4 (Launchpad).
+
+Power screen (both shells): `power-overlay`, `power-on-button`, `wake-button`, `power-restarting`; custom events `power-shutdown`, `power-sleep`, `power-wake`, `power-restart`, `power-on`.

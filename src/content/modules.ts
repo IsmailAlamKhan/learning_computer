@@ -8,7 +8,7 @@ export const MODULES: ModuleMeta[] = [
   { module: 1, part: 1, icon: '💻', titleBn: 'কম্পিউটারের সাথে পরিচয়', oneLineBn: 'কম্পিউটারের অংশগুলো চিনি, নিরাপদে চালু-বন্ধ করি, টাচপ্যাড ব্যবহার শিখি।', status: 'soon' },
   { module: 2, part: 1, icon: '🖥️', titleBn: 'ডেস্কটপ ও স্ক্রিন', oneLineBn: 'পর্দায় যা দেখা যায় তা চিনি — আইকন, টাস্কবার/ডক, ক্লিক, ডাবল ক্লিক, ড্র্যাগ।', status: 'playable' },
   { module: 3, part: 1, icon: '🪟', titleBn: 'উইন্ডো', oneLineBn: 'উইন্ডো খুলি, বন্ধ করি, ছোট-বড় করি, সরাই এবং এক প্রোগ্রাম থেকে আরেকটিতে যাই।', status: 'soon' },
-  { module: 4, part: 1, icon: '🗂️', titleBn: 'ফাইল, ফোল্ডার ও পাথ', oneLineBn: 'আলমারির ফাইলের মতো করে ফাইল-ফোল্ডার সাজাই এবং পাথ পড়া শিখি।', status: 'soon' },
+  { module: 4, part: 1, icon: '🗂️', titleBn: 'ফাইল, ফোল্ডার ও পাথ', oneLineBn: 'আলমারির ফাইলের মতো করে ফাইল-ফোল্ডার সাজাই এবং পাথ পড়া শিখি।', status: 'playable' },
   { module: 5, part: 1, icon: '⌨️', titleBn: 'কিবোর্ড ও টাইপিং', oneLineBn: 'কিবোর্ডের অক্ষর, শর্টকাট ও প্রোগ্রামিংয়ের চিহ্ন চিনি; বাংলা-ইংরেজি কিবোর্ড বদলাই।', status: 'soon' },
   { module: 6, part: 1, icon: '📝', titleBn: 'প্রোগ্রাম ও অ্যাপ', oneLineBn: 'অ্যাপ খুলি, লেখা লিখে সেভ করি, সেভ আর সেভ অ্যাজের পার্থক্য বুঝি।', status: 'soon' },
   { module: 7, part: 1, icon: '🌐', titleBn: 'ইন্টারনেট ও ব্রাউজার', oneLineBn: 'ব্রাউজার চালাই, খুঁজে দেখি, ভালো আর সন্দেহজনক সাইট আলাদা করি।', status: 'soon' },

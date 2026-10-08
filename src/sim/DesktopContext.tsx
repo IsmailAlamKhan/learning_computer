@@ -36,6 +36,10 @@ export interface SimSettings {
   timezone: string
   clock24: boolean
   language: 'English' | 'বাংলা'
+  /** input languages/keyboards added in Settings: 'en' always, 'bn' once Bangla has been added */
+  keyboards?: string[]
+  /** which keyboard is typing right now ('en' | 'bn') */
+  activeKeyboard?: string
 }
 
 export const defaultSimSettings: SimSettings = {
@@ -51,6 +55,8 @@ export const defaultSimSettings: SimSettings = {
   timezone: 'Asia/Dhaka',
   clock24: false,
   language: 'English',
+  keyboards: ['en'],
+  activeKeyboard: 'en',
 }
 
 export interface UiState {

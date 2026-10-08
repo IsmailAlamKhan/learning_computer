@@ -1,0 +1,117 @@
+import { expect, test } from '@playwright/test'
+import { coach, cont, seedProfile, startGuided } from './helpers'
+
+const SETTINGS = { settings: { numerals: 'western', unlockAll: true } }
+
+test.describe('Module 6 guided practice', () => {
+  test('Windows flow completes end to end', async ({ page }) => {
+    await seedProfile(page, 'windows', SETTINGS)
+    const errors: string[] = []
+    page.on('pageerror', (e) => errors.push(String(e)))
+    await startGuided(page, 6)
+    // write + first save
+    await coach(page, 'start-button').click()
+    await coach(page, 'start-app-editor').click()
+    await coach(page, 'editor-text').fill('Hello, this is my first file.')
+    await coach(page, 'editor-menu-file').click()
+    await coach(page, 'editor-save').click()
+    await coach(page, 'save-dialog-name').fill('hello.txt')
+    await coach(page, 'save-dialog-save').click()
+    await coach(page, 'win-editor-close').click()
+    // reopen from Files
+    await coach(page, 'taskbar-app-files').click()
+    await coach(page, 'fm-sidebar-Documents').click()
+    await coach(page, 'fm-item-hello.txt').dblclick()
+    // edit, unsaved prompt, Save in place
+    await coach(page, 'editor-text').fill('Hello, this is my first file.\nA second line.')
+    await coach(page, 'win-editor-close').click()
+    await coach(page, 'dialog-cancel').click()
+    await coach(page, 'editor-menu-file').click()
+    await coach(page, 'editor-save').click()
+    // Save As
+    await coach(page, 'editor-menu-file').click()
+    await coach(page, 'editor-save-as').click()
+    await coach(page, 'save-dialog-name').fill('hello-copy.txt')
+    await coach(page, 'save-dialog-save').click()
+    await coach(page, 'win-editor-close').click()
+    await expect(coach(page, 'fm-item-hello.txt')).toBeVisible()
+    await expect(coach(page, 'fm-item-hello-copy.txt')).toBeVisible()
+    await cont(page)
+    // install
+    await coach(page, 'start-button').click()
+    await coach(page, 'start-search').fill('installer')
+    await coach(page, 'start-app-installer').click()
+    await coach(page, 'installer-download').click()
+    await coach(page, 'installer-next').click()
+    await coach(page, 'installer-install').click()
+    await coach(page, 'installer-finish').click()
+    await coach(page, 'start-button').click()
+    await coach(page, 'start-search').fill('calculator')
+    await coach(page, 'start-app-calcplus').click()
+    await coach(page, 'win-calcplus-close').click()
+    // uninstall
+    await coach(page, 'taskbar-app-settings').click()
+    await coach(page, 'settings-nav-apps').click()
+    await coach(page, 'settings-app-menu-Calculator Plus').click()
+    await coach(page, 'settings-app-uninstall-Calculator Plus').click()
+    await coach(page, 'settings-uninstall-confirm').click()
+    await expect(page.getByText(/সব ধাপ শেষ/)).toBeVisible()
+    expect(errors).toEqual([])
+    const saved = await page.evaluate(() => JSON.parse(localStorage.getItem('computer-shikhi:v1')!).modules['6'].stepsDone.windows.length)
+    expect(saved).toBe(38)
+  })
+
+  test('Mac flow completes end to end', async ({ page }) => {
+    await seedProfile(page, 'mac', SETTINGS)
+    const errors: string[] = []
+    page.on('pageerror', (e) => errors.push(String(e)))
+    await startGuided(page, 6)
+    await coach(page, 'menubar-search').click()
+    await coach(page, 'spotlight-input').fill('TextEdit')
+    await coach(page, 'spotlight-result-0').click()
+    await coach(page, 'editor-text').fill('Hello, this is my first file.')
+    await coach(page, 'editor-save').click()
+    await coach(page, 'save-dialog-name').fill('hello.txt')
+    await coach(page, 'save-dialog-save').click()
+    await coach(page, 'win-editor-close').click()
+    await coach(page, 'dock-files').click()
+    await coach(page, 'fm-sidebar-Documents').click()
+    await coach(page, 'fm-item-hello.txt').dblclick()
+    await coach(page, 'editor-text').fill('Hello, this is my first file.\nA second line.')
+    await coach(page, 'win-editor-close').click()
+    await coach(page, 'dialog-cancel').click()
+    await coach(page, 'editor-save').click()
+    await coach(page, 'editor-save-as').click()
+    await coach(page, 'save-dialog-name').fill('hello-copy.txt')
+    await coach(page, 'save-dialog-save').click()
+    await coach(page, 'win-editor-close').click()
+    await expect(coach(page, 'fm-item-hello-copy.txt')).toBeVisible()
+    await cont(page)
+    // install
+    await coach(page, 'menubar-search').click()
+    await coach(page, 'spotlight-input').fill('installer')
+    await coach(page, 'spotlight-result-0').click()
+    await coach(page, 'installer-download').click()
+    await coach(page, 'installer-next').click()
+    await coach(page, 'installer-install').click()
+    await coach(page, 'installer-finish').click()
+    await coach(page, 'dock-launchpad').click()
+    await coach(page, 'launchpad-app-calcplus').click()
+    await coach(page, 'win-calcplus-close').click()
+    // uninstall: drag from Applications to the Trash
+    await coach(page, 'fm-sidebar-Applications').click()
+    await coach(page, 'fm-item-Calculator Plus.app').dragTo(coach(page, 'dock-trash'))
+    await expect(page.getByText(/সব ধাপ শেষ/)).toBeVisible()
+    expect(errors).toEqual([])
+    // the app is really gone from Launchpad
+    await coach(page, 'dock-launchpad').click()
+    await expect(coach(page, 'launchpad-app-calcplus')).toHaveCount(0)
+  })
+
+  test('explanation widgets render', async ({ page }) => {
+    await seedProfile(page, 'windows', SETTINGS)
+    await page.goto('/#/module/6')
+    await expect(page.getByTestId('save-vs-saveas')).toBeVisible()
+    await expect(page.getByTestId('plain-vs-rich')).toBeVisible()
+  })
+})

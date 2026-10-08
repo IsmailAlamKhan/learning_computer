@@ -82,6 +82,22 @@ describe('WindowsShell', () => {
     expect(q('power-on-button')).toBeNull()
   })
 
+  it('emits power events; sleep wakes and restart returns by itself', () => {
+    const { q, bus } = setup()
+    const ev = () => bus.log.filter((e) => e.type === 'custom').map((e) => (e as { event: string }).event)
+    fireEvent.click(q('start-button')!)
+    fireEvent.click(q('start-power')!)
+    fireEvent.click(q('power-sleep')!)
+    expect(q('wake-button')).toBeTruthy()
+    act(() => q('wake-button')!.click())
+    expect(q('wake-button')).toBeNull()
+    fireEvent.click(q('start-button')!)
+    fireEvent.click(q('start-power')!)
+    fireEvent.click(q('power-restart')!)
+    expect(q('power-restarting')).toBeTruthy()
+    expect(ev()).toEqual(expect.arrayContaining(['power-sleep', 'power-wake', 'power-restart']))
+  })
+
   it('double-clicking the Recycle Bin does not crash without a bin app', () => {
     const { q } = setup()
     fireEvent.doubleClick(q('icon-Recycle Bin')!)
