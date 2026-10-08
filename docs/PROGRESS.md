@@ -92,9 +92,11 @@
 
 ## Open issues / follow-ups
 
-- Stage 3 must update `roadmap.test.ts` ("skips soon modules" test assumes module 1 is still `soon`).
-- oxlint shows only `only-export-components`/`refs` warnings in src/sim (accepted).
-- Display zoom in sim Settings stores a value but shells don't apply it yet (Module 10).
-- Module 2 Bengali: native-speaker double-check suggested for the "কন্ট্রোল সেন্টার" and "সিস্টেম ট্রে" wording.
-
-- Module 6 has ~38 Windows / 32 Mac guided steps (exceeds the 10–18 guideline): consider splitting into two sub-lessons (6a write/save, 6b install/uninstall) in the final QA. Mac 'Save As… hidden until Option held' claim needs native/Mac verification.
+- **Native-speaker Bengali review** still recommended: see the "Phrases a native speaker should double-check" tables in docs/BENGALI_REVIEW.md (e.g. কন্ট্রোল সেন্টার, সিস্টেম ট্রে, সনদ vs সনদপত্র, ঠকবাজ vs প্রতারক, পিছনে/পেছনে, the Mac "Save As… with Option" wording, VS Code Mac download "সাধারণত .zip").
+- **Long lessons**: M4 (27/23 steps), M6 (38/32), M10 (31/26), M11 (26/26), M18 (4 chapters, 48/51 steps) exceed the 3–7 minute guideline; they run as complete walkthroughs and teacher tips suggest two sittings. Splitting them into `chapters` is a straightforward follow-up.
+- **Accuracy items to verify on real machines**: whether plain PrtScn opens the Snipping Tool by default on current Windows 11; Mac green window button (zoom vs full screen) and Launchpad's name on the newest macOS; Mac TextEdit "Don't Save" wording; Windows 24-hour clock menu labels; real Node.js/VS Code installer page order.
+- Glossary has a few same-term/different-id duplicates (`wifi`/`set-wifi`, `copy`/`kb-copy` …) with consistent meanings (ids must stay stable).
+- The notebook has no dedicated print view (prints cleanly as a page); axe covers each lesson section's initial state only, not every state of every widget.
+- E2E: Module 8 (Mac) can flake under heavy CPU load (Playwright config uses 2 workers + 1 retry). The coach credits an action done during the 1.4 s "well done" pause only for the immediately next step.
+- oxlint reports only `only-export-components`/`refs` warnings in src/sim (accepted).
+- On phone widths the simulator is cramped by design; a friendly note recommends a laptop.
