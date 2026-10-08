@@ -118,6 +118,16 @@ export type ExplanationBlock =
   | { kind: 'widget'; widget: string; props?: Record<string, unknown> }
   | { kind: 'code'; code: string; language?: string }
 
+/** Initial state of the simulated computer for this lesson's practice. */
+export interface SimSetup {
+  /** app ids opened (without firing events) when the simulation starts, e.g. ['files', 'editor'] */
+  openApps?: string[]
+  /** add extra files/folders to the virtual file system */
+  vfs?: (vfs: import('../sim/vfs').VirtualFileSystem, os: OsFlavor) => void
+  /** initial computer settings (wallpaper, wifi, volume ...) */
+  settings?: Partial<import('../sim/DesktopContext').SimSettings>
+}
+
 export interface Lesson {
   /** Module number 1..20. */
   module: number
@@ -138,6 +148,8 @@ export interface Lesson {
   glossaryIds: string[]
   /** Which simulation hosts the steps. Default 'desktop'. */
   simulation?: 'desktop' | 'terminal' | 'editor' | 'none' | 'custom'
+  /** starting state of the simulated desktop (open windows, extra files, settings) */
+  setup?: SimSetup
 }
 
 export type ModuleStatus = 'playable' | 'soon'

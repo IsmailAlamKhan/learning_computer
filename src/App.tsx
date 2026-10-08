@@ -7,6 +7,7 @@ import Settings from './pages/Settings'
 import Glossary from './pages/Glossary'
 import ModulePage from './pages/ModulePage'
 import Teacher from './pages/Teacher'
+import CheatSheetPage, { CheatSheetList } from './pages/CheatSheetPage'
 
 export default function App() {
   const { profile } = useProgress()
@@ -20,6 +21,8 @@ export default function App() {
         <Route path="/settings" element={<Settings />} />
         <Route path="/glossary" element={<Glossary />} />
         <Route path="/teacher" element={<Teacher />} />
+        <Route path="/cheatsheets" element={<CheatSheetList />} />
+        <Route path="/cheatsheet/:id" element={<CheatSheetPage />} />
         <Route
           path="*"
           element={

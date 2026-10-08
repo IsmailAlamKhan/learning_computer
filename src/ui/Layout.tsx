@@ -21,6 +21,7 @@ export function Layout() {
             <nav aria-label="প্রধান মেনু" className="flex flex-wrap gap-1">
               <NavLink to="/" end className={link}>হোম</NavLink>
               <NavLink to="/glossary" className={link}>শব্দকোষ</NavLink>
+              <NavLink to="/cheatsheets" className={link}>চিট শিট</NavLink>
               <NavLink to="/settings" className={link}>সেটিংস</NavLink>
             </nav>
           )}

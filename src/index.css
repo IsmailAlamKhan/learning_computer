@@ -182,3 +182,11 @@ kbd {
 }
 .coach-bob { animation: coach-bob 1s ease-in-out infinite; }
 .coach-ripple { animation: coach-ripple 0.7s ease-out forwards; }
+
+.cheatsheet table { border-collapse: collapse; width: 100%; }
+.cheatsheet th, .cheatsheet td { border: 1px solid var(--c-line); padding: 0.35rem 0.6rem; text-align: left; vertical-align: top; }
+.cheatsheet th { background: var(--c-sunken); }
+@media print {
+  .cheatsheet { font-size: 11pt; line-height: 1.5; }
+  .cheatsheet table, .cheatsheet tr { break-inside: avoid; }
+}

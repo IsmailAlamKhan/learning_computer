@@ -57,7 +57,7 @@ export function GuidedPractice({ lesson, os, alreadyDone, onFinished }: { lesson
             </div>
           )}
           <div ref={wrapperRef} className="relative">
-            <SimStage key={`${os}`} os={os} bus={bus} onReset={onReset} />
+            <SimStage key={`${os}`} os={os} bus={bus} onReset={onReset} setup={lesson.setup} />
             {!finished && <CoachOverlay run={run} os={os} wrapperRef={wrapperRef} />}
           </div>
         </>
@@ -93,7 +93,7 @@ export function FreePracticeSection({ lesson, os, onDone, done }: { lesson: Less
           {done ? '✓ করা হয়েছে' : 'আমার অনুশীলন হয়েছে'}
         </button>
       </div>
-      <SimStage key={os} os={os} bus={bus} />
+      <SimStage key={os} os={os} bus={bus} setup={lesson.setup} />
     </div>
   )
 }

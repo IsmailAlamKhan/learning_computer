@@ -10,8 +10,11 @@ import { BrowserIcon, PhotosIcon, RecycleBinIcon, SettingsIcon } from '../ui/ico
 export { registerSite, normalizeInput } from './browser/sites'
 export { useFmPrefs } from './fmPrefs'
 
-/** Register File Explorer/Finder, Recycle Bin/Trash, Notepad/TextEdit, Browser, Settings and Photos. Safe to call repeatedly. */
+const extras = import.meta.glob<{ register?: () => void }>('./extra/*.tsx', { eager: true })
+
+/** Register File Explorer/Finder, Recycle Bin/Trash, Notepad/TextEdit, Browser, Settings and Photos (+ ./extra/*.tsx modules exporting `register()`). Safe to call repeatedly. */
 export function registerBuiltinApps() {
+  for (const m of Object.values(extras)) m.register?.()
   registerApp({
     id: 'files',
     title: (os) => (os === 'windows' ? 'File Explorer' : 'Finder'),

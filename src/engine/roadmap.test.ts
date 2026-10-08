@@ -20,8 +20,14 @@ describe('roadmap', () => {
   })
   it('skips modules that are still coming soon when unlocking', () => {
     const d = defaultData()
-    expect(MODULES[0].status).toBe('soon')
-    expect(moduleState(withPlayable(2), d)).toBe('unlocked')
+    const m1 = MODULES[0]
+    const old = m1.status
+    m1.status = 'soon'
+    try {
+      expect(moduleState(withPlayable(2), d)).toBe('unlocked')
+    } finally {
+      m1.status = old
+    }
   })
   it('unlocks the next after completion', () => {
     const d = defaultData()
@@ -35,7 +41,7 @@ describe('roadmap', () => {
     expect(moduleState(withPlayable(7), d)).toBe('unlocked')
   })
   it('shows soon for unfinished modules', () => {
-    expect(moduleState({ ...MODULES[4], status: 'soon' }, defaultData())).toBe('soon')
+    expect(moduleState({ ...MODULES[19], status: 'soon' }, defaultData())).toBe('soon')
   })
   it('has 20 modules in order', () => {
     expect(MODULES.map((m) => m.module)).toEqual(Array.from({ length: 20 }, (_, i) => i + 1))
