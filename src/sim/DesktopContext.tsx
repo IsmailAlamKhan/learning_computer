@@ -21,6 +21,7 @@ import { VirtualFileSystem, type VNode } from './vfs'
 import { activeWindow, initialWm, wmReducer, type Bounds, type WinState, type WmAction, type WmState } from './windowManager'
 import { getApp } from './apps/registry'
 import { normalizeCombo, systemAction, type ShortcutAction } from './shortcuts'
+import { getSystemShortcut } from './systemActions'
 
 export interface SimSettings {
   wallpaper: number
@@ -194,6 +195,7 @@ export function DesktopProvider({ os, userName = 'Anika', bus, vfsFactory, inset
   wmRef.current = wm
   const closeGuards = useRef(new Map<string, () => boolean>())
   const switcherTimer = useRef<number | undefined>(undefined)
+  const apiRef = useRef<DesktopApi | null>(null)
 
   // forward file-system events to the bus
   useEffect(() => vfs.onEvent(bus.emit), [vfs, bus])
@@ -345,6 +347,11 @@ export function DesktopProvider({ os, userName = 'Anika', bus, vfsFactory, inset
     (raw: string): boolean => {
       const combo = normalizeCombo(raw, os)
       emit({ type: 'keyCombo', keys: combo })
+      const custom = getSystemShortcut(os, combo)
+      if (custom && apiRef.current) {
+        custom(apiRef.current)
+        return true
+      }
       const sys = systemAction(combo, os)
       if (sys) {
         runSystemAction(sys)
@@ -402,5 +409,6 @@ export function DesktopProvider({ os, userName = 'Anika', bus, vfsFactory, inset
     [os, userName, vfs, vfsVersion, bus, emit, wm, openApp, closeWindow, closeApp, openFolder, openFile, setBounds, sim, setSim, ui, setUi, menu, openMenu, closeMenu, clipboard, toasts, toast, dispatchCombo, registerComboHandler, runSystemAction, iconPos, setIconPos, selection],
   )
 
+  apiRef.current = api
   return <Ctx.Provider value={api}>{children}</Ctx.Provider>
 }

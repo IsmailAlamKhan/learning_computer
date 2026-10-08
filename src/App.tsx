@@ -7,6 +7,7 @@ import Settings from './pages/Settings'
 import Glossary from './pages/Glossary'
 import ModulePage from './pages/ModulePage'
 import Teacher from './pages/Teacher'
+import Certificate from './pages/Certificate'
 import CheatSheetPage, { CheatSheetList } from './pages/CheatSheetPage'
 
 export default function App() {
@@ -21,6 +22,7 @@ export default function App() {
         <Route path="/settings" element={<Settings />} />
         <Route path="/glossary" element={<Glossary />} />
         <Route path="/teacher" element={<Teacher />} />
+        <Route path="/certificate/:part" element={<Certificate />} />
         <Route path="/cheatsheets" element={<CheatSheetList />} />
         <Route path="/cheatsheet/:id" element={<CheatSheetPage />} />
         <Route

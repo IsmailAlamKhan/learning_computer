@@ -190,3 +190,8 @@ kbd {
   .cheatsheet { font-size: 11pt; line-height: 1.5; }
   .cheatsheet table, .cheatsheet tr { break-inside: avoid; }
 }
+
+@page certificate { size: A4 landscape; margin: 8mm; }
+@media print {
+  .certificate { page: certificate; -webkit-print-color-adjust: exact; print-color-adjust: exact; break-inside: avoid; max-width: none !important; width: 100% !important; }
+}

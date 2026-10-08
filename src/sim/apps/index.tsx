@@ -10,6 +10,9 @@ import { BrowserIcon, PhotosIcon, RecycleBinIcon, SettingsIcon } from '../ui/ico
 export { registerSite, normalizeInput } from './browser/sites'
 export { useFmPrefs } from './fmPrefs'
 
+// browser sites self-register on import: drop a file in ./browser/sites/
+import.meta.glob('./browser/sites/*.tsx', { eager: true })
+
 const extras = import.meta.glob<{ register?: () => void }>('./extra/*.tsx', { eager: true })
 
 /** Register File Explorer/Finder, Recycle Bin/Trash, Notepad/TextEdit, Browser, Settings and Photos (+ ./extra/*.tsx modules exporting `register()`). Safe to call repeatedly. */
