@@ -123,3 +123,10 @@ so Windows and Mac progress are independent. Export/import is plain JSON from th
 State-based actions (`fileExists`, `fileContains`) are evaluated on every simulator event, so the step completes right after the
 file is created/saved. Use `target` to point the coach at the terminal (`terminal-input`) or editor (`code-editor`, `code-run`, `code-save`).
 Terminal ids: `terminal-input`, `terminal-output`; editor ids: `code-editor`, `code-run`, `code-save`, `code-tab-<name>`, `code-explorer-<name>`, `code-output`, `code-preview`.
+
+## Chapters (micro-lessons)
+
+A long module can be split into independent chapters: `chapters: [{ id, titleBn, introBn?, steps, setup?, checklist? }]` (leave `steps: []`).
+The guided section then shows a list of chapters; each chapter starts a fresh simulated computer using its own `setup`, so
+steps never depend on a previous chapter's state. The module counts as "hands-on done" when every chapter's steps (for the
+learner's OS) are completed. Step ids must be unique across the whole module. Module 20 uses chapters.

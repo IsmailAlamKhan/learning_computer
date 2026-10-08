@@ -1,17 +1,65 @@
 import { useCallback, useMemo, useRef, useState } from 'react'
-import type { Lesson, OsFlavor } from '../../engine/types'
+import type { Chapter, Lesson, OsFlavor, Step } from '../../engine/types'
 import { stepsFor } from '../../engine/runner'
 import { useGuidedRun } from '../../engine/coach/useGuidedRun'
 import { CoachOverlay } from '../../engine/coach/CoachOverlay'
 import { SimStage } from '../../sim/SimStage'
 import { SimBus } from '../../sim/bus'
-import { store } from '../../state/store'
+import { store, useProgress } from '../../state/store'
 import { useFmt } from '../../ui/useFmt'
 
 /** Guided practice: the simulator with the coach pointing at each step. */
 export function GuidedPractice({ lesson, os, alreadyDone, onFinished }: { lesson: Lesson; os: OsFlavor; alreadyDone: boolean; onFinished: () => void }) {
-  const bus = useMemo(() => new SimBus(), [lesson.module, os])
-  const steps = useMemo(() => stepsFor(lesson.steps, os), [lesson, os])
+  const chapters = lesson.chapters?.filter((c) => stepsFor(c.steps, os).length > 0)
+  const [chapterId, setChapterId] = useState<string | null>(null)
+  const progress = useProgress().modules[lesson.module]
+  if (chapters && chapters.length > 0) {
+    const chapter = chapters.find((c) => c.id === chapterId)
+    if (!chapter) {
+      return (
+        <div className="space-y-3">
+          <p>এই পাঠে কয়েকটি ছোট অংশ আছে। একটি একটি করে করুন — যেকোনো ক্রমে করা যায়, তবে ওপর থেকে নিচে করাই ভালো।</p>
+          <ol className="space-y-3">
+            {chapters.map((c, i) => {
+              const cs = stepsFor(c.steps, os)
+              const done = cs.every((s) => progress?.stepsDone[os].includes(s.id))
+              return (
+                <li key={c.id} className="card flex flex-wrap items-center gap-3">
+                  <span aria-hidden="true" className="text-2xl">{done ? '✅' : '▶️'}</span>
+                  <span className="flex-1">
+                    <span className="block font-bold">
+                      অংশ {i + 1}: {c.titleBn}
+                    </span>
+                    {c.introBn && <span className="block text-sm text-muted">{c.introBn}</span>}
+                  </span>
+                  <button className="btn" onClick={() => setChapterId(c.id)}>
+                    {done ? 'আবার করি' : 'শুরু করি'}
+                  </button>
+                </li>
+              )
+            })}
+          </ol>
+        </div>
+      )
+    }
+    return (
+      <div className="space-y-3">
+        <button className="btn btn-outline" onClick={() => setChapterId(null)}>
+          ← সব অংশ
+        </button>
+        <h3 className="text-lg font-bold">{chapter.titleBn}</h3>
+        <GuidedRunner key={`${chapter.id}-${os}`} lesson={lesson} os={os} steps={chapter.steps} chapter={chapter} alreadyDone={chapter.steps.length > 0 && stepsFor(chapter.steps, os).every((s) => progress?.stepsDone[os].includes(s.id))} onFinished={() => {}} />
+      </div>
+    )
+  }
+  return <GuidedRunner lesson={lesson} os={os} steps={lesson.steps} alreadyDone={alreadyDone} onFinished={onFinished} />
+}
+
+function GuidedRunner({ lesson, os, steps: allSteps, chapter, alreadyDone, onFinished }: { lesson: Lesson; os: OsFlavor; steps: Step[]; chapter?: Chapter; alreadyDone: boolean; onFinished: () => void }) {
+  const bus = useMemo(() => new SimBus(), [lesson.module, os, chapter?.id])
+  const steps = useMemo(() => stepsFor(allSteps, os), [allSteps, os])
+  const setup = chapter?.setup ?? lesson.setup
+  const checklist = chapter?.checklist ?? (chapter ? undefined : lesson.checklist)
   const wrapperRef = useRef<HTMLDivElement>(null)
   const { n } = useFmt()
   const [started, setStarted] = useState(false)
@@ -50,9 +98,9 @@ export function GuidedPractice({ lesson, os, alreadyDone, onFinished }: { lesson
               {n(run.state.done.length)} / {n(steps.length)}
             </span>
           </div>
-          {lesson.checklist && (
+          {checklist && (
             <ul className="card space-y-1" aria-label="কাজের তালিকা">
-              {lesson.checklist.map((c) => {
+              {checklist.map((c) => {
                 const done = c.stepIds.every((id) => run.state.done.includes(id) || steps.every((s) => s.id !== id))
                 return (
                   <li key={c.id} className="flex items-start gap-2">
@@ -71,7 +119,7 @@ export function GuidedPractice({ lesson, os, alreadyDone, onFinished }: { lesson
             </div>
           )}
           <div ref={wrapperRef} className="relative">
-            <SimStage key={`${os}`} os={os} bus={bus} onReset={onReset} setup={lesson.setup} defaultPadOpen={steps.some((s) => s.expectedAction.type === 'keyCombo')} />
+            <SimStage key={`${os}`} os={os} bus={bus} onReset={onReset} setup={setup} defaultPadOpen={steps.some((s) => s.expectedAction.type === 'keyCombo')} />
             {!finished && <CoachOverlay run={run} os={os} wrapperRef={wrapperRef} />}
           </div>
         </>

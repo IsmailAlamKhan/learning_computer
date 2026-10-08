@@ -4,6 +4,7 @@ import { getModule } from '../content/modules'
 import { hasLesson, loadLesson } from '../content/lessons'
 import { moduleState } from '../engine/roadmap'
 import { stepsFor } from '../engine/runner'
+import { lessonSteps } from '../engine/lessonSteps'
 import type { Lesson, OsFlavor } from '../engine/types'
 import { store, useProgress } from '../state/store'
 import { QuizRunner } from '../ui/quiz/QuizRunner'
@@ -88,7 +89,7 @@ function LessonView({ lesson }: { lesson: Lesson }) {
   const prog = data.modules[mod]
   const [os, setOs] = useState<OsFlavor>(data.profile.os)
   const [sec, setSec] = useState<SectionId>('learn')
-  const steps = stepsFor(lesson.steps, os)
+  const steps = stepsFor(lessonSteps(lesson), os)
   const stepsDone = steps.length === 0 || steps.every((s) => prog?.stepsDone[os].includes(s.id))
   const quizDone = osQuiz(lesson, os).length === 0 || !!prog?.quiz
   const canComplete = stepsDone && quizDone

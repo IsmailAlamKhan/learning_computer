@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import type { GlossaryEntry, Lesson } from '../engine/types'
 import { MODULES } from './modules'
+import { lessonSteps } from '../engine/lessonSteps'
 
 const lessonFiles = import.meta.glob<{ default: Lesson }>('./lessons/m*.ts', { eager: true })
 const glossaryFiles = import.meta.glob<{ default: GlossaryEntry[] }>('./glossary/m*.ts', { eager: true })
@@ -32,18 +33,19 @@ describe('content integrity', () => {
         expect(l.quiz.length).toBeGreaterThanOrEqual(3)
         expect(l.summaryCard.pointsBn.length).toBeGreaterThan(0)
         expect(l.realWorld.tasksBn.length).toBeGreaterThanOrEqual(2)
-        expect(l.steps.length).toBeGreaterThan(0)
+        expect(lessonSteps(l).length).toBeGreaterThan(0)
         expect(MODULES.find((m) => m.module === l.module)?.part).toBe(l.part)
       })
       it('has unique ids and hints on every step, for both OS flavors', () => {
-        const ids = l.steps.map((s) => s.id)
+        const all = lessonSteps(l)
+        const ids = all.map((s) => s.id)
         expect(ids.filter((id, i) => ids.indexOf(id) !== i)).toEqual([])
-        for (const s of l.steps) {
+        for (const s of all) {
           expect(s.hintBn, s.id).toBeTruthy()
           expect(s.explanationBn, s.id).toBeTruthy()
         }
-        expect(l.steps.some((s) => s.osVariant !== 'mac')).toBe(true)
-        expect(l.steps.some((s) => s.osVariant !== 'windows')).toBe(true)
+        expect(all.some((s) => s.osVariant !== 'mac')).toBe(true)
+        expect(all.some((s) => s.osVariant !== 'windows')).toBe(true)
         const q = l.quiz.map((x) => x.id)
         expect(q.filter((id, i) => q.indexOf(id) !== i)).toEqual([])
       })
