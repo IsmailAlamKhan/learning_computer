@@ -48,7 +48,7 @@ export default function Home() {
   return (
     <div className="space-y-8">
       <section className="card space-y-4" style={{ background: 'var(--c-brand-soft)' }}>
-        <h1 className="text-2xl font-bold">নমস্কার{data.profile.name ? `, ${data.profile.name}` : ''}! 🌸</h1>
+        <h1 className="text-2xl font-bold">স্বাগতম{data.profile.name ? `, ${data.profile.name}` : ''}! 🌸</h1>
         {data.profile.motivation && (
           <p>
             <span className="text-muted">আপনার লক্ষ্য: </span>

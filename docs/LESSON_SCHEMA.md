@@ -93,3 +93,18 @@ A wrong answer never shows a harsh error: it shows the hint and lets her retry. 
 
 `localStorage` key `computer-shikhi:v1` (see `src/state/progress.ts`). Steps are tracked per OS flavor,
 so Windows and Mac progress are independent. Export/import is plain JSON from the Settings page.
+
+## Coach behaviour (engine)
+
+- A step shows a speech bubble pointing at `target` (highlight ring + animated cursor). The step advances **only** when
+  the simulator reports the matching event (`src/engine/actions.ts` → `matchAction`).
+- ~10 s without a learner action → `hintBn` appears. ~20 s → a **"দেখিয়ে দিন"** button animates the correct action
+  (click / double click / right click / drag / typing / keycaps). "আমি আটকে গেছি" swaps in `simplerBn`.
+- `continue` steps show a "বুঝেছি, পরের ধাপ" button and are used for tours.
+- Steps with `osVariant` other than the learner's current OS are skipped. Write one Windows and one Mac variant of a
+  step when the UI differs; use `both` when identical.
+- All `data-coach` ids are listed in [SIM_CONTRACT.md](SIM_CONTRACT.md). Paths in lesson data are canonical:
+  `~/Documents` (home-relative) so the same lesson works on Windows and Mac.
+- Keyboard shortcuts: write `mod+c`; `mod` is Ctrl on Windows and Cmd on Mac. Real keys and the on-screen
+  "শর্টকাট প্যাড" (for combos browsers swallow, like Alt+Tab) both count.
+- Lesson text must be religion-neutral (no নমস্কার/সালাম etc.).

@@ -6,10 +6,22 @@ import { MODULES } from '../content/modules'
 const withPlayable = (n: number) => ({ ...MODULES[n - 1], status: 'playable' as const })
 
 describe('roadmap', () => {
-  it('unlocks module 1 and locks later ones', () => {
+  it('unlocks module 1 and locks later ones while the previous playable module is incomplete', () => {
     const d = defaultData()
-    expect(moduleState(withPlayable(1), d)).toBe('unlocked')
-    expect(moduleState(withPlayable(2), d)).toBe('locked')
+    const m1 = MODULES[0]
+    const old = m1.status
+    m1.status = 'playable'
+    try {
+      expect(moduleState(withPlayable(1), d)).toBe('unlocked')
+      expect(moduleState(withPlayable(2), d)).toBe('locked')
+    } finally {
+      m1.status = old
+    }
+  })
+  it('skips modules that are still coming soon when unlocking', () => {
+    const d = defaultData()
+    expect(MODULES[0].status).toBe('soon')
+    expect(moduleState(withPlayable(2), d)).toBe('unlocked')
   })
   it('unlocks the next after completion', () => {
     const d = defaultData()
