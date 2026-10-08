@@ -6,6 +6,7 @@ import { getApp } from './apps/registry'
 import type { SimSetup } from '../engine/types'
 import { Frame } from './Frame'
 import { ShortcutPad } from './ui/ShortcutPad'
+import { DevicesLayer } from './devices/DevicesLayer'
 import { VirtualFileSystem } from './vfs'
 import { registerBuiltinApps } from './apps'
 import WindowsShell, { WINDOWS_INSET } from './windows/WindowsShell'
@@ -85,6 +86,7 @@ export function SimStage({ os, bus, userName = 'Anika', onReset, showPad = true,
       >
         <Frame Shell={Shell} insetTop={top} insetBottom={bottom} />
         {setup?.openApps?.length ? <OpenAtStart apps={setup.openApps} /> : null}
+        <DevicesLayer showPanel={!!setup?.hardware} />
         {pad && <ShortcutPad />}
       </DesktopProvider>
     </div>

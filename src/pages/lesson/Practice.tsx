@@ -50,6 +50,20 @@ export function GuidedPractice({ lesson, os, alreadyDone, onFinished }: { lesson
               {n(run.state.done.length)} / {n(steps.length)}
             </span>
           </div>
+          {lesson.checklist && (
+            <ul className="card space-y-1" aria-label="কাজের তালিকা">
+              {lesson.checklist.map((c) => {
+                const done = c.stepIds.every((id) => run.state.done.includes(id) || steps.every((s) => s.id !== id))
+                return (
+                  <li key={c.id} className="flex items-start gap-2">
+                    <span aria-hidden="true">{done ? '✅' : '⬜'}</span>
+                    <span className={done ? 'line-through opacity-70' : ''}>{c.textBn}</span>
+                    <span className="sr-only">{done ? '(হয়ে গেছে)' : '(বাকি)'}</span>
+                  </li>
+                )
+              })}
+            </ul>
+          )}
           {finished && (
             <div className="card space-y-2" role="status" style={{ background: 'var(--c-ok-soft)' }}>
               <p className="text-lg font-bold">🎉 সব ধাপ শেষ! খুব ভালো করেছেন।</p>

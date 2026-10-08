@@ -6,6 +6,7 @@ import type { WinState } from '../windowManager'
 import { SimDialog } from '../ui/SimDialog'
 import { FolderIcon, NodeIcon } from '../ui/icons'
 import { attached, findNode } from './util'
+import { PrintDialog } from '../devices/PrintDialog'
 
 type Mode = 'save' | 'open'
 
@@ -106,7 +107,7 @@ function FilePicker({ mode, startFolder, defaultName, onCancel, onChoose }: { mo
   )
 }
 
-type Dlg = { kind: 'save' } | { kind: 'open' } | { kind: 'replace'; folder: VNode; name: string } | { kind: 'unsaved' } | { kind: 'error'; msg: string }
+type Dlg = { kind: 'save' } | { kind: 'open' } | { kind: 'print' } | { kind: 'replace'; folder: VNode; name: string } | { kind: 'unsaved' } | { kind: 'error'; msg: string }
 
 export function Editor({ win }: { win: WinState }) {
   const d = useDesktop()
@@ -195,6 +196,7 @@ export function Editor({ win }: { win: WinState }) {
     return false
   }
   const doSaveAs = () => setDlg({ kind: 'save' })
+  const openPrint = () => setDlg({ kind: 'print' })
 
   const writeAs = (folder: VNode, fileName: string) => {
     try {
@@ -261,6 +263,7 @@ export function Editor({ win }: { win: WinState }) {
     if (c === (mac ? 'shift+cmd+s' : 'ctrl+shift+s')) return (doSaveAs(), true)
     if (c === `${m}+n`) return (newDoc(), true)
     if (c === `${m}+o`) return (openDoc(), true)
+    if (c === `${m}+p`) return (openPrint(), true)
     return false
   })
 
@@ -313,6 +316,7 @@ export function Editor({ win }: { win: WinState }) {
     mi('editor-open', 'Open…', openDoc, { shortcut: mac ? '⌘O' : 'Ctrl+O' }),
     mi('editor-save', 'Save', () => void doSave(), { shortcut: mac ? '⌘S' : 'Ctrl+S' }),
     mi('editor-save-as', 'Save As…', doSaveAs, { shortcut: mac ? '⇧⌘S' : 'Ctrl+Shift+S' }),
+    mi('editor-print', 'Print…', openPrint, { shortcut: mac ? '⌘P' : 'Ctrl+P' }),
     mi('editor-exit', mac ? 'Close' : 'Exit', () => d.closeWindow(win.id)),
   ]
 
@@ -329,6 +333,9 @@ export function Editor({ win }: { win: WinState }) {
       </button>
       <button type="button" data-coach="editor-save-as" className="min-h-9 rounded px-3 hover:bg-black/8" onClick={doSaveAs}>
         Save As…
+      </button>
+      <button type="button" data-coach="editor-print" className="min-h-9 rounded px-3 hover:bg-black/8" onClick={openPrint}>
+        Print…
       </button>
       <div className="relative">
         <button type="button" data-coach="editor-menu-format" aria-haspopup="menu" onClick={() => setMenu(menu === 'format' ? null : 'format')} className="min-h-9 rounded px-3 hover:bg-black/8">
@@ -384,6 +391,8 @@ export function Editor({ win }: { win: WinState }) {
         if (picked) loadNode(picked)
       }}
     />
+  ) : dlg.kind === 'print' ? (
+    <PrintDialog docName={name} text={text} onClose={() => setDlg(null)} />
   ) : dlg.kind === 'replace' ? (
     <SimDialog
       title={mac ? `“${dlg.name}” already exists. Do you want to replace it?` : 'Confirm Save As'}

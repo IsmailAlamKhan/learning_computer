@@ -117,6 +117,7 @@ export default function MacShell() {
     { id: 'about-mac', label: 'About This Mac', onSelect: soon('This is a practice computer. Nothing here can harm your real one.') },
     { separator: true },
     { id: 'system-settings', label: 'System Settings…', onSelect: () => d.openApp('settings') },
+    { id: 'force-quit', label: 'Force Quit…', shortcut: '⌥⌘⎋', onSelect: () => void d.dispatchCombo('alt+cmd+esc') },
     { separator: true },
     { id: 'sleep', label: 'Sleep', onSelect: power.sleep },
     { id: 'restart', label: 'Restart…', onSelect: power.restart },

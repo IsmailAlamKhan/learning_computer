@@ -175,7 +175,19 @@ export function Window({ win }: { win: WinState }) {
           </>
         )}
       </div>
-      <div data-coach={`${cid}-content`} className="relative min-h-0 flex-1 overflow-hidden bg-white" style={{ borderRadius: win.maximized ? 0 : mac ? '0 0 12px 12px' : '0 0 8px 8px' }}>
+      <div
+        data-coach={`${cid}-content`}
+        data-zoom={d.sim.zoom !== 100 ? d.sim.zoom : undefined}
+        data-dark={d.sim.darkMode ? 'true' : undefined}
+        className="relative min-h-0 flex-1 overflow-hidden bg-white"
+        style={{
+          borderRadius: win.maximized ? 0 : mac ? '0 0 12px 12px' : '0 0 8px 8px',
+          // Settings → display scale / text size: enlarges the content of every window (text, icons, buttons). 100 = untouched.
+          ...(d.sim.zoom !== 100 ? { zoom: d.sim.zoom / 100 } : null),
+          // Settings → dark mode: a simple inverted look for window contents (windows themselves stay a light "paper").
+          ...(d.sim.darkMode ? { filter: 'invert(0.92) hue-rotate(180deg)' } : null),
+        }}
+      >
         <Content win={win} />
       </div>
       {!win.maximized && EDGES.map((e) => <div key={e} data-coach={`${cid}-resize-${e}`} style={edgeStyle(e)} onPointerDown={startResize(e)} />)}

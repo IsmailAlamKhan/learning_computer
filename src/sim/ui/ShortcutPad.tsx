@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useDesktop } from '../DesktopContext'
 import { comboLabel } from '../shortcuts'
 
-const KEYS = ['Tab', 'Esc', 'Space', 'Enter', 'Delete', 'Left', 'Right', 'Up', 'Down', 'F2', 'C', 'V', 'X', 'Z', 'A', 'S', 'F', 'N', 'W', 'Q', 'D', 'L', 'M']
+const KEYS = ['Tab', 'Esc', 'Space', 'Enter', 'Delete', 'Left', 'Right', 'Up', 'Down', 'F2', 'C', 'V', 'X', 'Z', 'A', 'S', 'F', 'N', 'W', 'Q', 'D', 'L', 'M', 'P', 'PrtScn', '3', '4', '5']
 
 /**
  * On-screen shortcut pad. Browsers swallow some real key combinations (Alt+Tab, Cmd+Tab, Win key…),
@@ -37,7 +37,7 @@ export function ShortcutPad() {
         ))}
       </div>
       <div className="flex flex-wrap gap-1.5" role="group" aria-label="কী">
-        {KEYS.map((k) => (
+        {KEYS.filter((k) => !(mac && k === 'PrtScn')).map((k) => (
           <button key={k} data-coach={`pad-key-${k.toLowerCase()}`} onClick={() => press(k)} className="min-h-11 min-w-11 rounded-lg border-2 px-2.5 text-sm font-medium hover:bg-sunken" style={{ borderColor: 'var(--c-line)' }}>
             {k}
           </button>

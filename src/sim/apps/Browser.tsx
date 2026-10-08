@@ -1,4 +1,4 @@
-/** A generic simulated web browser: tabs, address bar that also searches, history, bookmarks. */
+/** A generic simulated web browser: tabs, address bar that also searches, padlock, history, bookmarks, downloads. */
 import { useEffect, useRef, useState } from 'react'
 import { useDesktop, useWindowCombos } from '../DesktopContext'
 import type { WinState } from '../windowManager'
@@ -13,6 +13,15 @@ interface Tab {
   reload: number
 }
 
+interface Download {
+  id: number
+  name: string
+  pct: number
+  done: boolean
+  /** final file name in Downloads (may differ if the name was taken) */
+  savedAs?: string
+}
+
 const urlOf = (t: Tab) => t.history[t.idx] ?? NEW_TAB
 
 export function Browser({ win }: { win: WinState }) {
@@ -24,6 +33,11 @@ export function Browser({ win }: { win: WinState }) {
   const [addr, setAddr] = useState<string | null>(null)
   const [bookmarks, setBookmarks] = useState<string[]>([])
   const addrRef = useRef<HTMLInputElement>(null)
+  const [downloads, setDownloads] = useState<Download[]>([])
+  const [dlOpen, setDlOpen] = useState(false)
+  const [lockOpen, setLockOpen] = useState(false)
+  const finished = useRef(new Set<number>())
+  const dlId = useRef(1)
 
   const tab = tabs.find((t) => t.id === activeId) ?? tabs[0]
   const url = urlOf(tab)
@@ -38,6 +52,37 @@ export function Browser({ win }: { win: WinState }) {
     d.wmDispatch({ type: 'setTitle', id: win.id, title: 'Web Browser' })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [win.id])
+
+  // simulated download progress: tick until 100 %, then drop the file into the Downloads folder
+  const running = downloads.some((x) => !x.done)
+  useEffect(() => {
+    if (!running) return
+    const t = window.setInterval(() => setDownloads((ds) => ds.map((x) => (x.done ? x : { ...x, pct: Math.min(100, x.pct + 20) }))), 200)
+    return () => window.clearInterval(t)
+  }, [running])
+  useEffect(() => {
+    const fin = downloads.filter((x) => x.pct >= 100 && !x.done && !finished.current.has(x.id))
+    if (fin.length === 0) return
+    const saved: Record<number, string> = {}
+    for (const f of fin) {
+      finished.current.add(f.id)
+      const folder = d.vfs.child(d.vfs.home, 'Downloads') ?? d.vfs.mkdir(d.vfs.home, 'Downloads')
+      const dot = f.name.lastIndexOf('.')
+      const [base, ext] = dot > 0 ? [f.name.slice(0, dot), f.name.slice(dot)] : [f.name, '']
+      const finalName = d.vfs.uniqueName(folder, base, ext)
+      d.vfs.createFile(folder, finalName, 'Simulated download — nothing real was installed.')
+      saved[f.id] = finalName
+    }
+    setDownloads((ds) => ds.map((x) => (saved[x.id] ? { ...x, done: true, savedAs: saved[x.id] } : x)))
+    d.emit({ type: 'custom', event: 'browser-download-done' })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [downloads])
+  const startDownload = (name: string) => {
+    setDownloads((ds) => [...ds, { id: dlId.current++, name, pct: 0, done: false }])
+    setDlOpen(true)
+    d.emit({ type: 'custom', event: 'browser-download-started' })
+  }
+  const emitCustom = (event: string) => d.emit({ type: 'custom', event })
 
   const patchTab = (id: number, fn: (t: Tab) => Tab) => setTabs((ts) => ts.map((t) => (t.id === id ? fn(t) : t)))
 
@@ -113,7 +158,9 @@ export function Browser({ win }: { win: WinState }) {
   const mac = d.os === 'mac'
   const site = resolveSite(url)
   const offline = !d.sim.wifiOn && url !== NEW_TAB && !url.startsWith('about:')
-  const siteProps: SiteProps = { url, go: navigate, search }
+  const siteProps: SiteProps = { url, go: navigate, search, emit: emitCustom, download: startDownload }
+  const secure = url.startsWith('https://')
+  const insecure = url.startsWith('http://')
   let page
   if (offline) page = <OfflinePage />
   else if (site) page = <site.Component {...siteProps} />
@@ -122,7 +169,7 @@ export function Browser({ win }: { win: WinState }) {
   const btn = 'flex min-h-9 min-w-9 items-center justify-center rounded text-gray-700 hover:bg-black/8 disabled:text-gray-300 disabled:hover:bg-transparent'
 
   return (
-    <div className="flex h-full flex-col text-sm text-gray-900">
+    <div className="relative flex h-full flex-col text-sm text-gray-900">
       <div className={`flex shrink-0 items-end gap-0.5 px-2 pt-1.5 ${mac ? 'bg-[#e4e4e4]' : 'bg-[#dfe6f0]'}`} role="tablist" data-coach="browser-tabs">
         {tabs.map((t, i) => (
           <div key={t.id} className={`group flex min-h-9 max-w-48 min-w-0 flex-1 items-center rounded-t-lg ${t.id === tab.id ? 'bg-white shadow-sm' : 'hover:bg-white/50'}`}>
@@ -157,6 +204,26 @@ export function Browser({ win }: { win: WinState }) {
             submit(shownAddr)
           }}
         >
+          {(secure || insecure) && (
+            <button
+              type="button"
+              data-coach="browser-padlock"
+              aria-label={secure ? 'Connection is secure (padlock)' : 'Not secure'}
+              aria-expanded={lockOpen}
+              onMouseDown={(e) => e.preventDefault()}
+              onClick={() => {
+                setLockOpen((o) => !o)
+                emitCustom('browser-padlock-click')
+              }}
+              className={`mr-1 flex min-h-8 items-center gap-1 rounded-full px-1.5 text-xs hover:bg-black/8 ${secure ? 'text-gray-700' : 'text-red-700'}`}
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" aria-hidden="true">
+                <rect x="5" y="11" width="14" height="9" rx="2" />
+                {secure ? <path d="M8 11V8a4 4 0 0 1 8 0v3" /> : <path d="M8 11V8a4 4 0 0 1 7-2.6" />}
+              </svg>
+              {insecure && <span>Not secure</span>}
+            </button>
+          )}
           <input
             ref={addrRef}
             data-coach="browser-address"
@@ -176,7 +243,56 @@ export function Browser({ win }: { win: WinState }) {
             {bookmarked ? '★' : '☆'}
           </button>
         </form>
+        <button type="button" aria-label="Downloads" data-coach="browser-downloads" aria-expanded={dlOpen} onClick={() => setDlOpen((o) => !o)} className={`${btn} relative`}>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+            <path d="M12 4v11m0 0-4-4m4 4 4-4M5 20h14" />
+          </svg>
+          {downloads.length > 0 && <span className={`absolute right-0.5 top-0.5 h-2.5 w-2.5 rounded-full ${running ? 'animate-pulse bg-blue-600' : 'bg-green-600'}`} data-coach="browser-downloads-dot" />}
+        </button>
       </div>
+      {lockOpen && (secure || insecure) && (
+        <div role="dialog" aria-label="Site information" data-coach="browser-padlock-popup" className="absolute top-24 left-14 z-20 w-72 rounded-lg border border-gray-300 bg-white p-3 text-xs shadow-lg">
+          <p className="font-semibold">{secure ? 'Connection is secure' : 'Connection is not secure'}</p>
+          <p className="mt-1 text-gray-700">
+            {secure
+              ? 'Information you send is scrambled on the way. This does not mean the site is honest or safe.'
+              : 'Anything you type here could be read by others on the way. Do not enter passwords.'}
+          </p>
+          <button type="button" className="mt-2 min-h-8 rounded border border-gray-300 px-3" onClick={() => setLockOpen(false)}>
+            Close
+          </button>
+        </div>
+      )}
+      {dlOpen && (
+        <div role="dialog" aria-label="Downloads" data-coach="browser-downloads-panel" className="absolute top-24 right-2 z-20 w-80 rounded-lg border border-gray-300 bg-white p-3 text-sm shadow-lg">
+          <div className="mb-2 flex items-center justify-between">
+            <span className="font-semibold">Downloads</span>
+            <button type="button" aria-label="Close downloads" className="min-h-8 min-w-8 rounded hover:bg-black/8" onClick={() => setDlOpen(false)}>
+              <CloseGlyph size={12} />
+            </button>
+          </div>
+          {downloads.length === 0 && <p className="text-xs text-gray-500">No files downloaded yet.</p>}
+          <ul className="flex flex-col gap-2">
+            {downloads.map((x) => (
+              <li key={x.id} data-coach={`browser-download-${x.savedAs ?? x.name}`}>
+                <div className="truncate text-xs font-medium">{x.savedAs ?? x.name}</div>
+                {x.done ? (
+                  <div className="flex items-center justify-between text-xs text-green-700">
+                    <span>Done — saved in Downloads</span>
+                    <button type="button" data-coach="browser-download-show" className="min-h-8 rounded px-2 text-blue-700 hover:bg-black/8" onClick={() => d.openFolder(d.vfs.canonPath(d.vfs.child(d.vfs.home, 'Downloads') ?? d.vfs.home))}>
+                      Show in folder
+                    </button>
+                  </div>
+                ) : (
+                  <div className="h-2 overflow-hidden rounded bg-gray-200" role="progressbar" aria-valuenow={x.pct} aria-valuemin={0} aria-valuemax={100} data-coach="browser-download-progress">
+                    <div className="h-full bg-blue-600 transition-all" style={{ width: `${x.pct}%` }} />
+                  </div>
+                )}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
       {bookmarks.length > 0 && (
         <div className="flex shrink-0 items-center gap-1 overflow-x-auto border-b border-gray-200 bg-gray-50 px-2 py-0.5" data-coach="browser-bookmarks">
           {bookmarks.map((b, i) => (

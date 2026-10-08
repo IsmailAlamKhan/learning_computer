@@ -41,6 +41,10 @@ export interface SimSettings {
   keyboards?: string[]
   /** which keyboard is typing right now ('en' | 'bn') */
   activeKeyboard?: string
+  /** printers added in Settings (names). Other modules (printing) read `useDesktop().sim.printers`; empty by default. */
+  printers?: string[]
+  /** Bluetooth devices paired in Settings (names) */
+  pairedDevices?: string[]
 }
 
 export const defaultSimSettings: SimSettings = {
@@ -58,6 +62,8 @@ export const defaultSimSettings: SimSettings = {
   language: 'English',
   keyboards: ['en'],
   activeKeyboard: 'en',
+  printers: [],
+  pairedDevices: [],
 }
 
 export interface UiState {
@@ -260,6 +266,7 @@ export function DesktopProvider({ os, userName = 'Anika', bus, vfsFactory, inset
     (node: VNode) => {
       if (node.kind === 'folder') return openApp('files', { props: { path: vfs.canonPath(node) } })
       if (node.media === 'image') return openApp('photos', { props: { nodeId: node.id }, newWindow: true })
+      if (node.media === 'audio' || node.media === 'video') return openApp('media', { props: { nodeId: node.id }, newWindow: true })
       if (node.media === 'pdf' || node.media === 'app' || node.media === 'zip') {
         toastRef.current(`“${node.name}” can’t be opened in this practice computer.`)
         return

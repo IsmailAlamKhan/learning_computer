@@ -1,11 +1,22 @@
 import type { OsFlavor } from '../../engine/types'
-import { extensionOf, type VNode } from '../vfs'
+import { extensionOf, vfsOfRoot, type VNode } from '../vfs'
 
-export function findNode(root: VNode, id: string): VNode | null {
+function walkFind(root: VNode, id: string): VNode | null {
   if (root.id === id) return root
   for (const c of root.children) {
-    const f = findNode(c, id)
+    const f = walkFind(c, id)
     if (f) return f
+  }
+  return null
+}
+
+/** Find a node by id in the main tree (and on any mounted USB drive / phone when `root` is the VFS root). */
+export function findNode(root: VNode, id: string): VNode | null {
+  const f = walkFind(root, id)
+  if (f) return f
+  for (const m of vfsOfRoot(root)?.mounts ?? []) {
+    const g = walkFind(m, id)
+    if (g) return g
   }
   return null
 }
@@ -14,6 +25,8 @@ export function findNode(root: VNode, id: string): VNode | null {
 export function attached(node: VNode, root: VNode): boolean {
   for (let n: VNode = node; ; ) {
     if (n === root) return true
+    // a removable drive (USB stick, phone) counts as attached while it is plugged in
+    if (n.mount?.plugged && !n.parent) return true
     const p = n.parent
     if (!p || !p.children.includes(n)) return false
     n = p

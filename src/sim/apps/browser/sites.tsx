@@ -7,6 +7,7 @@
  * Later registrations win over earlier ones. No network is ever used.
  */
 import { useState, type ComponentType } from 'react'
+import { searchIndex, type SearchEntry } from './searchIndex'
 
 export interface SiteProps {
   /** the full normalised URL being shown */
@@ -15,6 +16,10 @@ export interface SiteProps {
   go: (url: string) => void
   /** run a search on the simulated search engine */
   search: (query: string) => void
+  /** emit a custom lesson event (`{type:'custom', event}`) */
+  emit?: (event: string) => void
+  /** start a (simulated) download of a file into the Downloads folder */
+  download?: (fileName: string) => void
 }
 
 export type SiteMatcher = string | ((url: string) => boolean)
@@ -105,12 +110,23 @@ function SearchBox({ initial, search, big }: { initial: string; search: (q: stri
   )
 }
 
-export function NewTabPage({ search }: SiteProps) {
+export function NewTabPage({ search, go }: SiteProps) {
   return (
     <div className="flex h-full flex-col items-center justify-center gap-6 bg-gradient-to-b from-sky-50 to-white p-6 text-center">
       <div className="text-3xl font-light text-gray-700">New Tab</div>
       <SearchBox initial="" search={search} big />
       <p className="text-sm text-gray-500">Type a word to search, or a web address such as example.com in the address bar.</p>
+      <div className="flex flex-wrap justify-center gap-3" aria-label="Shortcuts">
+        {[
+          ['https://rannaghor.example/', 'Rannaghor', 'recipes'],
+          ['https://khobor.example/', 'Khobor', 'news'],
+        ].map(([u, n, d]) => (
+          <button key={u} type="button" data-coach={`newtab-${n.toLowerCase()}`} onClick={() => go(u)} className="min-h-12 w-32 rounded-xl border border-gray-200 bg-white px-3 py-2 text-left shadow-sm hover:bg-sky-50">
+            <div className="text-sm font-semibold text-gray-800">{n}</div>
+            <div className="text-xs text-gray-500">{d}</div>
+          </button>
+        ))}
+      </div>
     </div>
   )
 }
@@ -133,16 +149,23 @@ function slug(q: string) {
   return s || 'page'
 }
 
+/** Only used when nothing in the mini-internet matches: plausible-looking but unreachable pages. */
+function fallbackResults(q: string): SearchEntry[] {
+  const s = slug(q)
+  return [
+    { url: `https://www.${s}.example/`, title: `${q} – the basics`, snippet: `A friendly introduction to ${q}. Learn the main ideas step by step.`, keywords: [] },
+    { url: `https://guide.example/${s}`, title: `How to: ${q}`, snippet: `A simple guide with pictures. Everything you need to know about ${q}.`, keywords: [] },
+    { url: `https://news.example/${s}`, title: `${q} – latest news`, snippet: `Read recent stories and updates about ${q}.`, keywords: [] },
+    { url: `https://answers.example/q/${s}`, title: `Questions and answers about ${q}`, snippet: `People ask and answer questions about ${q}.`, keywords: [] },
+    { url: `https://encyclopedia.example/wiki/${s}`, title: `${q} – encyclopedia`, snippet: `Facts and background about ${q}.`, keywords: [] },
+  ]
+}
+
 function SearchResults({ url, go, search }: SiteProps) {
   const q = queryOf(url) ?? ''
-  const s = slug(q)
-  const results = [
-    { u: `https://www.${s}.example/`, t: `${q} – the basics`, d: `A friendly introduction to ${q}. Learn the main ideas step by step.` },
-    { u: `https://guide.example/${s}`, t: `How to: ${q}`, d: `A simple guide with pictures. Everything you need to know about ${q}.` },
-    { u: `https://news.example/${s}`, t: `${q} – latest news`, d: `Read recent stories and updates about ${q}.` },
-    { u: `https://answers.example/q/${s}`, t: `Questions and answers about ${q}`, d: `People ask and answer questions about ${q}.` },
-    { u: `https://encyclopedia.example/wiki/${s}`, t: `${q} – encyclopedia`, d: `Facts and background about ${q}.` },
-  ]
+  const found = searchIndex(q)
+  const results = found.results.length > 0 ? found.results : fallbackResults(q)
+  const shownUrl = (u: string) => u.replace(/^https?:\/\//, '').replace(/\/$/, '')
   return (
     <div className="h-full overflow-auto bg-white">
       <div className="flex items-center gap-4 border-b border-gray-200 px-4 py-3">
@@ -154,21 +177,41 @@ function SearchResults({ url, go, search }: SiteProps) {
       <div className="mx-auto max-w-2xl px-4 py-4">
         <p className="mb-4 text-xs text-gray-500">About {results.length * 1200} results (0.31 seconds)</p>
         <ul className="flex flex-col gap-5">
-          {results.map((r, i) => (
-            <li key={r.u}>
-              <div className="text-xs text-gray-600">{r.u.replace('https://', '')}</div>
+          {found.ads.map((r, i) => (
+            <li key={`ad-${r.url}`} className="rounded bg-amber-50 p-2" data-coach={`search-ad-${i + 1}`}>
+              <div className="flex items-center gap-2 text-xs text-gray-600">
+                <span className="rounded border border-gray-500 px-1 text-[10px] font-bold text-gray-800">Ad · বিজ্ঞাপন</span>
+                {shownUrl(r.url)}
+              </div>
               <a
-                href={r.u}
-                data-coach={`search-result-${i + 1}`}
+                href={r.url}
+                data-coach={`search-ad-link-${i + 1}`}
                 onClick={(e) => {
                   e.preventDefault()
-                  go(r.u)
+                  go(r.url)
                 }}
                 className="text-lg text-blue-700 hover:underline"
               >
-                {r.t}
+                {r.title}
               </a>
-              <p className="text-sm text-gray-700">{r.d}</p>
+              <p className="text-sm text-gray-700">{r.snippet}</p>
+            </li>
+          ))}
+          {results.map((r, i) => (
+            <li key={r.url} data-coach={`search-result-box-${i + 1}`}>
+              <div className="text-xs text-gray-600">{shownUrl(r.url)}</div>
+              <a
+                href={r.url}
+                data-coach={`search-result-${i + 1}`}
+                onClick={(e) => {
+                  e.preventDefault()
+                  go(r.url)
+                }}
+                className="text-lg text-blue-700 hover:underline"
+              >
+                {r.title}
+              </a>
+              <p className="text-sm text-gray-700">{r.snippet}</p>
             </li>
           ))}
         </ul>

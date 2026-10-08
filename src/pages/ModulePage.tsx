@@ -160,7 +160,12 @@ function LessonView({ lesson }: { lesson: Lesson }) {
             {prog?.completed ? (
               <div className="card space-y-2" style={{ background: 'var(--c-ok-soft)' }}>
                 <p className="text-lg font-bold">🎉 এই পাঠ সম্পন্ন হয়েছে!</p>
-                <Link to="/" className="btn">
+                {lesson.certificatePart && (
+                  <Link to={`/certificate/${lesson.certificatePart}`} className="btn btn-lg">
+                    🏆 আপনার সনদপত্র দেখুন ও ছাপুন
+                  </Link>
+                )}
+                <Link to="/" className="btn btn-outline">
                   হোমে ফিরে পরের পাঠ দেখুন
                 </Link>
               </div>
@@ -180,6 +185,7 @@ function LessonView({ lesson }: { lesson: Lesson }) {
                   disabled={!canComplete}
                   onClick={() => {
                     store.completeModule(mod)
+                    if (lesson.certificatePart) store.addCertificate(lesson.certificatePart)
                   }}
                 >
                   ✓ পাঠ সম্পন্ন করি

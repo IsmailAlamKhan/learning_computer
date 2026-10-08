@@ -32,6 +32,8 @@ export interface VNode {
   modifiedAt: number
   protected?: boolean
   hidden?: boolean
+  /** Root of a mounted (removable) drive — USB stick or phone. */
+  mount?: { kind: 'usb' | 'phone'; letter?: string; plugged: boolean }
 }
 
 export interface BinItem {
@@ -75,6 +77,10 @@ export function mediaForExtension(ext: string): VNode['media'] | undefined {
   return undefined
 }
 
+const vfsByRoot = new WeakMap<VNode, VirtualFileSystem>()
+/** The file system whose main tree has this root (lets helpers find nodes on mounted drives too). */
+export const vfsOfRoot = (root: VNode): VirtualFileSystem | undefined => vfsByRoot.get(root)
+
 export class VirtualFileSystem {
   readonly flavor: OsFlavor
   readonly userName: string
@@ -83,6 +89,7 @@ export class VirtualFileSystem {
   home!: VNode
   private nextId = 1
   private bin: BinItem[] = []
+  private mountList: VNode[] = []
   private listeners = new Set<() => void>()
   private eventListeners = new Set<(e: SimEvent) => void>()
   /** Bumps on every change — use with useSyncExternalStore. */
@@ -96,6 +103,7 @@ export class VirtualFileSystem {
     this.sep = flavor === 'windows' ? '\\' : '/'
     this.driveName = flavor === 'windows' ? 'C:' : null
     this.buildTree(seed)
+    vfsByRoot.set(this.root, this)
   }
 
   // ---------- subscription ----------
@@ -201,6 +209,53 @@ export class VirtualFileSystem {
     }
   }
 
+  // ---------- removable drives ----------
+  /** Currently mounted removable drives (USB stick, phone), in mount order. */
+  get mounts(): readonly VNode[] {
+    return this.mountList
+  }
+
+  /** The mounted drive a node lives on, or null if it is on the main disk. */
+  mountOf(node: VNode): VNode | null {
+    let n: VNode | null = node
+    while (n?.parent) n = n.parent
+    return n && n.mount && this.mountList.includes(n) ? n : null
+  }
+
+  /** Plug in a removable drive. Returns its root folder; the drive's files survive unmount()/remount(). */
+  mount(name: string, seed: { folders?: SeedFolder[]; files?: SeedFile[] } = {}, opts: { kind?: 'usb' | 'phone'; letter?: string } = {}): VNode {
+    const n = normalizeName(name).trim()
+    if (!n || /[\\/]/.test(n)) throw new VfsError('invalidName', name)
+    if (this.mountList.some((m) => same(m.name, n))) throw new VfsError('exists', n)
+    const root = this.mk(n, 'folder', null, { protected: true, mount: { kind: opts.kind ?? 'usb', letter: opts.letter, plugged: true } })
+    seed.folders?.forEach((f) => this.seedFolder(root, f))
+    seed.files?.forEach((s) => this.mk(s.name, 'file', root, { content: s.content ?? '', media: s.media ?? mediaForExtension(extensionOf(s.name)), hidden: s.hidden }))
+    this.mountList.push(root)
+    this.changed()
+    return root
+  }
+
+  /** Plug a previously unmounted drive back in (keeps what was copied onto it). */
+  remount(root: VNode): VNode {
+    if (!root.mount) throw new VfsError('notFound', root.name)
+    if (!this.mountList.includes(root)) {
+      root.mount.plugged = true
+      this.mountList.push(root)
+      this.changed()
+    }
+    return root
+  }
+
+  /** Eject / unplug: the drive disappears from the file manager. The node itself stays valid for remount(). */
+  unmount(root: VNode): boolean {
+    const i = this.mountList.indexOf(root)
+    if (i < 0) return false
+    this.mountList.splice(i, 1)
+    if (root.mount) root.mount.plugged = false
+    this.changed()
+    return true
+  }
+
   // ---------- naming ----------
   validateName(name: string): string {
     const n = normalizeName(name).trim()
@@ -248,7 +303,10 @@ export class VirtualFileSystem {
     while (n) {
       if (n === this.home) return ['~', ...chain.reverse()].join('/')
       if (n.parent) chain.push(n.name)
-      else if (n.name) chain.push(n.name)
+      else if (n.mount) {
+        if (this.flavor === 'windows') chain.push(`${n.mount.letter ?? 'E'}:`)
+        else chain.push(n.name, 'Volumes')
+      } else if (n.name) chain.push(n.name)
       n = n.parent
     }
     return '/' + chain.reverse().join('/')
@@ -263,6 +321,15 @@ export class VirtualFileSystem {
       n = n.parent
     }
     names.reverse()
+    const top = (() => {
+      let t: VNode = node
+      while (t.parent) t = t.parent
+      return t
+    })()
+    if (top.mount) {
+      if (this.flavor === 'windows') return names.length === 1 ? `${top.mount.letter ?? 'E'}:\\` : [`${top.mount.letter ?? 'E'}:`, ...names.slice(1)].join('\\')
+      return '/Volumes/' + names.join('/')
+    }
     if (this.flavor === 'windows') return names.length === 1 ? names[0] + '\\' : names.join('\\')
     const rest = names.slice(1)
     return '/' + rest.join('/')
@@ -285,7 +352,11 @@ export class VirtualFileSystem {
     if (p === '') return from
     let cur: VNode
     let parts: string[]
-    if (p === '~' || p.startsWith('~/') || p.startsWith('~\\')) {
+    const mountHit = this.resolveMountRoot(p)
+    if (mountHit) {
+      cur = mountHit.root
+      parts = mountHit.rest
+    } else if (p === '~' || p.startsWith('~/') || p.startsWith('~\\')) {
       cur = this.home
       parts = p.slice(1).split(/[\\/]+/).filter(Boolean)
     } else if (this.flavor === 'windows' && /^\/?[a-zA-Z]:/.test(p)) {
@@ -313,6 +384,21 @@ export class VirtualFileSystem {
       cur = next
     }
     return cur
+  }
+
+  /** `D:\\x`, `/D:/x` (Windows) or `/Volumes/NAME/x` (Mac) → the mounted drive and the remaining path parts. */
+  private resolveMountRoot(p: string): { root: VNode; rest: string[] } | null {
+    if (!this.mountList.length) return null
+    if (this.flavor === 'windows') {
+      const m = /^\/?([a-zA-Z]):(?:[\\/]+(.*))?$/.exec(p)
+      if (!m) return null
+      const root = this.mountList.find((r) => (r.mount?.letter ?? 'E').toLowerCase() === m[1].toLowerCase())
+      return root ? { root, rest: (m[2] ?? '').split(/[\\/]+/).filter(Boolean) } : null
+    }
+    const m = /^\/Volumes\/([^/]+)(?:\/(.*))?$/.exec(p)
+    if (!m) return null
+    const root = this.mountList.find((r) => same(r.name, m[1]))
+    return root ? { root, rest: (m[2] ?? '').split('/').filter(Boolean) } : null
   }
 
   exists(path: string, from?: VNode) {
@@ -527,6 +613,7 @@ export class VirtualFileSystem {
       return n
     }
     v.root = build(data.tree, null)
+    vfsByRoot.set(v.root, v)
     const find = (p: string) => v.resolve(p, v.root)
     v.home = (data.flavor === 'windows' ? find(`C:/Users/${data.userName}`) : find(`/Users/${data.userName.toLowerCase()}`)) ?? v.root
     return v

@@ -10,11 +10,11 @@ const LANG_CHOICES = [
   { id: 'ur', name: 'Urdu', native: 'اردو', ok: false },
 ]
 
-const btn = 'min-h-9 rounded border border-gray-400 bg-white px-4 hover:bg-gray-50'
-const btnPrimary = 'min-h-9 rounded bg-blue-600 px-4 text-white hover:bg-blue-700'
+export const btn = 'min-h-9 rounded border border-gray-400 bg-white px-4 hover:bg-gray-50'
+export const btnPrimary = 'min-h-9 rounded bg-blue-600 px-4 text-white hover:bg-blue-700'
 
 /** Simple in-window modal used by the language/keyboard flows. */
-function Sheet({ title, coach, children, footer, mac }: { title: string; coach: string; children: ReactNode; footer: ReactNode; mac: boolean }) {
+export function Sheet({ title, coach, children, footer, mac }: { title: string; coach: string; children: ReactNode; footer: ReactNode; mac: boolean }) {
   return (
     <div className="absolute inset-0 z-[400] flex items-center justify-center bg-black/30 p-3">
       <div role="dialog" aria-modal="true" aria-label={title} data-coach={coach} className={`relative flex max-h-full w-full max-w-md flex-col bg-white text-sm text-gray-900 shadow-2xl ${mac ? 'rounded-xl' : 'rounded-lg border border-gray-300'}`}>
@@ -26,7 +26,7 @@ function Sheet({ title, coach, children, footer, mac }: { title: string; coach: 
   )
 }
 
-function Row({ label, hint, children }: { label: string; hint?: string; children: ReactNode }) {
+export function Row({ label, hint, children }: { label: string; hint?: string; children: ReactNode }) {
   return (
     <div className="flex min-h-14 items-center justify-between gap-4 border-b border-gray-100 py-2">
       <div className="min-w-0">
@@ -78,6 +78,12 @@ export function LanguageRegion() {
     <>
       <Row label="Windows display language" hint="Windows features like Settings and File Explorer will appear in this language.">
         <span>English (United States)</span>
+      </Row>
+      <Row label="Time format" hint="Regional format → Change formats (Short time / Long time)">
+        <select data-coach="settings-timeformat" aria-label="Time format" value={sim.clock24 ? '24' : '12'} onChange={(e) => setSim({ clock24: e.target.value === '24' })} className="min-h-9 rounded border border-gray-300 bg-white px-2">
+          <option value="12">12-hour (1:00 PM)</option>
+          <option value="24">24-hour (13:00)</option>
+        </select>
       </Row>
       <div className="mt-4 flex items-center justify-between">
         <div className="font-medium">Preferred languages</div>

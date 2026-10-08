@@ -1,9 +1,12 @@
 /** Photos: shows image files as generated, deterministic SVG scenes (sky, hills, flower). No real pictures are used. */
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useDesktop, useWindowCombos } from '../DesktopContext'
 import type { VNode } from '../vfs'
 import type { WinState } from '../windowManager'
 import { attached, findNode } from './util'
+import { decodeShot } from '../devices/screenshots'
+import { ShotPreview } from '../devices/ShotPreview'
+import { getDevices } from '../devices/store'
 
 function hash(s: string): number {
   let h = 2166136261
@@ -49,6 +52,12 @@ export function PhotoScene({ seed, className }: { seed: string; className?: stri
   )
 }
 
+/** A picture: screenshots show a drawing of the captured screen, other files show a generated scene. */
+export function PhotoImage({ node, className }: { node: VNode; className?: string }) {
+  const shot = decodeShot(node.content)
+  return shot ? <ShotPreview shot={shot} className={className} /> : <PhotoScene seed={node.name} className={className} />
+}
+
 export function Photos({ win }: { win: WinState }) {
   const d = useDesktop()
   const { vfs } = d
@@ -76,7 +85,22 @@ export function Photos({ win }: { win: WinState }) {
   const prev = () => show(images[(idx - 1 + images.length) % images.length])
   const next = () => show(images[(idx + 1) % images.length])
 
+  const [slideshow, setSlideshow] = useState(false)
+  const nextRef = useRef(next)
+  nextRef.current = next
+  useEffect(() => {
+    if (!slideshow || !current) return
+    const t = setInterval(() => nextRef.current(), 2500)
+    return () => clearInterval(t)
+  }, [slideshow, current])
+  const toggleSlideshow = () => {
+    d.emit({ type: 'custom', event: slideshow ? 'slideshow-stopped' : 'slideshow-started' })
+    setSlideshow(!slideshow)
+  }
+
   useWindowCombos(win.id, (c) => {
+    // paste a screenshot that is on the clipboard (PrtScn / Win+Shift+S) → shows it in the Snipping Tool window
+    if ((c === 'ctrl+v' || c === 'cmd+v') && getDevices(d).state.clip) return (d.openApp('snip'), true)
     if (!current) return false
     if (c === 'left') return (prev(), true)
     if (c === 'right') return (next(), true)
@@ -97,7 +121,7 @@ export function Photos({ win }: { win: WinState }) {
           <div className="flex flex-1 flex-wrap content-start gap-3 overflow-auto p-3">
             {images.map((n) => (
               <button key={n.id} type="button" data-coach={`photos-thumb-${n.name}`} onClick={() => show(n)} className="flex w-36 flex-col gap-1 rounded p-1 text-left hover:bg-sky-50">
-                <PhotoScene seed={n.name} className="h-24 w-full rounded" />
+                <PhotoImage node={n} className="h-24 w-full rounded" />
                 <span className="truncate text-xs">{n.name}</span>
               </button>
             ))}
@@ -116,6 +140,9 @@ export function Photos({ win }: { win: WinState }) {
         <div className="min-w-0 flex-1 truncate px-2 text-center" data-coach="photos-name">
           {current.name}
         </div>
+        <button type="button" data-coach="photos-slideshow" aria-pressed={slideshow} disabled={images.length < 2} onClick={toggleSlideshow} className={btn}>
+          {slideshow ? 'Stop slideshow' : 'Slideshow'}
+        </button>
         <button type="button" aria-label="Zoom out" data-coach="photos-zoom-out" disabled={zoom <= 25} onClick={() => setZoom((z) => Math.max(25, z - 25))} className={btn}>
           −
         </button>
@@ -129,7 +156,7 @@ export function Photos({ win }: { win: WinState }) {
       <div className="relative min-h-0 flex-1 overflow-auto" data-coach="photos-view">
         <div className="flex min-h-full min-w-full items-center justify-center p-3">
           <div style={{ width: `${zoom}%`, maxWidth: zoom <= 100 ? 560 : undefined }} className="shrink-0">
-            <PhotoScene seed={current.name} className="block h-auto w-full rounded shadow-lg" />
+            <PhotoImage node={current} className="block h-auto w-full rounded shadow-lg" />
           </div>
         </div>
         <button type="button" aria-label="Previous picture" data-coach="photos-prev" disabled={images.length < 2} onClick={prev} className="absolute top-1/2 left-2 flex min-h-11 min-w-11 -translate-y-1/2 items-center justify-center rounded-full bg-black/50 text-xl hover:bg-black/70 disabled:opacity-30">

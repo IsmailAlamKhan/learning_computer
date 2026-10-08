@@ -7,7 +7,8 @@ import { dropZoneProps, useDrag } from '../dnd'
 import { errorMessageEn, extensionOf, type VNode } from '../vfs'
 import type { WinState } from '../windowManager'
 import { SimDialog } from '../ui/SimDialog'
-import { BackGlyph, ForwardGlyph, FolderIcon, NodeIcon, PlusGlyph, RecycleBinIcon, RefreshGlyph, SearchGlyph, UpGlyph } from '../ui/icons'
+import { BackGlyph, ForwardGlyph, FolderIcon, NodeIcon, PlusGlyph, RecycleBinIcon, RefreshGlyph, SearchGlyph, UpGlyph, UsbIcon } from '../ui/icons'
+import { getDevices } from '../devices/store'
 import { attached, byteLength, findNode, fmtDate, fmtSize, isTypingTarget, kindLabel, splitExt } from './util'
 import { useFmPrefs } from './fmPrefs'
 
@@ -449,7 +450,9 @@ export function FileManager({ win, bin = false }: { win: WinState; bin?: boolean
       .filter((n): n is VNode => !!n)
     for (const n of nodes) {
       try {
-        vfs.move(n, dest)
+        // moving between two different drives (this PC <-> USB stick / phone) copies, like a real computer
+        if (vfs.mountOf(n) !== vfs.mountOf(dest)) vfs.copy(n, dest)
+        else vfs.move(n, dest)
       } catch (e) {
         fail(e)
         break
@@ -761,6 +764,40 @@ export function FileManager({ win, bin = false }: { win: WinState; bin?: boolean
       <span className="truncate">{name}</span>
     </button>
   )
+  const driveBtns = vfs.mounts.map((m) => {
+    const canEject = m.mount?.kind === 'usb'
+    const eject = () => getDevices(d).ejectUsb()
+    const btn = sideBtn(
+      m.name,
+      !bin && (cwd === m || vfs.isDescendant(cwd, m)),
+      () => go(m),
+      m.mount?.kind === 'phone' ? <FolderIcon size={18} /> : <UsbIcon size={18} />,
+      {
+        ...dropZoneProps(
+          (pl) => dropInto(m, pl),
+          (pl) => payloadIds(pl).length > 0,
+        ),
+        onContextMenu: (e: RMouseEvent) => {
+          e.preventDefault()
+          e.stopPropagation()
+          d.openMenu(e, [
+            { id: 'open', label: 'Open', onSelect: () => go(m) },
+            ...(canEject ? [{ id: 'eject', label: mac ? `Eject “${m.name}”` : 'Eject', onSelect: eject }] : []),
+          ])
+        },
+      },
+    )
+    return mac && canEject ? (
+      <div key={m.id} className="flex items-center">
+        <div className="min-w-0 flex-1">{btn}</div>
+        <button type="button" data-coach={`fm-eject-${m.name}`} aria-label={`Eject ${m.name}`} title="Eject" className="flex min-h-9 min-w-9 items-center justify-center rounded hover:bg-black/10" onClick={eject}>
+          ⏏
+        </button>
+      </div>
+    ) : (
+      btn
+    )
+  })
   const sidebar = (
     <nav aria-label="Navigation" className={`w-44 shrink-0 overflow-y-auto border-r border-gray-200 p-2 ${mac ? 'bg-[#f1f1f1]' : 'bg-[#f9f9f9]'}`}>
       {mac && <div className="px-2 pt-1 pb-1 text-xs font-semibold text-gray-500">Favorites</div>}
@@ -778,6 +815,8 @@ export function FileManager({ win, bin = false }: { win: WinState; bin?: boolean
             ),
           ),
         )}
+      {driveBtns.length > 0 && mac && <div className="px-2 pt-2 pb-1 text-xs font-semibold text-gray-500">Locations</div>}
+      {driveBtns}
       {sideBtn(
         binName,
         bin,

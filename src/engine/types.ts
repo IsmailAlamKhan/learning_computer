@@ -126,6 +126,8 @@ export interface SimSetup {
   vfs?: (vfs: import('../sim/vfs').VirtualFileSystem, os: OsFlavor) => void
   /** initial computer settings (wallpaper, wifi, volume ...) */
   settings?: Partial<import('../sim/DesktopContext').SimSettings>
+  /** show the hardware panel (insert a USB drive, connect a phone) below the simulated screen */
+  hardware?: boolean
 }
 
 export interface Lesson {
@@ -150,6 +152,10 @@ export interface Lesson {
   simulation?: 'desktop' | 'terminal' | 'editor' | 'none' | 'custom'
   /** starting state of the simulated desktop (open windows, extra files, settings) */
   setup?: SimSetup
+  /** Optional progress checklist shown above the guided practice; an item ticks when all its steps are done. */
+  checklist?: { id: string; textBn: string; stepIds: string[] }[]
+  /** If set, completing this lesson issues the certificate (সনদপত্র) of that part. */
+  certificatePart?: 1 | 2
 }
 
 export type ModuleStatus = 'playable' | 'soon'
