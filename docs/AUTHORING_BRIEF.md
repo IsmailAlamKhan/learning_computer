@@ -27,3 +27,12 @@ Target Windows 11 and recent macOS. Every shortcut, menu name, path convention, 
 - Provide `hintBn` for each step and `simplerBn` for harder steps. Lessons are 3–7 minutes: ~10–18 steps max per OS.
 - Use `continue` steps sparingly for tours.
 - Verify steps by really running the e2e walkthrough on both OSes. If a needed `data-coach` id or event doesn't exist, add it in the sim (minimal edit) and note it.
+
+## Additional infrastructure (added in stage 4)
+- **Never put `*.test.tsx` files in an auto-globbed folder root** (`src/content/widgets/`, `src/content/cheatsheets/`, `src/sim/apps/extra/`, `src/sim/apps/browser/sites/`): put tests in `__tests__/` or next to the lib code outside those folders.
+- **System keyboard shortcuts** (Task Manager, screenshots, …): `registerSystemShortcut(os, combo, handler)` from `src/sim/systemActions.ts`, called from a module inside `src/sim/apps/extra/*.tsx` (auto-loaded via its `register()` export). Don't edit `shortcuts.ts`/`DesktopContext.tsx` for this.
+- **Browser sites**: drop a file in `src/sim/apps/browser/sites/*.tsx` that calls `registerSite(...)` at import time (auto-loaded).
+- **Certificates**: `/certificate/1` and `/certificate/2` pages exist (`src/pages/Certificate.tsx`); completing the last module of a part (13 / 20) shows it. Link to it from your lesson if you own that module.
+- **Concurrent edits**: several agents work at once. Re-read a shared file immediately before editing it; keep shared-file edits tiny (one import / one line), and never overwrite a whole shared file.
+- Ports for your Playwright run: M7 4207, M8 4208, M9 4209, M10 4210, M11 4211, M12 4212, M13 4213; outdir `/tmp/dist-mNN`. Seed `unlockAll` is already the default in `e2e/helpers.ts`.
+- Lessons 3–7 minutes is the target; if a guided flow needs more than ~20 steps per OS, split the content: keep the most important ~15–18 steps guided and move the rest to the free-practice checklist.
