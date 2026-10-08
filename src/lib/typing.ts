@@ -101,7 +101,7 @@ export const LEVELS: Level[] = [
   {
     id: 'home',
     titleBn: 'হোম রো অক্ষর',
-    introBn: 'আঙুল রাখার সারি: a s d f g h j k l। F আর J কী-তে ছোট একটি উঁচু দাগ থাকে — ওটা হাতড়ে দুই তর্জনী রাখুন।',
+    introBn: 'আঙুল রাখার সারি: a s d f g h j k l। F আর J কী-তে ছোট একটি উঁচু দাগ থাকে — ছুঁয়ে দেখলেই টের পাবেন — ওই দুটিতে দুই তর্জনী রাখুন।',
     texts: ['asdf jkl', 'sad dad', 'ask a lad', 'glass flask', 'a hall shall fall', 'half a salad'],
   },
   {

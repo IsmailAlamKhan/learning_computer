@@ -49,7 +49,34 @@ export function Frame({ Shell, insetTop, insetBottom }: { Shell: ComponentType; 
     el.addEventListener('dblclick', dc, true)
     el.addEventListener('contextmenu', cm, true)
     el.addEventListener('input', inp, true)
+    // When a focused control disappears (a closed window's ✕ button, a rename box after Enter) the browser drops focus to
+    // <body>, and later key shortcuts (F2, Ctrl+L…) would never reach the sim. Hand focus back to the sim root.
+    let inside = false
+    const markInside = () => {
+      inside = true
+    }
+    const onDocFocusIn = (e: Event) => {
+      if (!el.contains(e.target as Node)) inside = false
+    }
+    const lost = () => !document.activeElement || document.activeElement === document.body
+    const refocus = () => window.setTimeout(() => inside && lost() && el.focus({ preventScroll: true }), 0)
+    // The focused control can be removed a while after the event (animations, re-renders), so also watch for DOM changes.
+    const mo = new MutationObserver(() => inside && lost() && el.focus({ preventScroll: true }))
+    mo.observe(el, { childList: true, subtree: true })
+    el.addEventListener('pointerdown', markInside, true)
+    el.addEventListener('keydown', markInside, true)
+    el.addEventListener('click', refocus, true)
+    el.addEventListener('keydown', refocus, true)
+    document.addEventListener('focusin', onDocFocusIn)
+    document.addEventListener('pointerdown', onDocFocusIn)
     return () => {
+      mo.disconnect()
+      document.removeEventListener('focusin', onDocFocusIn)
+      document.removeEventListener('pointerdown', onDocFocusIn)
+      el.removeEventListener('pointerdown', markInside, true)
+      el.removeEventListener('keydown', markInside, true)
+      el.removeEventListener('click', refocus, true)
+      el.removeEventListener('keydown', refocus, true)
       el.removeEventListener('click', c, true)
       el.removeEventListener('dblclick', dc, true)
       el.removeEventListener('contextmenu', cm, true)

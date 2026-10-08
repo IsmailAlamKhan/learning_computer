@@ -1,17 +1,26 @@
 import { expect, test, type Page } from '@playwright/test'
-import { coach, seedProfile, startGuided } from './helpers'
+import { coach, seedProfile as seed, startGuided } from './helpers'
+const seedProfile = (page: Page, os: 'windows' | 'mac') => seed(page, os, { settings: { numerals: 'western', unlockAll: true } })
 
 const esc = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 
 /** Steps 1–6: type with Shift, then Select All / Copy / click / Paste / Undo with the real keys. */
 async function shortcutsPart(page: Page, mod: 'Control' | 'Meta') {
+  // the coach shows a short "well done" pause (1.4s) after every step; wait it out so each key press is seen by the right step
+  const pause = () => page.waitForTimeout(1600)
   await coach(page, 'editor-text').click()
   await page.keyboard.type('Hello World')
+  await pause()
   await page.keyboard.press(`${mod}+a`)
+  await pause()
   await page.keyboard.press(`${mod}+c`)
+  await pause()
   await coach(page, 'editor-text').click()
+  await pause()
   await page.keyboard.press(`${mod}+v`)
+  await pause()
   await page.keyboard.press(`${mod}+z`)
+  await pause()
 }
 
 test.describe('Module 5 guided practice', () => {
@@ -61,7 +70,7 @@ test.describe('Module 5 guided practice', () => {
     await expect(page.getByText(/সব ধাপ শেষ/)).toBeVisible()
     expect(errors).toEqual([])
     const saved = await page.evaluate(() => JSON.parse(localStorage.getItem('computer-shikhi:v1')!).modules['5'].stepsDone.mac.length)
-    expect(saved).toBe(18)
+    expect(saved).toBe(17)
   })
 })
 

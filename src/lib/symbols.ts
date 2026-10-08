@@ -87,7 +87,7 @@ const NON_CHARACTER_KEYS = /^(Shift|Control|Alt|AltGraph|Meta|CapsLock|Tab|Escap
 export function judgeKey(target: string, pressedKey: string): KeyJudgement {
   if (NON_CHARACTER_KEYS.test(pressedKey) || pressedKey === '') return { kind: 'ignore' }
   if (pressedKey === target) return { kind: 'correct' }
-  if ([...pressedKey].length === 1 && /[^\u0000-\u024F]/.test(pressedKey)) return { kind: 'non-latin' }
+  if ([...pressedKey].length === 1 && (pressedKey.codePointAt(0) ?? 0) > 0x24f) return { kind: 'non-latin' }
   const loc = locateChar(target)
   const pressed = locateChar(pressedKey)
   if (loc && pressed && loc.keyId === pressed.keyId) return loc.shift ? { kind: 'needs-shift' } : { kind: 'too-much-shift' }

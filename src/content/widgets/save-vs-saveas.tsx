@@ -13,13 +13,13 @@ export function saveScene(kind: SaveKind, step: number): SaveScene {
   if (s === 0) return { files: [{ name: 'hello.txt', text: 'Hello' }], captionBn: 'শুরুতে Documents ফোল্ডারে একটি ফাইল: hello.txt, ভেতরে “Hello”।' }
   if (s === 1) return { files: [{ name: 'hello.txt', text: 'Hello' }], captionBn: 'আপনি ফাইলটি খুলে লেখার শেষে “ Ruma” যোগ করলেন। এখনও সেভ করেননি — ফাইলে আগের লেখাই আছে।' }
   if (kind === 'save')
-    return { files: [{ name: 'hello.txt', text: 'Hello Ruma' }], captionBn: 'Save: একই ফাইলটিই নতুন লেখায় বদলে গেল। এখনও একটাই ফাইল — পুরনো লেখা আর নেই।' }
+    return { files: [{ name: 'hello.txt', text: 'Hello Ruma' }], captionBn: 'Save: একই ফাইলটিই নতুন লেখায় বদলে গেল। এখনও একটাই ফাইল — পুরোনো লেখা আর নেই।' }
   return {
     files: [
       { name: 'hello.txt', text: 'Hello' },
       { name: 'hello-copy.txt', text: 'Hello Ruma' },
     ],
-    captionBn: 'Save As: নতুন নামে আরেকটি ফাইল তৈরি হলো। পুরনো hello.txt আগের মতোই আছে — এখন দুটি ফাইল।',
+    captionBn: 'Save As: নতুন নামে আরেকটি ফাইল তৈরি হলো। পুরোনো hello.txt আগের মতোই আছে — এখন দুটি ফাইল।',
   }
 }
 

@@ -118,7 +118,7 @@ export function challengeHintBn(style: PathStyle, chain: string[]): string {
   if (chain.length === 0) return 'ডিস্কের ওপরের ফোল্ডার থেকে শুরু করুন — Users ফোল্ডারে ক্লিক করুন।'
   let ok = 0
   while (ok < chain.length && ok < want.length && chain[ok] === want[ok]) ok++
-  if (ok < chain.length) return `এই পথটি ঠিক পথে নেই। “${want[Math.max(0, ok - 1)]}” পর্যন্ত ঠিক ছিল — সেখান থেকে আবার চেষ্টা করুন।`
+  if (ok < chain.length) return `এই পথটি এখনও মেলেনি। “${want[Math.max(0, ok - 1)]}” পর্যন্ত ঠিক ছিল — সেখান থেকে আবার চেষ্টা করুন।`
   if (ok >= want.length) return 'ঠিক জায়গায় পৌঁছে গেছেন!'
   return `ঠিক পথে আছেন! এবার “${want[ok]}” খুঁজুন।`
 }

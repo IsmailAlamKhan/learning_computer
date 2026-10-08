@@ -6,7 +6,7 @@ export async function seedProfile(page: Page, os: 'windows' | 'mac', extra: Reco
       if (localStorage.getItem('computer-shikhi:v1')) return
       localStorage.setItem(
         'computer-shikhi:v1',
-        JSON.stringify({ version: 1, profile: { name: 'রুমা', os: o, motivation: 'ওয়েবসাইট বানাতে চাই', onboarded: true }, settings: { numerals: 'western' }, modules: {}, ...(ex as object) }),
+        JSON.stringify({ version: 1, profile: { name: 'রুমা', os: o, motivation: 'ওয়েবসাইট বানাতে চাই', onboarded: true }, settings: { numerals: 'western', unlockAll: true }, modules: {}, ...(ex as object) }),
       )
     },
     [os, extra] as const,

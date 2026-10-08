@@ -4,7 +4,7 @@
 |---|---|---|
 | 1 | Scaffold, brief, schema, app shell, progress store | DONE |
 | 2 | Simulation engine + Module 2 benchmark | DONE |
-| 3 | Modules 1, 3, 4, 5, 6 | NOT STARTED |
+| 3 | Modules 1, 3, 4, 5, 6 | DONE |
 | 4 | Modules 7–13 | NOT STARTED |
 | 5 | Terminal, editor, runners | NOT STARTED |
 | 6 | Part 2 (Modules 14–20) | NOT STARTED |
@@ -28,6 +28,14 @@
 - Module 2 written in Bengali (17 Windows / 16 Mac guided steps, free practice, 5-question quiz incl. click-the-right-thing and drag-to-match, summary, real tasks, teacher tip) + 14 glossary entries.
 - Tests: 116 unit/component tests (VFS, window manager, shortcuts, actions, runner, guided-run timers with fake clock, quiz grading, shells, apps) + 6 Playwright e2e (full Module 2 on both OS, hint/demo flow, quiz, completion). Uses installed Chrome (`PW_CHANNEL`), no browser download.
 - Simplifications: Mac green button = zoom/maximize (not macOS full-screen); guided practice always restarts from step 1 on reset/reload (sim state is not persisted); Windows Start/Mac menus are display-only for items not needed by lessons.
+
+### Stage 3 — DONE (2026-10-09)
+- Playable now: Modules 1–6 (Windows + Mac each). Infra added: auto-registered widgets (`src/content/widgets/*.tsx`), cheat sheets (`/cheatsheets`), extra sim apps (`src/sim/apps/extra`), `Lesson.setup` (open windows / extra files / settings), parallel-safe Playwright config (`PW_PORT`, `PW_OUTDIR`).
+- M1: `computer-parts` widget (13 clickable parts + challenge), `touchpad-practice` widget, shared power screen (sleep/wake/restart/shutdown events). M3: window moves/resize/maximize/switch with on-screen shortcut pad for Alt+Tab/Cmd+Tab. M4: file ops, extensions, `path-explorer` widget, Recycle Bin/Trash restore, address-bar/Go-to-Folder. M5: `typing-practice`, `symbol-drill`, `shortcut-table`, keyboard-layout widgets, simulated Bangla keyboard add/switch flow with tray/menu-bar indicator, printable shortcuts cheat sheet. M6: Notepad/TextEdit save/Save As/reopen, plain-vs-rich and save-vs-saveas widgets, simulated App Installer + uninstall.
+- Engine fix found by M6: `type` events are emitted asynchronously so controlled inputs don't lose the last character; Frame refocuses the sim root when a focused control disappears.
+- Tests: 209 unit/component tests; 27 Playwright e2e (every guided step on both OSes, widgets, quizzes) all green; tsc/lint(build) clean.
+- Bengali review by a separate reviewer pass: ~70 fixes (see docs/BENGALI_REVIEW.md). Duplicate glossary id `restore` fixed (`restore-window`).
+- Known: lessons 4 (27/23 steps) and 6 (38/32 steps) exceed the 3–7 minute guideline; kept as complete walk-throughs with the teacher tip suggesting two sittings (candidate for splitting in final QA).
 
 ## Decisions and assumptions
 

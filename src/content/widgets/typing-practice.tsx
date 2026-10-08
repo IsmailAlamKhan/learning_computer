@@ -64,7 +64,7 @@ export default function TypingPractice() {
       <input
         ref={inputRef}
         data-testid="typing-input"
-        aria-label="এখানে উপরের লেখাটি টাইপ করুন"
+        aria-label="এখানে ওপরের লেখাটি টাইপ করুন"
         className="field font-mono text-xl"
         autoComplete="off"
         autoCapitalize="off"
@@ -75,7 +75,7 @@ export default function TypingPractice() {
         placeholder="এখানে ক্লিক করে লেখা শুরু করুন"
         onKeyDown={(e) => {
           setCaps(e.getModifierState?.('CapsLock') ?? false)
-          if (e.key.length === 1 && /[^\u0000-ɏ]/.test(e.key)) setNonLatin(true)
+          if (e.key.length === 1 && e.key.charCodeAt(0) > 0x24f) setNonLatin(true)
           else if (e.key.length === 1) setNonLatin(false)
         }}
         onChange={(e) => setSession((s) => applyInput(s, target, e.target.value, Date.now()))}

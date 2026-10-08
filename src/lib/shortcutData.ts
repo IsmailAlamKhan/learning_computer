@@ -25,7 +25,7 @@ export const EDIT_ROWS: ShortcutRow[] = [
   { id: 'paste', labelBn: 'পেস্ট (Paste) — বসানো', win: [['ctrl', 'V']], mac: [['cmd', 'V']] },
   { id: 'cut', labelBn: 'কাট (Cut) — কেটে নেওয়া', win: [['ctrl', 'X']], mac: [['cmd', 'X']] },
   { id: 'undo', labelBn: 'আনডু (Undo) — আগের অবস্থায় ফেরা', win: [['ctrl', 'Z']], mac: [['cmd', 'Z']] },
-  { id: 'redo', labelBn: 'রিডু (Redo) — আনডু ফিরিয়ে নেওয়া', win: [['ctrl', 'Y'], ['ctrl', 'shift', 'Z']], mac: [['cmd', 'shift', 'Z']], noteBn: 'Windows-এ প্রোগ্রাম ভেদে দুইরকম হতে পারে।' },
+  { id: 'redo', labelBn: 'রিডু (Redo) — আনডু ফিরিয়ে নেওয়া', win: [['ctrl', 'Y'], ['ctrl', 'shift', 'Z']], mac: [['cmd', 'shift', 'Z']], noteBn: 'Windows-এ প্রোগ্রাম ভেদে দুই রকম হতে পারে।' },
   { id: 'select-all', labelBn: 'সিলেক্ট অল (Select All) — সব বেছে নেওয়া', win: [['ctrl', 'A']], mac: [['cmd', 'A']] },
   { id: 'save', labelBn: 'সেভ (Save) — জমিয়ে রাখা', win: [['ctrl', 'S']], mac: [['cmd', 'S']] },
   { id: 'find', labelBn: 'ফাইন্ড (Find) — লেখার ভেতরে খোঁজা', win: [['ctrl', 'F']], mac: [['cmd', 'F']] },

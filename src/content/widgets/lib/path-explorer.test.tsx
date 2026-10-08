@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { fireEvent, render, screen } from '@testing-library/react'
-import PathExplorer from './path-explorer'
+import PathExplorer from '../path-explorer'
 
 const node = (c: HTMLElement, name: string) => c.querySelector(`[data-node="${name}"]`) as HTMLElement
 

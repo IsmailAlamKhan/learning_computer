@@ -6,7 +6,9 @@ import { KEYBOARDS, nextKeyboard } from '../keyboards'
 function useKeyboardSwitch(mac: boolean) {
   const d = useDesktop()
   const ref = useRef(d)
-  ref.current = d
+  useEffect(() => {
+    ref.current = d
+  })
   useEffect(
     () =>
       d.registerComboHandler((c) => {

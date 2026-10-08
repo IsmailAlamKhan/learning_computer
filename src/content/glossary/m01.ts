@@ -4,7 +4,7 @@ const entries: GlossaryEntry[] = [
   { id: 'computer', termBn: 'কম্পিউটার', termEn: 'Computer', meaningBn: 'যে যন্ত্র আমাদের দেওয়া নির্দেশ মেনে হিসাব, লেখা, ছবি, গান-ভিডিও এবং আরও অনেক কাজ করে দেয়।', module: 1 },
   { id: 'hardware', termBn: 'হার্ডওয়্যার', termEn: 'Hardware', meaningBn: 'কম্পিউটারের যেসব অংশ হাতে ধরা বা ছোঁয়া যায় — যেমন পর্দা, কিবোর্ড, মাউস, চার্জার।', module: 1 },
   { id: 'monitor', termBn: 'মনিটর (পর্দা)', termEn: 'Monitor / Screen', meaningBn: 'কম্পিউটার যা দেখাচ্ছে তা যে পর্দায় দেখা যায়। ল্যাপটপে পর্দা শরীরের সাথেই লাগানো থাকে।', module: 1 },
-  { id: 'keyboard', termBn: 'কিবোর্ড', termEn: 'Keyboard', meaningBn: 'অক্ষর, সংখ্যা ও চিহ্ন লেখার চাবির সারি।', module: 1 },
+  { id: 'keyboard', termBn: 'কিবোর্ড', termEn: 'Keyboard', meaningBn: 'অক্ষর, সংখ্যা ও চিহ্ন লেখার কী-এর সারি।', module: 1 },
   { id: 'mouse', termBn: 'মাউস', termEn: 'Mouse', meaningBn: 'হাতে ধরে নাড়াচাড়া করার যন্ত্র। এটি নাড়ালে পর্দার তীর চিহ্নটিও নড়ে। ল্যাপটপে মাউসের কাজ করে টাচপ্যাড।', module: 1 },
   { id: 'touchpad', termBn: 'টাচপ্যাড', termEn: 'Touchpad', meaningBn: 'ল্যাপটপের কিবোর্ডের নিচের মসৃণ জায়গা। এর ওপর আঙুল বুলিয়ে তীর নাড়ানো যায় আর টোকা দিয়ে ক্লিক করা যায়।', module: 1 },
   { id: 'cpu', termBn: 'সিপিইউ (কম্পিউটারের মস্তিষ্ক)', termEn: 'CPU', meaningBn: 'কম্পিউটারের ভেতরের যে অংশ সব হিসাব আর নির্দেশের কাজ করে। একে কম্পিউটারের মস্তিষ্ক বলা যায়।', module: 1 },

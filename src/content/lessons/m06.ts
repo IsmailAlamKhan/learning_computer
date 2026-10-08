@@ -19,7 +19,7 @@ const win: Step[] = [
   },
   {
     id: 'w-write', osVariant: 'windows', titleBn: 'একটি বাক্য লিখুন', target: 'editor-text', expectedAction: { type: 'custom', event: 'editor-dirty' },
-    explanationBn: 'সাদা জায়গায় ক্লিক করে ইংরেজিতে যেকোনো একটি বাক্য লিখুন, যেমন: Hello, this is my first file. বাংলা লিখতে পারলে বাংলাও লিখতে পারেন, তবে জরুরি নয়।',
+    explanationBn: 'সাদা জায়গায় ক্লিক করে ইংরেজিতে যেকোনো একটি বাক্য লিখুন, যেমন: Hello, this is my first file. বাংলা লেখা জানলে বাংলাতেও লিখতে পারেন, তবে জরুরি নয়।',
     hintBn: 'সাদা জায়গাটির ভেতরে একবার ক্লিক করুন, তারপর কিবোর্ডে টাইপ করুন।',
     successMessageBn: 'লেখা হয়ে গেছে। লক্ষ করুন, ওপরের নামের আগে একটি তারা (*) এসেছে — মানে “এখনও সেভ হয়নি”।',
   },
@@ -36,7 +36,7 @@ const win: Step[] = [
   },
   {
     id: 'w-name', osVariant: 'windows', titleBn: 'ফাইলের নাম লিখুন', target: 'save-dialog-name', expectedAction: { type: 'type', target: 'save-dialog-name', text: 'hello.txt', ignoreCase: true },
-    explanationBn: 'এই ছোট জানালাটির নাম Save As ডায়ালগ। ওপরে দেখুন ফাইলটি Documents ফোল্ডারে যাচ্ছে। “File name” ঘরে পুরনো নাম মুছে লিখুন: hello.txt',
+    explanationBn: 'এই ছোট বাক্সটির নাম Save As ডায়ালগ (Dialog)। ওপরে দেখুন ফাইলটি Documents ফোল্ডারে যাচ্ছে। “File name” ঘরে পুরোনো নাম মুছে লিখুন: hello.txt',
     hintBn: 'ঘরের লেখাটি মুছে আবার লিখুন: hello.txt (ছোট হাতের অক্ষর, মাঝে একটি ডট)।',
     simplerBn: 'ঘরের ভেতরে ক্লিক করে সব লেখা মুছে ফেলুন, তারপর টাইপ করুন h-e-l-l-o, একটি ডট (.), তারপর t-x-t।',
   },
@@ -53,12 +53,12 @@ const win: Step[] = [
   // ---- reopen from Files ----
   {
     id: 'w-open-files', osVariant: 'windows', titleBn: 'ফাইল এক্সপ্লোরার খুলুন', target: 'taskbar-app-files', expectedAction: { type: 'openApp', app: 'files' },
-    explanationBn: 'সেভ করা ফাইল আবার খুলতে নিচের টাস্কবারে ফোল্ডারের আইকন (File Explorer) এ ক্লিক করুন।',
+    explanationBn: 'সেভ করা ফাইল আবার খুলতে নিচের টাস্কবারে ফোল্ডারের আইকন (File Explorer)-এ ক্লিক করুন।',
     hintBn: 'টাস্কবারের হলুদ ফোল্ডারের মতো আইকনটি।',
   },
   {
     id: 'w-go-documents', osVariant: 'windows', titleBn: 'Documents ফোল্ডারে যান', target: 'fm-sidebar-Documents', expectedAction: { type: 'navigate', path: '~/Documents' },
-    explanationBn: 'বাঁ দিকের তালিকা থেকে “Documents” এ ক্লিক করুন। আপনার hello ফাইলটি এখানেই আছে।',
+    explanationBn: 'বাঁ দিকের তালিকা থেকে “Documents”-এ ক্লিক করুন। আপনার hello ফাইলটি এখানেই আছে।',
     hintBn: 'বাঁ পাশের তালিকায় Documents লেখাটি খুঁজুন।',
   },
   {
@@ -102,7 +102,7 @@ const win: Step[] = [
   },
   {
     id: 'w-save-as', osVariant: 'windows', titleBn: 'Save As বেছে নিন', target: 'editor-save-as', expectedAction: { type: 'click', target: 'editor-save-as' },
-    explanationBn: 'এবার “Save as” (Save As) বেছে নিন।',
+    explanationBn: 'এবার “Save as” বেছে নিন।',
     hintBn: 'মেনুতে Save-এর ঠিক নিচের লাইনটি, যেখানে Save As লেখা।',
   },
   {
@@ -138,12 +138,12 @@ const win: Step[] = [
   },
   {
     id: 'w-open-installer', osVariant: 'windows', titleBn: 'App Installer খুলুন', target: 'start-app-installer', expectedAction: { type: 'openApp', app: 'installer' },
-    explanationBn: 'ফলাফলে “App Installer” এ ক্লিক করুন।',
+    explanationBn: 'ফলাফলে “App Installer”-এ ক্লিক করুন।',
     hintBn: 'তালিকার প্রথম ফলাফলটি App Installer।',
   },
   {
     id: 'w-download', osVariant: 'windows', titleBn: 'Download চাপুন', target: 'installer-download', expectedAction: { type: 'click', target: 'installer-download' },
-    explanationBn: 'এটি আসল ইনস্টল নয় — শুধু প্র্যাকটিসের জন্য নকল। নিচের হলুদ সাবধানবাণীটি পড়ুন, তারপর “Calculator Plus”-এর পাশের “Download” চাপুন।',
+    explanationBn: 'এটি আসল ইনস্টল নয় — শুধু প্র্যাকটিসের জন্য নকল। নিচের হলুদ সতর্কবার্তাটি পড়ুন, তারপর “Calculator Plus”-এর পাশের “Download” চাপুন।',
     hintBn: 'ডান পাশের নীল Download বোতাম।',
   },
   {
@@ -173,7 +173,7 @@ const win: Step[] = [
   },
   {
     id: 'w-open-calc', osVariant: 'windows', titleBn: 'Calculator Plus খুলুন', target: 'start-app-calcplus', expectedAction: { type: 'openApp', app: 'calcplus' },
-    explanationBn: '“Calculator Plus” এ ক্লিক করুন। ইনস্টলের পর নতুন প্রোগ্রাম এভাবেই খুঁজে পাওয়া যায়।',
+    explanationBn: '“Calculator Plus”-এ ক্লিক করুন। ইনস্টলের পর নতুন প্রোগ্রাম এভাবেই খুঁজে পাওয়া যায়।',
     hintBn: 'ফলাফলের তালিকায় Calculator Plus।',
   },
   {
@@ -184,12 +184,12 @@ const win: Step[] = [
   // ---- uninstall ----
   {
     id: 'w-open-settings', osVariant: 'windows', titleBn: 'Settings খুলুন', target: 'taskbar-app-settings', expectedAction: { type: 'openApp', app: 'settings' },
-    explanationBn: 'প্রোগ্রাম সরাতে চাইলে Settings-এ যেতে হয়। টাস্কবারের গিয়ারের মতো আইকন (Settings) এ ক্লিক করুন।',
-    hintBn: 'টাস্কবারের গিয়ার বা কলের মতো আইকন।',
+    explanationBn: 'প্রোগ্রাম সরাতে চাইলে Settings-এ যেতে হয়। টাস্কবারের গিয়ারের মতো আইকন (Settings)-এ ক্লিক করুন।',
+    hintBn: 'টাস্কবারের গিয়ারের (দাঁতওয়ালা চাকা) মতো আইকন।',
   },
   {
     id: 'w-nav-apps', osVariant: 'windows', titleBn: 'Apps বিভাগ', target: 'settings-nav-apps', expectedAction: { type: 'click', target: 'settings-nav-apps' },
-    explanationBn: 'বাঁ দিকের তালিকা থেকে “Apps” এ ক্লিক করুন। এখানে ইনস্টল করা সব প্রোগ্রামের তালিকা থাকে (Installed apps)।',
+    explanationBn: 'বাঁ দিকের তালিকা থেকে “Apps”-এ ক্লিক করুন। এখানে ইনস্টল করা সব প্রোগ্রামের তালিকা থাকে (Installed apps)।',
     hintBn: 'বাঁ পাশের তালিকায় “Apps” লেখাটি।',
   },
   {
@@ -205,7 +205,7 @@ const win: Step[] = [
   {
     id: 'w-uninstall-confirm', osVariant: 'windows', titleBn: 'নিশ্চিত করুন', target: 'settings-uninstall-confirm', expectedAction: { type: 'custom', event: 'app-uninstalled' },
     explanationBn: 'কম্পিউটার আবার জিজ্ঞেস করবে। “Uninstall” চাপলে প্রোগ্রামটি সরে যাবে। (আসল কম্পিউটারে নিজের দরকারি প্রোগ্রাম কখনো ভুল করে সরাবেন না।)',
-    hintBn: 'ছোট জানালার ডান নিচের নীল Uninstall বোতাম।',
+    hintBn: 'ছোট বাক্সের ডান নিচের নীল Uninstall বোতাম।',
   },
 ]
 
@@ -227,7 +227,7 @@ const mac: Step[] = [
   },
   {
     id: 'm-write', osVariant: 'mac', titleBn: 'একটি বাক্য লিখুন', target: 'editor-text', expectedAction: { type: 'custom', event: 'editor-dirty' },
-    explanationBn: 'সাদা জায়গায় ক্লিক করে ইংরেজিতে একটি বাক্য লিখুন, যেমন: Hello, this is my first file. বাংলা লিখতে পারলে বাংলাও লিখতে পারেন, তবে জরুরি নয়। (এখানে TextEdit “Plain Text” অবস্থায় আছে — ওপরের ডান কোণে দেখুন।)',
+    explanationBn: 'সাদা জায়গায় ক্লিক করে ইংরেজিতে একটি বাক্য লিখুন, যেমন: Hello, this is my first file. বাংলা লেখা জানলে বাংলাতেও লিখতে পারেন, তবে জরুরি নয়। (এখানে TextEdit “Plain Text” অবস্থায় আছে — ওপরের ডান কোণে দেখুন।)',
     hintBn: 'সাদা জায়গাটির ভেতরে একবার ক্লিক করে টাইপ করুন।',
     successMessageBn: 'লেখা হয়ে গেছে। এখন নামের পাশে “Edited” দেখাচ্ছে — মানে “এখনও সেভ হয়নি”।',
   },
@@ -238,7 +238,7 @@ const mac: Step[] = [
   },
   {
     id: 'm-name', osVariant: 'mac', titleBn: 'ফাইলের নাম লিখুন', target: 'save-dialog-name', expectedAction: { type: 'type', target: 'save-dialog-name', text: 'hello.txt', ignoreCase: true },
-    explanationBn: 'এই ছোট জানালাটি ফাইল সেভ করার ডায়ালগ। “Where” লেখা অংশে দেখুন ফাইলটি Documents ফোল্ডারে যাচ্ছে। “Save As” ঘরে পুরনো নাম মুছে লিখুন: hello.txt',
+    explanationBn: 'এই ছোট বাক্সটি ফাইল সেভ করার ডায়ালগ (Dialog)। “Where” লেখা অংশে দেখুন ফাইলটি Documents ফোল্ডারে যাচ্ছে। “Save As” ঘরে পুরোনো নাম মুছে লিখুন: hello.txt',
     hintBn: 'ঘরের লেখাটি মুছে আবার লিখুন: hello.txt (ছোট হাতের অক্ষর, মাঝে একটি ডট)।',
     simplerBn: 'ঘরের ভেতরে ক্লিক করে সব লেখা মুছে ফেলুন, তারপর টাইপ করুন h-e-l-l-o, একটি ডট (.), তারপর t-x-t।',
   },
@@ -254,12 +254,12 @@ const mac: Step[] = [
   },
   {
     id: 'm-open-finder', osVariant: 'mac', titleBn: 'ফাইন্ডার (Finder) খুলুন', target: 'dock-files', expectedAction: { type: 'openApp', app: 'files' },
-    explanationBn: 'সেভ করা ফাইল আবার খুলতে নিচের ডকের প্রথম আইকন Finder এ ক্লিক করুন।',
+    explanationBn: 'সেভ করা ফাইল আবার খুলতে নিচের ডকের প্রথম আইকন Finder-এ ক্লিক করুন।',
     hintBn: 'ডকের বাঁ দিকের হাসিমুখের মতো আইকনটি।',
   },
   {
     id: 'm-go-documents', osVariant: 'mac', titleBn: 'Documents ফোল্ডারে যান', target: 'fm-sidebar-Documents', expectedAction: { type: 'navigate', path: '~/Documents' },
-    explanationBn: 'বাঁ দিকের তালিকা থেকে “Documents” এ ক্লিক করুন। আপনার hello ফাইলটি এখানেই আছে।',
+    explanationBn: 'বাঁ দিকের তালিকা থেকে “Documents”-এ ক্লিক করুন। আপনার hello ফাইলটি এখানেই আছে।',
     hintBn: 'বাঁ পাশের তালিকায় Documents লেখাটি খুঁজুন।',
   },
   {
@@ -327,12 +327,12 @@ const mac: Step[] = [
   },
   {
     id: 'm-open-installer', osVariant: 'mac', titleBn: 'App Installer খুলুন', target: 'spotlight-result-0', expectedAction: { type: 'openApp', app: 'installer' },
-    explanationBn: 'প্রথম ফলাফল “App Installer” এ ক্লিক করুন।',
+    explanationBn: 'প্রথম ফলাফল “App Installer”-এ ক্লিক করুন।',
     hintBn: 'তালিকার একদম ওপরের লাইন।',
   },
   {
     id: 'm-download', osVariant: 'mac', titleBn: 'Download চাপুন', target: 'installer-download', expectedAction: { type: 'click', target: 'installer-download' },
-    explanationBn: 'এটি আসল ইনস্টল নয় — শুধু প্র্যাকটিসের জন্য নকল। (আসল Mac-এ অনেক প্রোগ্রাম অ্যাপ স্টোর (App Store) থেকে নামে, কিছু আবার নামানো ফাইল খুলে Applications ফোল্ডারে টেনে রাখতে হয়।) নিচের হলুদ সাবধানবাণীটি পড়ুন, তারপর “Calculator Plus”-এর পাশের “Download” চাপুন।',
+    explanationBn: 'এটি আসল ইনস্টল নয় — শুধু প্র্যাকটিসের জন্য নকল। (আসল Mac-এ অনেক প্রোগ্রাম অ্যাপ স্টোর (App Store) থেকে নামে, কিছু আবার নামানো ফাইল খুলে Applications ফোল্ডারে টেনে রাখতে হয়।) নিচের হলুদ সতর্কবার্তাটি পড়ুন, তারপর “Calculator Plus”-এর পাশের “Download” চাপুন।',
     hintBn: 'ডান পাশের নীল Download বোতাম।',
   },
   {
@@ -353,7 +353,7 @@ const mac: Step[] = [
   {
     id: 'm-launchpad', osVariant: 'mac', titleBn: 'লঞ্চপ্যাড (Launchpad) খুলুন', target: 'dock-launchpad', expectedAction: { type: 'click', target: 'dock-launchpad' },
     explanationBn: 'এবার দেখি নতুন প্রোগ্রামটি কম্পিউটার চিনতে পারছে কি না। ডকের লঞ্চপ্যাডে ক্লিক করুন — সেখানে সব প্রোগ্রাম থাকে।',
-    hintBn: 'ডকের রকেটের মতো আইকনটি।',
+    hintBn: 'ডকের ছোট ছোট রঙিন বর্গ দিয়ে সাজানো আইকনটি।',
   },
   {
     id: 'm-open-calc', osVariant: 'mac', titleBn: 'Calculator Plus খুলুন', target: 'launchpad-app-calcplus', expectedAction: { type: 'openApp', app: 'calcplus' },
@@ -368,12 +368,12 @@ const mac: Step[] = [
   // ---- uninstall ----
   {
     id: 'm-applications', osVariant: 'mac', titleBn: 'Applications ফোল্ডারে যান', target: 'fm-sidebar-Applications', expectedAction: { type: 'click', target: 'fm-sidebar-Applications' },
-    explanationBn: 'Mac-এ প্রোগ্রাম সরাতে হলে Finder-এর “Applications” ফোল্ডারে যেতে হয়। বাঁ দিকের তালিকা থেকে Applications এ ক্লিক করুন।',
+    explanationBn: 'Mac-এ প্রোগ্রাম সরাতে হলে Finder-এর “Applications” ফোল্ডারে যেতে হয়। বাঁ দিকের তালিকা থেকে Applications-এ ক্লিক করুন।',
     hintBn: 'Finder উইন্ডোর বাঁ পাশে Applications লেখাটি। উইন্ডোটি অন্য উইন্ডোর পেছনে থাকলে ডকের Finder-এ ক্লিক করুন।',
   },
   {
     id: 'm-drag-trash', osVariant: 'mac', titleBn: 'ট্র্যাশে টেনে ফেলুন', target: 'fm-item-Calculator Plus.app', expectedAction: { type: 'drag', target: 'fm-item-Calculator Plus.app', dropTarget: 'dock-trash' },
-    explanationBn: 'Calculator Plus.app টি ধরে টেনে নিচে ডকের ট্র্যাশ (Trash) আইকনে ছেড়ে দিন। এটাই Mac-এ আনইনস্টল করার প্রধান উপায়। (অ্যাপ স্টোর থেকে নামানো অ্যাপ লঞ্চপ্যাডে Option কী চেপে ধরে ✕ চেপেও সরানো যায়।)',
+    explanationBn: 'Calculator Plus.app ধরে টেনে নিচে ডকের ট্র্যাশ (Trash) আইকনে ছেড়ে দিন। এটাই Mac-এ আনইনস্টল করার প্রধান উপায়। (অ্যাপ স্টোর থেকে নামানো অ্যাপ লঞ্চপ্যাডে Option কী চেপে ধরে ✕ চেপেও সরানো যায়।)',
     hintBn: 'আইকনের ওপর মাউসের বাঁ বোতাম চেপে ধরে রেখে টেনে ট্র্যাশের ওপর নিয়ে গিয়ে ছেড়ে দিন।',
     simplerBn: 'ফাইলের ওপর বোতাম চেপে ধরুন, চেপে রেখেই মাউস নিচে ডকের শেষের ট্র্যাশের ছবির ওপর নিয়ে যান, তারপর বোতাম ছেড়ে দিন।',
   },
@@ -406,7 +406,7 @@ const lesson: Lesson = {
     {
       kind: 'list',
       itemsBn: [
-        'Windows-এ: স্টার্ট (Start) বোতাম চেপে সঙ্গে সঙ্গে নাম টাইপ করুন, এটিই স্টার্ট সার্চ (Start search)। টাস্কবারের সার্চ বক্সও একই কাজ করে।',
+        'Windows-এ: স্টার্ট (Start) বোতাম চেপে সাথে সাথে নাম টাইপ করুন, এটিই স্টার্ট সার্চ (Start search)। টাস্কবারের সার্চ বক্সও একই কাজ করে।',
         'Mac-এ: স্পটলাইট (Spotlight) — ওপরের ডান দিকের ম্যাগনিফাইং গ্লাস, বা কিবোর্ডে Cmd + Space। নাম লিখে Enter চাপুন। সব প্রোগ্রাম একসাথে দেখতে চাইলে ডকের লঞ্চপ্যাড (Launchpad)।',
         'বন্ধ করতে: Windows-এ উইন্ডোর ডান ওপরের ✕। Mac-এ বাঁ ওপরের লাল বোতাম — তবে Mac-এ উইন্ডো বন্ধ করলেও প্রোগ্রাম অনেক সময় চালু থাকে (ডকে আইকনের নিচে ছোট বিন্দু থাকে); পুরোপুরি বন্ধ করতে Cmd + Q।',
       ],
@@ -415,7 +415,7 @@ const lesson: Lesson = {
     { kind: 'widget', widget: 'save-vs-saveas' },
     { kind: 'p', textBn: 'আজ আমরা যে প্রোগ্রামে লিখব — Windows-এ নোটপ্যাড (Notepad), Mac-এ টেক্সটএডিট (TextEdit) — তাতে শুধু সাধারণ লেখা (প্লেইন টেক্সট, Plain text) হয়। এর মানে লেখার সাজসজ্জা (মোটা, রঙিন, বড় হরফ) থাকে না। ফাইলের নামের শেষে সাধারণত .txt থাকে।' },
     { kind: 'widget', widget: 'plain-vs-rich' },
-    { kind: 'p', textBn: 'Word-এর মতো প্রোগ্রামে লিখলে সাজানো লেখা (formatted text) হয়, আর ফাইলের ভেতরে সাজসজ্জার অনেক লুকানো নির্দেশ জমা হয়। প্রোগ্রামাররা তাই .txt, .py, .html এর মতো প্লেইন টেক্সট ফাইলে কাজ করেন — যা লেখা হয়েছে ঠিক তা-ই থাকে, কম্পিউটারের বোঝার ভুল হয় না।' },
+    { kind: 'p', textBn: 'Word-এর মতো প্রোগ্রামে লিখলে সাজানো লেখা (formatted text) হয়, আর ফাইলের ভেতরে সাজসজ্জার অনেক লুকানো নির্দেশ জমা হয়। প্রোগ্রামাররা তাই .txt, .py, .html-এর মতো প্লেইন টেক্সট ফাইলে কাজ করেন — যা লেখা হয়েছে ঠিক তা-ই থাকে, কম্পিউটারের বোঝার ভুল হয় না।' },
     { kind: 'note', textBn: 'Mac-এ TextEdit অনেক সময় প্রথমে সাজানো লেখার (rich text) অবস্থায় খোলে। প্লেইন টেক্সটে আনতে মেনু বারে Format → Make Plain Text বেছে নিন (শর্টকাট Shift + Cmd + T)। ' + DIFF + '। সিমুলেশনের TextEdit আগে থেকেই Plain Text অবস্থায় আছে।' },
     { kind: 'p', textBn: 'শেষে নতুন প্রোগ্রাম ইনস্টল (Install) করার ধারণা। ইনস্টল মানে প্রোগ্রামটি কম্পিউটারে বসিয়ে নেওয়া। সাধারণত প্রস্তুতকারকের নিজের ওয়েবসাইট বা কম্পিউটারের অফিসিয়াল অ্যাপ স্টোর থেকে সেটআপ ফাইল নামাতে হয়, তারপর Next → Install → Finish ধাপগুলো পার করতে হয়। সরাতে চাইলে আনইনস্টল (Uninstall) করতে হয়। Windows-এ Settings → Apps → Installed apps থেকে তিন বিন্দু (⋯) → Uninstall। Mac-এ Finder-এর Applications ফোল্ডার থেকে প্রোগ্রামটি ট্র্যাশে ফেলা হয়।' },
     { kind: 'note', textBn: 'সাবধান: শুধু অফিসিয়াল উৎস (official source) থেকে প্রোগ্রাম নামান। পপ-আপে “আপনার কম্পিউটার বিপদে, এখনই এটা ইনস্টল করুন” লেখা দেখলে, বা অচেনা লিংক বা মেসেজ থেকে নামাতে বললে কখনো করবেন না — এগুলো প্রতারণা হতে পারে। এ বিষয়ে পরের দিকের একটি পাঠে বিস্তারিত শিখব।' },
@@ -480,7 +480,7 @@ const lesson: Lesson = {
       ],
       correct: ['b'],
       hintBn: 'Save আগের ফাইলটির ওপরেই নতুন লেখা বসিয়ে দেয়। আগের লেখা আলাদা থাকতে হলে নতুন একটি ফাইল দরকার।',
-      explanationBn: 'Save As নতুন নামে আরেকটি ফাইল বানায়, পুরনোটি যেমন ছিল তেমনই থাকে। শুধু Save করলে পুরনো লেখা বদলে যেত।',
+      explanationBn: 'Save As নতুন নামে আরেকটি ফাইল বানায়, পুরোনোটি যেমন ছিল তেমনই থাকে। শুধু Save করলে পুরোনো লেখা বদলে যেত।',
     },
     {
       id: 'q-source', type: 'multipleChoice', questionBn: 'নতুন একটি প্রোগ্রাম ইনস্টল করার সবচেয়ে নিরাপদ উপায় কোনটি?',
@@ -502,7 +502,7 @@ const lesson: Lesson = {
       'প্রোগ্রাম খুঁজতে: Windows-এ স্টার্ট চেপে নাম লিখুন। Mac-এ স্পটলাইট (Cmd + Space) বা লঞ্চপ্যাড।',
       'প্রথমবার Save করলে নাম আর জায়গা ঠিক করতে হয়। এরপর Save করলে একই ফাইল বদলায়। Save As করলে নতুন নামে নতুন ফাইল হয়।',
       'সেভ করার আগে বন্ধ করতে গেলে কম্পিউটার জিজ্ঞেস করে: Save, Don’t save নাকি Cancel। সাবধানে বেছে নিন।',
-      'সাধারণ লেখা (.txt) তে কোনো লুকানো সাজসজ্জা থাকে না। তাই প্রোগ্রামাররা এ ধরনের ফাইলে কাজ করেন। Mac-এর TextEdit-এ Format → Make Plain Text (Shift + Cmd + T)।',
+      'সাধারণ লেখায় (.txt) কোনো লুকানো সাজসজ্জা থাকে না। তাই প্রোগ্রামাররা এ ধরনের ফাইলে কাজ করেন। Mac-এর TextEdit-এ Format → Make Plain Text (Shift + Cmd + T)।',
       'ইনস্টল: অফিসিয়াল উৎস থেকে নামান, Next → Install → Finish। আনইনস্টল: Windows-এ Settings → Apps → Installed apps → ⋯ → Uninstall; Mac-এ Applications থেকে ট্র্যাশে ফেলা।',
       'পপ-আপ বা অচেনা লিংক থেকে কখনো কিছু ইনস্টল করবেন না।',
     ],

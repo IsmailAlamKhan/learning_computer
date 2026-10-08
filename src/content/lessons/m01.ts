@@ -34,7 +34,7 @@ const lesson: Lesson = {
       itemsBn: [
         'শাট ডাউন (Shut down): কম্পিউটার পুরোপুরি বন্ধ। দিনের কাজ শেষ হলে এটি করুন।',
         'রিস্টার্ট (Restart): বন্ধ করে সাথে সাথে আবার চালু। কম্পিউটার আটকে গেলে বা ধীর হলে এটি কাজে লাগে।',
-        'স্লিপ (Sleep): কাজ খোলা রেখে কিছুক্ষণের বিশ্রাম। চা খেতে উঠলে এটি ভালো। ফিরে কিবোর্ডে যেকোনো চাবি চাপলে বা ক্লিক করলে আগের মতো পাবেন।',
+        'স্লিপ (Sleep): কাজ খোলা রেখে কিছুক্ষণের বিশ্রাম। চা খেতে উঠলে এটি ভালো। ফিরে কিবোর্ডে যেকোনো কী চাপলে বা ক্লিক করলে আগের মতো পাবেন।',
       ],
     },
     { kind: 'analogy', textBn: 'ভাতের হাঁড়ি নামানোর আগে যেমন চুলা নিভিয়ে নিতে হয়, কম্পিউটারও তেমনি বন্ধ করার আগে সবকিছু গুছিয়ে নিতে চায়। তাই আগে কাজ সেভ (Save) করুন, প্রোগ্রাম বন্ধ করুন, তারপর মেনু থেকে শাট ডাউন করুন।' },
@@ -77,12 +77,12 @@ const lesson: Lesson = {
     },
     {
       id: 'w-sleep', osVariant: 'windows', titleBn: 'Sleep বেছে নিন', target: 'power-sleep', expectedAction: { type: 'custom', event: 'power-sleep' },
-      explanationBn: '“Sleep” এ ক্লিক করুন। কম্পিউটার বিশ্রামে যাবে, পর্দা অন্ধকার হবে। কাজ কিন্তু হারাবে না।',
+      explanationBn: '“Sleep”-এ ক্লিক করুন। কম্পিউটার বিশ্রামে যাবে, পর্দা অন্ধকার হবে। কাজ কিন্তু হারাবে না।',
       hintBn: 'তালিকার “Sleep” লেখাটি।',
     },
     {
       id: 'w-wake', osVariant: 'windows', titleBn: 'কম্পিউটারকে জাগানো', target: 'wake-button', expectedAction: { type: 'custom', event: 'power-wake' },
-      explanationBn: 'এখন পর্দা অন্ধকার। আসল কম্পিউটারে কিবোর্ডের যেকোনো চাবি চাপলে বা টাচপ্যাডে ক্লিক করলে সে জেগে ওঠে। এখানে “Press any key / click to wake” বোতামে ক্লিক করুন।',
+      explanationBn: 'এখন পর্দা অন্ধকার। আসল কম্পিউটারে কিবোর্ডের যেকোনো কী চাপলে বা টাচপ্যাডে ক্লিক করলে সে জেগে ওঠে। এখানে “Press any key / click to wake” বোতামে ক্লিক করুন।',
       hintBn: 'অন্ধকার পর্দার মাঝখানের বোতামটি।',
     },
     {
@@ -97,7 +97,7 @@ const lesson: Lesson = {
     },
     {
       id: 'w-restart', osVariant: 'windows', titleBn: 'Restart বেছে নিন', target: 'power-restart', expectedAction: { type: 'custom', event: 'power-restart' },
-      explanationBn: '“Restart” এ ক্লিক করুন। পর্দা এক মুহূর্ত কালো হয়ে আবার ফিরে আসবে — একটু অপেক্ষা করুন।',
+      explanationBn: '“Restart”-এ ক্লিক করুন। পর্দা এক মুহূর্ত কালো হয়ে আবার ফিরে আসবে — একটু অপেক্ষা করুন।',
       hintBn: 'তালিকার “Restart” লেখাটি।',
     },
     {
@@ -112,7 +112,7 @@ const lesson: Lesson = {
     },
     {
       id: 'w-shutdown', osVariant: 'windows', titleBn: 'Shut down বেছে নিন', target: 'power-shut-down', expectedAction: { type: 'custom', event: 'power-shutdown' },
-      explanationBn: '“Shut down” এ ক্লিক করুন। পর্দা পুরোপুরি কালো হয়ে গেলে বুঝবেন কম্পিউটার বন্ধ।',
+      explanationBn: '“Shut down”-এ ক্লিক করুন। পর্দা পুরোপুরি কালো হয়ে গেলে বুঝবেন কম্পিউটার বন্ধ।',
       hintBn: 'তালিকার মাঝের লাইন — “Shut down”।',
     },
     {
@@ -151,12 +151,12 @@ const lesson: Lesson = {
     },
     {
       id: 'm-sleep', osVariant: 'mac', titleBn: 'Sleep বেছে নিন', target: 'menu-item-sleep', expectedAction: { type: 'custom', event: 'power-sleep' },
-      explanationBn: '“Sleep” এ ক্লিক করুন। কম্পিউটার বিশ্রামে যাবে, পর্দা অন্ধকার হবে। কাজ কিন্তু হারাবে না।',
+      explanationBn: '“Sleep”-এ ক্লিক করুন। কম্পিউটার বিশ্রামে যাবে, পর্দা অন্ধকার হবে। কাজ কিন্তু হারাবে না।',
       hintBn: 'মেনুর “Sleep” লেখাটি।',
     },
     {
       id: 'm-wake', osVariant: 'mac', titleBn: 'কম্পিউটারকে জাগানো', target: 'wake-button', expectedAction: { type: 'custom', event: 'power-wake' },
-      explanationBn: 'এখন পর্দা অন্ধকার। আসল কম্পিউটারে কিবোর্ডের যেকোনো চাবি চাপলে বা টাচপ্যাডে ক্লিক করলে সে জেগে ওঠে। এখানে “Press any key / click to wake” বোতামে ক্লিক করুন।',
+      explanationBn: 'এখন পর্দা অন্ধকার। আসল কম্পিউটারে কিবোর্ডের যেকোনো কী চাপলে বা টাচপ্যাডে ক্লিক করলে সে জেগে ওঠে। এখানে “Press any key / click to wake” বোতামে ক্লিক করুন।',
       hintBn: 'অন্ধকার পর্দার মাঝখানের বোতামটি।',
     },
     {
@@ -166,7 +166,7 @@ const lesson: Lesson = {
     },
     {
       id: 'm-restart', osVariant: 'mac', titleBn: 'Restart বেছে নিন', target: 'menu-item-restart', expectedAction: { type: 'custom', event: 'power-restart' },
-      explanationBn: '“Restart…” এ ক্লিক করুন। পর্দা এক মুহূর্ত কালো হয়ে আবার ফিরে আসবে — একটু অপেক্ষা করুন।',
+      explanationBn: '“Restart…”-এ ক্লিক করুন। পর্দা এক মুহূর্ত কালো হয়ে আবার ফিরে আসবে — একটু অপেক্ষা করুন।',
       hintBn: 'মেনুর “Restart…” লেখাটি।',
     },
     {
@@ -176,7 +176,7 @@ const lesson: Lesson = {
     },
     {
       id: 'm-shutdown', osVariant: 'mac', titleBn: 'Shut Down বেছে নিন', target: 'menu-item-shutdown', expectedAction: { type: 'custom', event: 'power-shutdown' },
-      explanationBn: '“Shut Down…” এ ক্লিক করুন। পর্দা পুরোপুরি কালো হয়ে গেলে বুঝবেন কম্পিউটার বন্ধ। (আসল Mac-এ একটি নিশ্চিত করার বাক্স আসতে পারে।)',
+      explanationBn: '“Shut Down…”-এ ক্লিক করুন। পর্দা পুরোপুরি কালো হয়ে গেলে বুঝবেন কম্পিউটার বন্ধ। (আসল Mac-এ একটি নিশ্চিত করার বাক্স আসতে পারে।)',
       hintBn: 'মেনুর “Shut Down…” লেখাটি।',
     },
     {
@@ -208,7 +208,7 @@ const lesson: Lesson = {
         { id: 'charger', labelBn: 'চার্জার', icon: '🔌' },
       ],
       correct: 'keyboard',
-      hintBn: 'অনেকগুলো ছোট চাবি দিয়ে সাজানো যে জিনিসটিতে আঙুল দিয়ে চাপ দেন।',
+      hintBn: 'অনেকগুলো ছোট কী দিয়ে সাজানো যে জিনিসটিতে আঙুল দিয়ে চাপ দেন।',
       explanationBn: 'ঠিক! কিবোর্ড দিয়ে আমরা কম্পিউটারকে লিখে জানাই।',
     },
     {
@@ -255,7 +255,7 @@ const lesson: Lesson = {
       ],
       correct: ['a'],
       hintBn: 'কাজ খোলা রেখে অল্প সময়ের বিশ্রামের নামটি মনে করুন।',
-      explanationBn: 'ঠিক! স্লিপে কাজ যেমন ছিল তেমনই থাকে। ফিরে এসে যেকোনো চাবি চাপলে বা ক্লিক করলে কম্পিউটার জেগে ওঠে।',
+      explanationBn: 'ঠিক! স্লিপে কাজ যেমন ছিল তেমনই থাকে। ফিরে এসে যেকোনো কী চাপলে বা ক্লিক করলে কম্পিউটার জেগে ওঠে।',
     },
   ],
 

@@ -34,7 +34,7 @@ export function registerBuiltinApps() {
   registerApp({
     id: 'editor',
     title: (os) => (os === 'windows' ? 'Notepad' : 'TextEdit'),
-    descriptionBn: 'সাধারণ লেখা লেখা আর ফাইলে সেভ করে রাখার প্রোগ্রাম',
+    descriptionBn: 'সাধারণ লেখা টাইপ করা আর ফাইলে সেভ করে রাখার প্রোগ্রাম',
     icon: EditorIcon,
     component: Editor,
     defaultSize: { w: 620, h: 420 },

@@ -36,7 +36,7 @@ const lesson: Lesson = {
 
   explanation: [
     { kind: 'p', textBn: 'আপনার কম্পিউটারে যা কিছু জমানো আছে — চিঠি, ছবি, গান, পরে আপনার লেখা প্রোগ্রাম — সবই এক একটি ফাইল (File)। আর ফাইল সাজিয়ে রাখার জায়গার নাম ফোল্ডার (Folder)।' },
-    { kind: 'analogy', textBn: 'ভাবুন একটি আলমারির কথা। আলমারির প্রতিটি তাকে আলাদা আলাদা কাগজের ফাইল থাকে, আর কিছু ফাইলের ভেতরে আবার ছোট ছোট ফোল্ডার। ফোল্ডার হলো আলমারির তাক বা ফাইল-কভার, আর ফাইল হলো ভেতরের কাগজ। ফোল্ডারের ভেতরে ফোল্ডার রাখা যায় — ঠিক যেমন বড় তাকের ভেতরে ছোট ফাইল-কভার।' },
+    { kind: 'analogy', textBn: 'ভাবুন একটি আলমারির কথা। আলমারির তাকে কাগজ রাখার কভার সাজানো থাকে — সেই কভারগুলো হলো ফোল্ডার, আর ভেতরের কাগজগুলো হলো ফাইল। ফোল্ডারের ভেতরে ফোল্ডারও রাখা যায় — ঠিক যেমন বড় কভারের ভেতরে ছোট কভার।' },
     {
       kind: 'p',
       textBn: 'ফাইল ও ফোল্ডার দেখার, সাজানোর প্রোগ্রামের নাম Windows-এ ফাইল এক্সপ্লোরার (File Explorer), Mac-এ ফাইন্ডার (Finder)। দুটির কাজ প্রায় একই। এখানে ছয়টি দরকারি কাজ শিখবেন:',
@@ -48,7 +48,7 @@ const lesson: Lesson = {
         'নাম বদলানো (Rename): ফাইল বা ফোল্ডারের নাম পাল্টানো।',
         'সরানো (Move): ধরে টেনে (ড্র্যাগ করে) অন্য ফোল্ডারে রাখা।',
         'কপি (Copy) ও পেস্ট (Paste): একটি নকল তৈরি করে অন্য জায়গায় বসানো। শর্টকাট: Ctrl+C আর Ctrl+V (Mac-এ Cmd+C আর Cmd+V)।',
-        'মোছা (Delete) ও ফিরিয়ে আনা (Restore): মুছলে ফাইল প্রথমে রিসাইকেল বিনে (Mac-এ ট্র্যাশে) যায়, সেখান থেকে ফেরানো যায়।',
+        'মুছে ফেলা (Delete) ও ফিরিয়ে আনা (Restore): মুছলে ফাইল প্রথমে রিসাইকেল বিনে (Mac-এ ট্র্যাশে) যায়, সেখান থেকে ফেরানো যায়।',
         'খোঁজা (Search): নামের একটি অংশ লিখে ফাইল বের করা।',
       ],
     },
@@ -78,7 +78,7 @@ const lesson: Lesson = {
       itemsBn: [
         'Windows 11 ফাইল এক্সপ্লোরারে: ওপরের View → Show → File name extensions-এ টিক দিন।',
         'Mac-এ: মেনু বারে Finder → Settings (পুরোনো macOS-এ Preferences) → Advanced → “Show all filename extensions” চালু করুন।',
-        'এই সিমুলেশনে Mac-এর জন্য একটি শর্টকাট আছে — Finder উইন্ডোর ওপরে ⚙ (View options) বোতামের মেনু থেকে “Show All Filename Extensions” বাছলেই হয়। আসল Mac-এ ওপরের পথটি ধরবেন।',
+        'এই সিমুলেশনে Mac-এর জন্য একটি শর্টকাট আছে — Finder উইন্ডোর ওপরে ⚙ (View options) বোতামের মেনু থেকে “Show All Filename Extensions” বেছে নিলেই হয়। আসল Mac-এ ওপরের পথটি ধরবেন।',
       ],
     },
     { kind: 'note', textBn: 'আপনার কম্পিউটারে একটু আলাদা দেখাতে পারে — পুরোনো Windows বা macOS-এ মেনুর নাম বা জায়গা ভিন্ন হতে পারে।' },
@@ -159,7 +159,7 @@ const lesson: Lesson = {
     },
     {
       id: 'w-name-folder', osVariant: 'windows', titleBn: 'ফোল্ডারের নাম দিন: MyWork', target: 'rename-input', expectedAction: { type: 'rename', to: 'MyWork' },
-      explanationBn: 'ফোল্ডারের নামের ঘরটি নীল হয়ে আছে। কীবোর্ডে MyWork লিখে Enter চাপুন। (একসাথে লেখা, ফাঁকা জায়গা ছাড়া, ইংরেজি অক্ষরে।)',
+      explanationBn: 'ফোল্ডারের নামের ঘরটি নীল হয়ে আছে। কিবোর্ডে MyWork লিখে Enter চাপুন। (একসাথে লেখা, ফাঁকা জায়গা ছাড়া, ইংরেজি অক্ষরে।)',
       hintBn: 'M-y-W-o-r-k লিখুন — M আর W বড় হাতের। তারপর Enter চাপুন।',
       simplerBn: 'পুরোনো নাম “New folder” মুছে যাবে, আপনার লেখাটিই নতুন নাম হবে। লেখা হলে Enter চাপুন।',
     },
@@ -181,9 +181,9 @@ const lesson: Lesson = {
     },
     {
       id: 'w-f2', osVariant: 'windows', titleBn: 'নাম বদলানো: F2', target: 'fm-item-notes.txt', expectedAction: { type: 'keyCombo', keys: 'f2' },
-      explanationBn: 'নাম বদলাতে হলে ফাইলটি বেছে F2 চাপতে হয়। notes.txt বাছা আছে — কীবোর্ডে F2 চাপুন। (কীবোর্ডে না পেলে “শর্টকাট প্যাড” ব্যবহার করুন।)',
-      hintBn: 'কীবোর্ডের ওপরের সারির F2 চাপুন। না হলে আগে ফাইলটিতে একবার ক্লিক করে নিন।',
-      simplerBn: 'ফাইলটিতে একবার ক্লিক করুন, তারপর কীবোর্ডের F2 বোতাম চাপুন।',
+      explanationBn: 'নাম বদলাতে হলে ফাইলটি বেছে F2 চাপতে হয়। notes.txt বাছা আছে — কিবোর্ডে F2 চাপুন। (কিবোর্ডে না পেলে “শর্টকাট প্যাড” ব্যবহার করুন।)',
+      hintBn: 'কিবোর্ডের ওপরের সারির F2 চাপুন। না হলে আগে ফাইলটিতে একবার ক্লিক করে নিন।',
+      simplerBn: 'ফাইলটিতে একবার ক্লিক করুন, তারপর কিবোর্ডের F2 বোতাম চাপুন।',
       teacherTipBn: 'ল্যাপটপে অনেক সময় F2 চাপতে Fn বোতামও ধরে রাখতে হয়।',
     },
     {
@@ -204,7 +204,7 @@ const lesson: Lesson = {
     },
     {
       id: 'w-copy', osVariant: 'windows', titleBn: 'কপি: Ctrl+C', target: 'fm-item-Recipe.txt', expectedAction: { type: 'keyCombo', keys: 'mod+c' },
-      explanationBn: 'কীবোর্ডে Ctrl চেপে ধরে C চাপুন (Ctrl+C)। কিছু নড়বে না — কম্পিউটার চুপচাপ মনে রাখবে।',
+      explanationBn: 'কিবোর্ডে Ctrl চেপে ধরে C চাপুন (Ctrl+C)। কিছু নড়বে না — কম্পিউটার চুপচাপ মনে রাখবে।',
       hintBn: 'Ctrl বোতাম চেপে ধরে রেখে একবার C চাপুন, তারপর দুটিই ছাড়ুন।',
       simplerBn: 'না পারলে “শর্টকাট প্যাড” খুলে সেখান থেকে Ctrl+C বেছে নিন।',
     },
@@ -220,7 +220,7 @@ const lesson: Lesson = {
     },
     {
       id: 'w-paste', osVariant: 'windows', titleBn: 'Paste', target: 'ctx-paste', expectedAction: { type: 'copy', name: 'Recipe.txt', toPath: '~/Documents/MyWork' },
-      explanationBn: 'মেনু থেকে “Paste” বেছে নিন। Recipe.txt-এর একটি নকল এখানে বসে যাবে। (কীবোর্ডে Ctrl+V চাপলেও একই কাজ হয় — পরে চেষ্টা করবেন।)',
+      explanationBn: 'মেনু থেকে “Paste” বেছে নিন। Recipe.txt-এর একটি নকল এখানে বসে যাবে। (কিবোর্ডে Ctrl+V চাপলেও একই কাজ হয় — পরে চেষ্টা করবেন।)',
       hintBn: 'মেনুতে “Paste” লেখাটি খুঁজুন।',
       successMessageBn: 'নকল তৈরি! আসল Recipe.txt আগের জায়গাতেই আছে।',
     },
@@ -253,18 +253,18 @@ const lesson: Lesson = {
     },
     {
       id: 'w-ctrl-l', osVariant: 'windows', titleBn: 'পথ লিখে যাওয়া: Ctrl+L', target: 'fm-address', expectedAction: { type: 'keyCombo', keys: 'mod+l' },
-      explanationBn: 'ঠিকানার বারে পথ লিখেও সরাসরি যাওয়া যায়। কীবোর্ডে Ctrl+L চাপুন (বা বারের ফাঁকা অংশে ক্লিক করুন) — বারটি লেখার ঘর হয়ে যাবে।',
+      explanationBn: 'ঠিকানার বারে পথ লিখেও সরাসরি যাওয়া যায়। কিবোর্ডে Ctrl+L চাপুন (বা বারের ফাঁকা অংশে ক্লিক করুন) — বারটি লেখার ঘর হয়ে যাবে।',
       hintBn: 'Ctrl চেপে ধরে L চাপুন। না হলে “শর্টকাট প্যাড” ব্যবহার করুন।',
     },
     {
       id: 'w-type-path', osVariant: 'windows', titleBn: 'পথ লিখুন: Documents-এ ফিরুন', target: 'fm-address-input', expectedAction: { type: 'navigate', path: '~/Documents' },
       explanationBn: 'বারে এখন C:\\Users\\Anika\\Documents\\MyWork লেখা। শেষের \\MyWork অংশটি মুছে দিয়ে C:\\Users\\Anika\\Documents রাখুন, তারপর Enter চাপুন।',
-      hintBn: 'ব্যাকস্ল্যাশ ( \\ ) কীবোর্ডের Enter বোতামের ওপরের দিকে থাকে। শুধু শেষের অংশটুকু মুছলেই হবে।',
+      hintBn: 'ব্যাকস্ল্যাশ ( \\ ) কিবোর্ডের Enter বোতামের ওপরের দিকে থাকে। শুধু শেষের অংশটুকু মুছলেই হবে।',
       simplerBn: 'পুরো লেখাটি মুছে লিখুন: C:\\Users\\Anika\\Documents — তারপর Enter।',
     },
     {
       id: 'w-search', osVariant: 'windows', titleBn: 'ফাইল খুঁজুন', target: 'fm-search', expectedAction: { type: 'type', target: 'fm-search', text: 'Birthdays', ignoreCase: true },
-      explanationBn: 'ওপরের ডান দিকের সার্চ বক্সে Birthdays লিখুন। Family ফোল্ডারের ভেতরের ফাইলটিও খুঁজে বের হবে — সঙ্গে দেখা যাবে সেটি কোথায় আছে।',
+      explanationBn: 'ওপরের ডান দিকের সার্চ বক্সে Birthdays লিখুন। Family ফোল্ডারের ভেতরের ফাইলটিও খুঁজে বের হবে — সাথে দেখা যাবে সেটি কোথায় আছে।',
       hintBn: 'ওপরের ডানের “Search Documents” লেখা বক্সে ক্লিক করে লিখুন।',
       successMessageBn: 'চমৎকার! ফাইলটি যত গভীরেই থাকুক, সার্চে পেয়ে গেলেন।',
     },
@@ -277,8 +277,8 @@ const lesson: Lesson = {
       simplerBn: 'বাঁ দিকের তালিকা থেকে “Documents” লেখা জায়গাটিতে একবার ক্লিক করুন।',
     },
     {
-      id: 'm-read-path', osVariant: 'mac', titleBn: 'এখন কোথায় আছেন — পাথ বার', target: 'fm-address', expectedAction: { type: 'continue' },
-      explanationBn: 'উইন্ডোর নিচের এই সারিটি পাথ বার (Path Bar): Macintosh HD › Users › anika › Documents। এটিই আপনার বর্তমান জায়গার পথ। বড় থেকে ছোট ফোল্ডার, ধাপে ধাপে। (আসল Mac-এ না দেখালে মেনু বারে View → Show Path Bar দিন।)',
+      id: 'm-read-path', osVariant: 'mac', titleBn: 'এখন কোথায় আছেন — পথ বার', target: 'fm-address', expectedAction: { type: 'continue' },
+      explanationBn: 'উইন্ডোর নিচের এই সারিটি পথ বার (Path Bar): Macintosh HD › Users › anika › Documents। এটিই আপনার বর্তমান জায়গার পথ। বড় থেকে ছোট ফোল্ডার, ধাপে ধাপে। (আসল Mac-এ না দেখালে মেনু বারে View → Show Path Bar দিন।)',
       hintBn: '“বুঝেছি, পরের ধাপ” বোতামে চাপুন।',
     },
     {
@@ -294,12 +294,12 @@ const lesson: Lesson = {
     },
     {
       id: 'm-new-folder', osVariant: 'mac', titleBn: 'নতুন ফোল্ডার: New Folder', target: 'fm-new-folder', expectedAction: { type: 'createFolder' },
-      explanationBn: 'এবার Documents-এর ভেতরে নিজের কাজের জন্য একটি ফোল্ডার বানাব। ওপরের “New Folder” বোতামে ক্লিক করুন। (কীবোর্ড শর্টকাট: Shift+Cmd+N।)',
+      explanationBn: 'এবার Documents-এর ভেতরে নিজের কাজের জন্য একটি ফোল্ডার বানাব। ওপরের “New Folder” বোতামে ক্লিক করুন। (কিবোর্ড শর্টকাট: Shift+Cmd+N।)',
       hintBn: 'ওপরের সারিতে “+ New Folder” বোতাম।',
     },
     {
       id: 'm-name-folder', osVariant: 'mac', titleBn: 'ফোল্ডারের নাম দিন: MyWork', target: 'rename-input', expectedAction: { type: 'rename', to: 'MyWork' },
-      explanationBn: 'ফোল্ডারের নামের ঘরটি লেখার জন্য তৈরি। কীবোর্ডে MyWork লিখে Return চাপুন। (একসাথে লেখা, ফাঁকা জায়গা ছাড়া, ইংরেজি অক্ষরে।)',
+      explanationBn: 'ফোল্ডারের নামের ঘরটি লেখার জন্য তৈরি। কিবোর্ডে MyWork লিখে Return চাপুন। (একসাথে লেখা, ফাঁকা জায়গা ছাড়া, ইংরেজি অক্ষরে।)',
       hintBn: 'M-y-W-o-r-k লিখুন — M আর W বড় হাতের। তারপর Return।',
       simplerBn: 'পুরোনো নাম “untitled folder” মুছে যাবে, আপনার লেখাটিই নতুন নাম হবে। লেখা হলে Return চাপুন।',
     },
@@ -310,9 +310,9 @@ const lesson: Lesson = {
     },
     {
       id: 'm-return', osVariant: 'mac', titleBn: 'নাম বদলানো: Return', target: 'fm-item-notes.txt', expectedAction: { type: 'keyCombo', keys: 'enter' },
-      explanationBn: 'Mac-এ নাম বদলাতে ফাইল বেছে Return (Enter) চাপতে হয়। কীবোর্ডে Return চাপুন।',
-      hintBn: 'কীবোর্ডের বড় Return বোতাম। না হলে আগে ফাইলটিতে একবার ক্লিক করুন।',
-      simplerBn: 'ফাইলটিতে একবার ক্লিক করুন, তারপর কীবোর্ডের Return চাপুন। না পারলে “শর্টকাট প্যাড” ব্যবহার করুন।',
+      explanationBn: 'Mac-এ নাম বদলাতে ফাইল বেছে Return (Enter) চাপতে হয়। কিবোর্ডে Return চাপুন।',
+      hintBn: 'কিবোর্ডের বড় Return বোতাম। না হলে আগে ফাইলটিতে একবার ক্লিক করুন।',
+      simplerBn: 'ফাইলটিতে একবার ক্লিক করুন, তারপর কিবোর্ডের Return চাপুন। না পারলে “শর্টকাট প্যাড” ব্যবহার করুন।',
     },
     {
       id: 'm-rename', osVariant: 'mac', titleBn: 'নতুন নাম: ideas.txt', target: 'rename-input', expectedAction: { type: 'rename', from: 'notes.txt', to: 'ideas.txt' },
@@ -332,7 +332,7 @@ const lesson: Lesson = {
     },
     {
       id: 'm-copy', osVariant: 'mac', titleBn: 'কপি: Cmd+C', target: 'fm-item-Recipe.txt', expectedAction: { type: 'keyCombo', keys: 'mod+c' },
-      explanationBn: 'কীবোর্ডে Command (⌘) চেপে ধরে C চাপুন (Cmd+C)। কিছু নড়বে না — কম্পিউটার চুপচাপ মনে রাখবে।',
+      explanationBn: 'কিবোর্ডে Command (⌘) চেপে ধরে C চাপুন (Cmd+C)। কিছু নড়বে না — কম্পিউটার চুপচাপ মনে রাখবে।',
       hintBn: 'Command চেপে ধরে রেখে একবার C চাপুন, তারপর দুটিই ছাড়ুন।',
       simplerBn: 'না পারলে “শর্টকাট প্যাড” খুলে সেখান থেকে Cmd+C বেছে নিন।',
     },
@@ -348,13 +348,13 @@ const lesson: Lesson = {
     },
     {
       id: 'm-paste', osVariant: 'mac', titleBn: 'Paste Item', target: 'ctx-paste', expectedAction: { type: 'copy', name: 'Recipe.txt', toPath: '~/Documents/MyWork' },
-      explanationBn: 'মেনু থেকে “Paste Item” বেছে নিন। Recipe.txt-এর একটি নকল এখানে বসে যাবে। (কীবোর্ডে Cmd+V চাপলেও একই কাজ হয় — পরে চেষ্টা করবেন।)',
+      explanationBn: 'মেনু থেকে “Paste Item” বেছে নিন। Recipe.txt-এর একটি নকল এখানে বসে যাবে। (কিবোর্ডে Cmd+V চাপলেও একই কাজ হয় — পরে চেষ্টা করবেন।)',
       hintBn: 'মেনুতে “Paste Item” লেখাটি খুঁজুন।',
       successMessageBn: 'নকল তৈরি! আসল Recipe.txt আগের জায়গাতেই আছে।',
     },
     {
       id: 'm-delete', osVariant: 'mac', titleBn: 'ট্র্যাশে পাঠান', target: 'fm-delete', expectedAction: { type: 'delete', name: 'Recipe.txt' },
-      explanationBn: 'নকল করা Recipe.txt বাছা আছে। ওপরের ডান দিকের ট্র্যাশ (🗑) বোতামে ক্লিক করুন। ফাইলটি ট্র্যাশে যাবে, চিরতরে যাবে না। (কীবোর্ডে: Cmd+Delete।)',
+      explanationBn: 'নকল করা Recipe.txt বাছা আছে। ওপরের ডান দিকের ট্র্যাশ (🗑) বোতামে ক্লিক করুন। ফাইলটি ট্র্যাশে যাবে, চিরতরে যাবে না। (কিবোর্ডে: Cmd+Delete।)',
       hintBn: 'ওপরের সারিতে একটি ছোট ডাস্টবিনের মতো চিহ্ন।',
       simplerBn: 'যদি আর বাছা না থাকে, আগে Recipe.txt-এ একবার ক্লিক করুন, তারপর ডাস্টবিনের চিহ্নে।',
     },
@@ -381,18 +381,18 @@ const lesson: Lesson = {
     },
     {
       id: 'm-goto', osVariant: 'mac', titleBn: 'পথ লিখে যাওয়া: Go to Folder', target: 'fm-address', expectedAction: { type: 'keyCombo', keys: 'mod+shift+g' },
-      explanationBn: 'পথ লিখে সরাসরি কোনো ফোল্ডারে যাওয়ার শর্টকাট: Shift+Cmd+G (মেনু বারে Go → Go to Folder)। কীবোর্ডে Shift, Command আর G একসাথে চাপুন।',
+      explanationBn: 'পথ লিখে সরাসরি কোনো ফোল্ডারে যাওয়ার শর্টকাট: Shift+Cmd+G (মেনু বারে Go → Go to Folder)। কিবোর্ডে Shift, Command আর G একসাথে চাপুন।',
       hintBn: 'Shift আর Command চেপে ধরে রেখে G চাপুন। না হলে “শর্টকাট প্যাড” ব্যবহার করুন।',
     },
     {
       id: 'm-type-path', osVariant: 'mac', titleBn: 'পথ লিখুন: Documents-এ ফিরুন', target: 'goto-input', expectedAction: { type: 'navigate', path: '~/Documents' },
       explanationBn: 'ঘরে এখন /Users/anika/Documents/MyWork লেখা। শেষের /MyWork অংশটি মুছে /Users/anika/Documents রাখুন, তারপর “Go” বোতামে ক্লিক করুন।',
-      hintBn: 'স্ল্যাশ ( / ) কীবোর্ডে ? বোতামের সাথে থাকে। শুধু শেষের অংশটুকু মুছলেই হবে।',
+      hintBn: 'স্ল্যাশ ( / ) কিবোর্ডে ? বোতামের সাথে থাকে। শুধু শেষের অংশটুকু মুছলেই হবে।',
       simplerBn: 'পুরো লেখাটি মুছে লিখুন: /Users/anika/Documents — তারপর “Go” বোতামে ক্লিক করুন।',
     },
     {
       id: 'm-search', osVariant: 'mac', titleBn: 'ফাইল খুঁজুন', target: 'fm-search', expectedAction: { type: 'type', target: 'fm-search', text: 'Birthdays', ignoreCase: true },
-      explanationBn: 'ওপরের ডান দিকের সার্চ বক্সে Birthdays লিখুন। Family ফোল্ডারের ভেতরের ফাইলটিও খুঁজে বের হবে — সঙ্গে দেখা যাবে সেটি কোথায় আছে।',
+      explanationBn: 'ওপরের ডান দিকের সার্চ বক্সে Birthdays লিখুন। Family ফোল্ডারের ভেতরের ফাইলটিও খুঁজে বের হবে — সাথে দেখা যাবে সেটি কোথায় আছে।',
       hintBn: 'ওপরের ডানের “Search” লেখা বক্সে ক্লিক করে লিখুন।',
       successMessageBn: 'চমৎকার! ফাইলটি যত গভীরেই থাকুক, সার্চে পেয়ে গেলেন।',
     },
@@ -404,7 +404,7 @@ const lesson: Lesson = {
       'এখন পুরো ফাইল ম্যানেজার আপনার। Downloads ফোল্ডারে গিয়ে দেখুন, সেখানে এলোমেলো কিছু ফাইল রাখা আছে (photo1.jpg, notes.txt, holiday-photos.zip…)। এগুলো গুছিয়ে ফেলুন। ইচ্ছেমতো ফোল্ডার বানান, ফাইল সরান, কপি করুন। কিছু ভুল হলে মুছে ফেলুন, তারপর বিন বা ট্র্যাশ থেকে ফিরিয়েও আনুন — কোনো ক্ষতি নেই।',
     checklistBn: [
       'Downloads-এ “Photos” নামে একটি ফোল্ডার বানালাম আর ছবির ফাইলগুলো (.jpg) তাতে সরালাম।',
-      'কীবোর্ডের শর্টকাট (Ctrl+C আর Ctrl+V, Mac-এ Cmd+C আর Cmd+V) দিয়ে একটি ফাইল কপি করলাম।',
+      'কিবোর্ডের শর্টকাট (Ctrl+C আর Ctrl+V, Mac-এ Cmd+C আর Cmd+V) দিয়ে একটি ফাইল কপি করলাম।',
       'ঠিকানার বার (Windows) বা Go to Folder (Mac) দিয়ে Pictures ফোল্ডারে গেলাম।',
       'একটি ফাইলের পুরো পথ নিজে বলতে পারলাম: কোন ফোল্ডারের ভেতর কোনটি।',
       'সার্চ দিয়ে “photo” লিখে ফাইল খুঁজলাম।',
@@ -475,9 +475,9 @@ const lesson: Lesson = {
   summaryCard: {
     titleBn: 'মনে রাখুন',
     pointsBn: [
-      'ফাইল = আলমারির কাগজ, ফোল্ডার = তাক বা ফাইল-কভার। ফোল্ডারের ভেতরে ফোল্ডার রাখা যায়।',
+      'ফাইল = আলমারির কাগজ, ফোল্ডার = কাগজ রাখার কভার (বা তাক)। ফোল্ডারের ভেতরে ফোল্ডার রাখা যায়।',
       'কপি-পেস্ট: Ctrl+C, Ctrl+V (Mac-এ Cmd+C, Cmd+V)। নাম বদল: Windows-এ F2, Mac-এ Return। সরানো: ধরে টেনে ফোল্ডারে ছেড়ে দেওয়া।',
-      'মুছলে ফাইল রিসাইকেল বিন (Mac-এ ট্র্যাশ) এ যায় — সেখান থেকে Restore (Mac-এ Put Back) করা যায়।',
+      'মুছলে ফাইল রিসাইকেল বিন (Mac-এ ট্র্যাশ)-এ যায় — সেখান থেকে Restore (Mac-এ Put Back) করা যায়।',
       'এক্সটেনশন (.txt, .jpg, .pdf, .html, .py, .js) বলে দেয় ফাইলটি কোন ধরনের। ভুল এক্সটেনশনে ফাইল ঠিকমতো খোলে না, আর প্রোগ্রামের ফাইলের এক্সটেনশন একদম ঠিক হতে হয়।',
       'এক্সটেনশন দেখতে: Windows-এ View → Show → File name extensions; Mac-এ Finder → Settings → Advanced → Show all filename extensions।',
       'পথ হলো ফাইলের ঠিকানা। Windows: C:\\Users\\Anika\\Documents (ব্যাকস্ল্যাশ)। Mac: /Users/anika/Documents (স্ল্যাশ)। .. মানে এক ধাপ ওপরের ফোল্ডার।',
@@ -491,14 +491,14 @@ const lesson: Lesson = {
     tasksBn: [
       'ফাইল এক্সপ্লোরার (Windows) বা ফাইন্ডার (Mac) খুলুন। Documents, Downloads, Pictures আর Desktop ফোল্ডারে একবার করে ঢুকে দেখুন, ভেতরে কী কী আছে। কিছু মুছবেন বা সরাবেন না — শুধু দেখুন।',
       'Documents-এর ভেতরে MyWork নামে একটি নতুন ফোল্ডার বানান। তার ভেতরে একটি লেখার ফাইল বানান বা সেভ করুন (Windows-এ New → Text Document)। তারপর ফাইলটির নাম বদলে ideas.txt করুন।',
-      'আপনার কম্পিউটারে যে-কোনো একটি ফাইল খুলে তার পুরো পথ (ঠিকানা) পড়ে খাতায় লিখুন — প্রথমে ড্রাইভ বা রুট, তারপর ফোল্ডারগুলো, সবশেষে ফাইলের নাম।',
+      'আপনার কম্পিউটারে যেকোনো একটি ফাইল খুলে তার পুরো পথ (ঠিকানা) পড়ে খাতায় লিখুন — প্রথমে ড্রাইভ বা রুট, তারপর ফোল্ডারগুলো, সবশেষে ফাইলের নাম।',
     ],
     windowsTasksBn: ['আপনার Windows কম্পিউটারে ফাইল এক্সপ্লোরারের ওপরে View → Show → File name extensions-এ টিক দিন। তারপর কয়েকটি ফাইলের নামের শেষে এক্সটেনশন দেখুন। (শুধু দেখুন, এখনই কোনো এক্সটেনশন বদলাবেন না।)'],
     macTasksBn: ['আপনার Mac-এ মেনু বারে Finder → Settings (পুরোনো macOS-এ Preferences) → Advanced খুলে “Show all filename extensions” চালু করুন। তারপর কয়েকটি ফাইলের নামের শেষে এক্সটেনশন দেখুন। (এখনই কোনো এক্সটেনশন বদলাবেন না।)'],
   },
 
   teacherTipBn:
-    'পথ (path) বোঝা প্রোগ্রামিংয়ের জন্য খুবই গুরুত্বপূর্ণ — পরে টার্মিনাল আর কোড এডিটরে বারবার লাগবে। ঠিকানার উপমা (দেশ → জেলা → থানা → গ্রাম → বাড়ি) ধরে কয়েকবার বলুন। শুরুতেই আসল কম্পিউটারে এক্সটেনশন দেখা চালু করিয়ে দিন, আর বোঝান যে নাম বদলানোর সময় .txt, .py, .html যেন অক্ষত থাকে। অনুশীলনে আসল গুরুত্বপূর্ণ ফাইল কপি করে তার ওপর হাত পাকাতে বলুন, মূল ফাইলে নয়। নিজের কাজের ফোল্ডারের নাম ইংরেজিতে ও ফাঁকা জায়গা ছাড়া রাখার অভ্যাস এখনই করান। প্রসঙ্গত, এই পাঠে ধাপ বেশি — প্রয়োজনে দুই বসায় ভাগ করে নিন; অগ্রগতি ধাপ ধরে ধরে সংরক্ষিত থাকে।',
+    'পথ (path) বোঝা প্রোগ্রামিংয়ের জন্য খুবই গুরুত্বপূর্ণ — পরে টার্মিনাল আর কোড এডিটরে বারবার লাগবে। ঠিকানার উপমা (দেশ → জেলা → থানা → গ্রাম → বাড়ি) ধরে কয়েকবার বলুন। শুরুতেই আসল কম্পিউটারে এক্সটেনশন দেখা চালু করিয়ে দিন, আর বোঝান যে নাম বদলানোর সময় .txt, .py, .html যেন অক্ষত থাকে। অনুশীলনে আসল গুরুত্বপূর্ণ ফাইল কপি করে তার ওপর হাত পাকাতে বলুন, মূল ফাইলে নয়। নিজের কাজের ফোল্ডারের নাম ইংরেজিতে ও ফাঁকা জায়গা ছাড়া রাখার অভ্যাস এখনই করান। প্রসঙ্গত, এই পাঠে ধাপ বেশি — দরকার হলে দুই বসায় ভাগ করে নিন; অগ্রগতি ধাপ ধরে ধরে জমা থাকে।',
 }
 
 export default lesson

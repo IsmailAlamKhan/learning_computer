@@ -4,6 +4,9 @@ import { coach, cont, seedProfile, startGuided } from './helpers'
 /** Module 4 may be locked until earlier modules are done, so unlock everything in the seeded profile. */
 const UNLOCK = { settings: { numerals: 'western', unlockAll: true } }
 
+/** Let the sim hand keyboard focus back to itself after a control disappears (a human is never this fast). */
+const settle = (page: Page) => page.waitForTimeout(700)
+
 async function renameTo(page: Page, name: string) {
   await page.locator('[data-coach="rename-input"]').fill(name)
   await page.keyboard.press('Enter')
@@ -26,7 +29,7 @@ async function copyDeleteRestore(page: Page, os: 'windows' | 'mac') {
 
 test.describe('Module 4 guided practice', () => {
   test('Windows flow completes end to end', async ({ page }) => {
-    await seedProfile(page, 'windows')
+    await seedProfile(page, 'windows', UNLOCK)
     const errors: string[] = []
     page.on('pageerror', (e) => errors.push(String(e)))
     await startGuided(page, 4)
@@ -41,6 +44,7 @@ test.describe('Module 4 guided practice', () => {
     await coach(page, 'fm-new').click()
     await coach(page, 'ctx-new-text').click()
     await renameTo(page, 'notes.txt')
+    await settle(page)
     await page.keyboard.press('F2')
     await renameTo(page, 'ideas.txt')
     await coach(page, 'fm-item-ideas.txt').dragTo(coach(page, 'fm-item-MyWork'))
@@ -56,7 +60,7 @@ test.describe('Module 4 guided practice', () => {
   })
 
   test('Mac flow completes end to end', async ({ page }) => {
-    await seedProfile(page, 'mac')
+    await seedProfile(page, 'mac', UNLOCK)
     const errors: string[] = []
     page.on('pageerror', (e) => errors.push(String(e)))
     await startGuided(page, 4)
@@ -67,6 +71,7 @@ test.describe('Module 4 guided practice', () => {
     await coach(page, 'fm-new-folder').click()
     await renameTo(page, 'MyWork')
     await coach(page, 'fm-item-notes.txt').click()
+    await settle(page)
     await page.keyboard.press('Enter')
     await renameTo(page, 'ideas.txt')
     await coach(page, 'fm-item-ideas.txt').dragTo(coach(page, 'fm-item-MyWork'))
@@ -84,7 +89,7 @@ test.describe('Module 4 guided practice', () => {
 
 for (const os of ['windows', 'mac'] as const) {
   test(`Module 4 quiz and path-explorer widget (${os})`, async ({ page }) => {
-    await seedProfile(page, os)
+    await seedProfile(page, os, UNLOCK)
     await page.goto('/#/module/4')
     // the path-explorer widget: build the challenge path
     const w = page.locator('[data-widget="path-explorer"]')

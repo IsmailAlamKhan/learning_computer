@@ -185,7 +185,7 @@ export default function PathExplorer() {
       <div className="rounded-xl p-3" style={{ background: 'var(--c-sunken)' }} data-testid="challenge">
         <p className="m-0 font-medium">ছোট্ট চ্যালেঞ্জ</p>
         <p className="m-0">
-          ট্রি থেকে ক্লিক করে <code>Documents</code> ফোল্ডারের ভেতরের <code>Family/Birthdays.txt</code> ফাইলটির পথ তৈরি করুন।
+          ফোল্ডারের তালিকা থেকে ক্লিক করে <code>Documents</code> ফোল্ডারের ভেতরের <code>Family/Birthdays.txt</code> ফাইলটির পথ তৈরি করুন।
         </p>
         <p className="m-0 mt-1" role="status" style={{ color: solved ? 'var(--c-ok)' : 'var(--c-muted)' }}>
           {solved ? '🎉 চমৎকার! এটাই Birthdays.txt ফাইলের সম্পূর্ণ পথ। শেষ অংশটি ফাইলের নাম, আর তার আগের সবগুলো ফোল্ডার।' : challengeHintBn(style, selected)}
