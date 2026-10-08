@@ -28,6 +28,9 @@ export default function Teacher() {
         })}
       </ul>
       <Link to="/settings" className="btn btn-outline">ব্যাকআপ নিতে সেটিংসে যান</Link>
+      <p>
+        <Link to="/demo/tools" className="underline">টুলস ডেমো</Link>
+      </p>
     </div>
   )
 }

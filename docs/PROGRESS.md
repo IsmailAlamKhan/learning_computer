@@ -6,7 +6,7 @@
 | 2 | Simulation engine + Module 2 benchmark | DONE |
 | 3 | Modules 1, 3, 4, 5, 6 | DONE |
 | 4 | Modules 7–13 | DONE |
-| 5 | Terminal, editor, runners | NOT STARTED |
+| 5 | Terminal, editor, runners | DONE |
 | 6 | Part 2 (Modules 14–20) | NOT STARTED |
 | 7 | Hardening, PWA, QA, docs | NOT STARTED |
 
@@ -45,6 +45,15 @@
 - Bengali reviewed by a separate pass for 7–13 (docs/BENGALI_REVIEW.md).
 - Guided step counts exceed the 3–7 minute guideline in M4 (27/23), M6 (38/32), M10 (31/26), M11 (26/26): kept complete; teacher tips suggest two sittings. Candidate to split in final QA if time permits.
 - Main JS bundle > 500 kB: code-splitting of sim apps/widgets is a stage 7 task.
+
+### Stage 5 — DONE (2026-10-09)
+- Simulated terminal (`src/sim/terminal`, app `terminal`): PowerShell-style (dir/cd/mkdir/type/cls/ls/pwd/cat/echo/ni/…) and zsh-style (ls/cd/pwd/mkdir/touch/cat/echo/clear/…) on the shared VFS; `>`/`>>`, tab-completion, history, Ctrl+C/L; `python`/`python3`/`py`/`node` run files via the runner; version checks; dangerous commands (rm/del/sudo/format…) blocked with a Bengali explanation; unknown commands get nearest-command Bengali hints.
+- Code editor (`src/sim/editor`, app `code`): CodeMirror 6 (chosen: small, offline, handles Bengali strings), explorer, tabs, highlighting for HTML/CSS/JS/Python, auto-indent, bracket matching, Ctrl/Cmd+S into the VFS, Run button with friendly input prompt box, sandboxed live preview iframe (`sandbox="allow-scripts"`, CSP, no network).
+- Runner (`src/sim/runner`): JavaScript in a Blob Web Worker (network/escape globals removed, timeout → terminate); Python via **self-hosted Pyodide 314.0.7** (npm + static copy to `<base>/pyodide/`, ~13 MB, lazily loaded in a worker; ~1.2 s first run) — chosen over a CDN for privacy/offline/pinning; `input()` through a replay strategy (no SharedArrayBuffer needed); output caps; Bengali friendly error translation (original English error always shown too). See docs/RUNNER.md.
+- Engine: new actions `typeCommand`, `fileExists`, `fileContains`, `codeOutputEquals`, `previewContains`, `predictOutput` (coach bubble input) + schema docs.
+- Demo page `/#/demo/tools` (linked from the teacher page) shows terminal + editor on both flavors.
+- Tests: 552 unit/component tests (incl. real Pyodide under Node), new Playwright specs for terminal and editor. Python run verified in real Chrome against the production build.
+- For stage 7: service worker must precache `pyodide/*` (6 files) and `assets/pythonWorker-*.js` (see docs/RUNNER.md).
 
 ## Decisions and assumptions
 
