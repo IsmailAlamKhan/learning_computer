@@ -47,7 +47,7 @@ export default function IfElseExplorer() {
             data-testid={`ie-rule-${i}`}
             data-state={result.lines[i]}
             className="rounded-lg border-2 px-3 py-2"
-            style={{ borderColor: result.lines[i] === 'fired' ? 'var(--c-ok)' : 'var(--c-line)', background: result.lines[i] === 'fired' ? 'var(--c-ok-soft)' : 'transparent', opacity: result.lines[i] === 'skipped' ? 0.55 : 1 }}
+            style={{ borderColor: result.lines[i] === 'fired' ? 'var(--c-ok)' : 'var(--c-line)', background: result.lines[i] === 'fired' ? 'var(--c-ok-soft)' : 'transparent', borderStyle: result.lines[i] === 'skipped' ? 'dashed' : 'solid', color: result.lines[i] === 'skipped' ? 'var(--c-muted)' : undefined }}
           >
             <span className="font-medium">{r.ifBn}</span> → {r.thenBn}
             <span className="ml-2 text-sm" style={{ color: 'var(--c-muted)' }}>{mark[result.lines[i]]}</span>
@@ -57,7 +57,7 @@ export default function IfElseExplorer() {
           data-testid="ie-else"
           data-state={result.elseState}
           className="rounded-lg border-2 px-3 py-2"
-          style={{ borderColor: result.elseState === 'fired' ? 'var(--c-ok)' : 'var(--c-line)', background: result.elseState === 'fired' ? 'var(--c-ok-soft)' : 'transparent', opacity: result.elseState === 'skipped' ? 0.55 : 1 }}
+          style={{ borderColor: result.elseState === 'fired' ? 'var(--c-ok)' : 'var(--c-line)', background: result.elseState === 'fired' ? 'var(--c-ok-soft)' : 'transparent', borderStyle: result.elseState === 'skipped' ? 'dashed' : 'solid', color: result.elseState === 'skipped' ? 'var(--c-muted)' : undefined }}
         >
           {scenario.elseBn}
           <span className="ml-2 text-sm" style={{ color: 'var(--c-muted)' }}>{result.elseState === 'fired' ? '✅ কোনো শর্তই মেলেনি, তাই এটি' : '— দেখাই হয়নি'}</span>

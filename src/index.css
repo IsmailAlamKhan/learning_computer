@@ -79,6 +79,7 @@ body {
   color: var(--c-ink);
   font-family: var(--font-sans);
   line-height: 1.75;
+  overflow-wrap: break-word; /* long paths / URLs wrap instead of widening the page */
   -webkit-font-smoothing: antialiased;
 }
 
@@ -86,6 +87,13 @@ body {
   outline: 3px solid var(--c-focus);
   outline-offset: 2px;
   border-radius: 4px;
+}
+
+/* simulated desktop: some mock controls drop the outline; keep keyboard focus visible on dark and light backgrounds */
+[data-sim-root] :focus-visible {
+  outline: 3px solid #1d4ed8 !important;
+  outline-offset: -3px !important;
+  box-shadow: 0 0 0 2px #fff inset;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -183,6 +191,7 @@ kbd {
 .coach-bob { animation: coach-bob 1s ease-in-out infinite; }
 .coach-ripple { animation: coach-ripple 0.7s ease-out forwards; }
 
+.cheatsheet { overflow-x: auto; }
 .cheatsheet table { border-collapse: collapse; width: 100%; }
 .cheatsheet th, .cheatsheet td { border: 1px solid var(--c-line); padding: 0.35rem 0.6rem; text-align: left; vertical-align: top; }
 .cheatsheet th { background: var(--c-sunken); }
@@ -193,5 +202,16 @@ kbd {
 
 @page certificate { size: A4 landscape; margin: 8mm; }
 @media print {
-  .certificate { page: certificate; -webkit-print-color-adjust: exact; print-color-adjust: exact; break-inside: avoid; max-width: none !important; width: 100% !important; }
+  .certificate { page: certificate; -webkit-print-color-adjust: exact; print-color-adjust: exact; break-inside: avoid; max-width: none !important; width: 100% !important; aspect-ratio: auto !important; height: 190mm !important; box-sizing: border-box; overflow: hidden; }
 }
+
+/* print: no extra screen padding / min-height that would spill onto a blank second page */
+@media print {
+  #main { padding: 0 !important; max-width: none !important; }
+  .min-h-screen { min-height: 0 !important; }
+  .cheatsheet h1, .cheatsheet h2, .cheatsheet h3 { break-after: avoid; }
+  .cheatsheet td, .cheatsheet th { break-inside: avoid; }
+  .card, .habit-sheet li { break-inside: avoid; }
+  a { text-decoration: underline; }
+}
+.habit-sheet { break-inside: avoid; }

@@ -3,6 +3,7 @@ import { SYMBOLS, howToType, judgeKey, whereBn } from '../../lib/symbols'
 import { KeyboardSvg, Keycap } from './parts/KeyboardSvg'
 import { useProgress } from '../../state/store'
 import { useFmt } from '../../ui/useFmt'
+import { SmallScreenNote } from '../../ui/SmallScreenNote'
 
 type Feedback = { tone: 'ok' | 'soft'; text: string } | null
 
@@ -52,6 +53,7 @@ export default function SymbolDrill() {
 
   return (
     <section className="card space-y-4" aria-label="প্রোগ্রামিংয়ের চিহ্ন শেখা">
+      <SmallScreenNote />
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h3 className="m-0 text-lg font-bold">প্রোগ্রামিংয়ের চিহ্ন চিনি</h3>
         <span className="text-sm text-muted" data-testid="symbol-progress">শেখা হয়েছে: {n(done.length)} / {n(SYMBOLS.length)}</span>

@@ -25,7 +25,7 @@ export default function InputProcessOutput() {
               data-testid={`io-stage-${st.id}`}
               data-used={used ? 'yes' : 'no'}
               className="flex items-start gap-3 rounded-xl border-2 p-3"
-              style={{ borderColor: used ? 'var(--c-brand)' : 'var(--c-line)', background: used ? 'var(--c-brand-soft)' : 'var(--c-sunken)', opacity: used ? 1 : 0.65 }}
+              style={{ borderColor: used ? 'var(--c-brand)' : 'var(--c-line)', borderStyle: used ? 'solid' : 'dashed', background: used ? 'var(--c-brand-soft)' : 'var(--c-sunken)' }}
             >
               <span className="text-2xl" aria-hidden="true">{st.icon}</span>
               <div>

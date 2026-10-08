@@ -39,8 +39,7 @@ same-origin files), pinned and reproducible (version = `pyodide` in package.json
   Size ≈ 13.4 MB (wasm 9.6 MB, stdlib 2.5 MB, asm 1.25 MB); loaded lazily, only when a Python run / `warmUp('python')` happens.
 * The main thread computes the absolute `indexURL` (`new URL('pyodide/', document.baseURI)`) and sends it to
   `pythonWorker.ts` (a Vite-bundled module worker, ~5 kB), which does `import(indexURL + 'pyodide.mjs')`.
-* **Service worker (stage 7):** precache `pyodide/*` (the six files above) plus the hashed `assets/pythonWorker-*.js`.
-  Everything is same-origin, so nothing else is needed for offline Python.
+* **Service worker (stage 7, done):** `assets/pythonWorker-*.js` is precached; `pyodide/*` (13 MB) is fetched in the background after the first idle load and served by a CacheFirst route. See docs/OFFLINE.md.
 * One long-lived worker/interpreter; runs are serialised. Each run uses a fresh globals dict (no state leaks), restores
   stdout/stderr/stdin, and `input` is replaced only inside the learner's builtins copy.
 * Errors: tracebacks are formatted from the learner's `<exec>` frames only (internal frames removed), then parsed

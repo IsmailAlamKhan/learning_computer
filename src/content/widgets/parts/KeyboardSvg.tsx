@@ -83,7 +83,7 @@ export function KeyboardSvg({ os, highlight = [], colorGroups, activeGroup, sele
   const width = ax + 3 * U + 4
   const height = y + 4
   return (
-    <svg viewBox={`0 0 ${width} ${height}`} role="img" aria-label={title} className="h-auto w-full max-w-full" style={{ maxWidth: width }}>
+    <svg viewBox={`0 0 ${width} ${height}`} role={onKey ? 'group' : 'img'} aria-label={title} className="h-auto w-full max-w-full" style={{ maxWidth: width }}>
       <title>{title}</title>
       {nodes}
     </svg>

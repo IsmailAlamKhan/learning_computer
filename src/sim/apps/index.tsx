@@ -2,16 +2,16 @@ import { EditorIcon, FilesIcon } from './appIcons'
 import { registerApp } from './registry'
 import { BinApp, FilesApp } from './FileManager'
 import { Editor } from './Editor'
-import { Browser } from './Browser'
-import { Settings } from './Settings'
+import { lazyApp } from './lazyApp'
 import { Photos } from './Photos'
 import { BrowserIcon, PhotosIcon, RecycleBinIcon, SettingsIcon } from '../ui/icons'
 
 export { registerSite, normalizeInput } from './browser/sites'
 export { useFmPrefs } from './fmPrefs'
 
-// browser sites self-register on import: drop a file in ./browser/sites/
-import.meta.glob('./browser/sites/*.tsx', { eager: true })
+// browser sites self-register on import (see BrowserEntry.tsx): drop a file in ./browser/sites/
+const BrowserLazy = lazyApp(() => import('./BrowserEntry').then((m) => m.Browser))
+const SettingsLazy = lazyApp(() => import('./Settings').then((m) => m.Settings))
 
 const extras = import.meta.glob<{ register?: () => void }>('./extra/*.tsx', { eager: true })
 
@@ -47,7 +47,7 @@ export function registerBuiltinApps() {
     title: () => 'Web Browser',
     descriptionBn: 'ইন্টারনেটে ওয়েবসাইট দেখা আর কিছু খোঁজার প্রোগ্রাম',
     icon: ({ size }) => <BrowserIcon size={size} />,
-    component: Browser,
+    component: BrowserLazy,
     defaultSize: { w: 820, h: 500 },
   })
   registerApp({
@@ -55,7 +55,7 @@ export function registerBuiltinApps() {
     title: (os) => (os === 'windows' ? 'Settings' : 'System Settings'),
     descriptionBn: 'আওয়াজ, উজ্জ্বলতা, ওয়াই-ফাই, ব্যাকগ্রাউন্ড ছবি ইত্যাদি ঠিক করার জায়গা',
     icon: ({ size }) => <SettingsIcon size={size} />,
-    component: Settings,
+    component: SettingsLazy,
     defaultSize: { w: 760, h: 500 },
   })
   registerApp({

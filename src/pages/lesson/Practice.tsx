@@ -1,12 +1,25 @@
-import { useCallback, useMemo, useRef, useState } from 'react'
+import { lazy, Suspense, useCallback, useMemo, useRef, useState, type ComponentProps } from 'react'
 import type { Chapter, Lesson, OsFlavor, Step } from '../../engine/types'
 import { stepsFor } from '../../engine/runner'
 import { useGuidedRun } from '../../engine/coach/useGuidedRun'
 import { CoachOverlay } from '../../engine/coach/CoachOverlay'
-import { SimStage } from '../../sim/SimStage'
 import { SimBus } from '../../sim/bus'
 import { store, useProgress } from '../../state/store'
 import { useFmt } from '../../ui/useFmt'
+import { SmallScreenNote } from '../../ui/SmallScreenNote'
+
+// The simulator (desktops, apps, runner glue) is loaded only when a practice section is opened.
+const SimStageLazy = lazy(() => import('../../sim/SimStage').then((m) => ({ default: m.SimStage })))
+function SimStage(props: ComponentProps<typeof SimStageLazy>) {
+  return (
+    <div className="space-y-3">
+      <SmallScreenNote />
+      <Suspense fallback={<p role="status" className="card text-muted">কম্পিউটারটি সাজানো হচ্ছে… একটু অপেক্ষা করুন।</p>}>
+        <SimStageLazy {...props} />
+      </Suspense>
+    </div>
+  )
+}
 
 /** Guided practice: the simulator with the coach pointing at each step. */
 export function GuidedPractice({ lesson, os, alreadyDone, onFinished }: { lesson: Lesson; os: OsFlavor; alreadyDone: boolean; onFinished: () => void }) {
@@ -90,8 +103,8 @@ function GuidedRunner({ lesson, os, steps: allSteps, chapter, alreadyDone, onFin
         </div>
       ) : (
         <>
-          <div className="flex items-center gap-3" aria-label="ধাপের অগ্রগতি">
-            <div role="progressbar" aria-valuemin={0} aria-valuemax={steps.length} aria-valuenow={run.state.done.length} className="h-3 flex-1 overflow-hidden rounded-full" style={{ background: 'var(--c-sunken)' }}>
+          <div className="flex items-center gap-3">
+            <div role="progressbar" aria-label="ধাপের অগ্রগতি" aria-valuetext={`${n(run.state.done.length)} / ${n(steps.length)} ধাপ শেষ`} aria-valuemin={0} aria-valuemax={steps.length} aria-valuenow={run.state.done.length} className="h-3 flex-1 overflow-hidden rounded-full" style={{ background: 'var(--c-sunken)' }}>
               <div className="h-full" style={{ width: `${(run.state.done.length / steps.length) * 100}%`, background: 'var(--c-brand)' }} />
             </div>
             <span className="text-sm">
@@ -105,7 +118,7 @@ function GuidedRunner({ lesson, os, steps: allSteps, chapter, alreadyDone, onFin
                 return (
                   <li key={c.id} className="flex items-start gap-2">
                     <span aria-hidden="true">{done ? '✅' : '⬜'}</span>
-                    <span className={done ? 'line-through opacity-70' : ''}>{c.textBn}</span>
+                    <span className={done ? 'text-muted line-through' : ''}>{c.textBn}</span>
                     <span className="sr-only">{done ? '(হয়ে গেছে)' : '(বাকি)'}</span>
                   </li>
                 )

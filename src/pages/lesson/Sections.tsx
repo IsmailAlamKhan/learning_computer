@@ -67,7 +67,7 @@ export function ExplanationSection({ lesson, module }: { lesson: Lesson; module:
             {terms.map((t) => (
               <div key={t!.id}>
                 <dt className="font-bold">
-                  {t!.termBn} <span className="font-normal text-muted">({t!.termEn})</span>
+                  {t!.termBn} <span lang="en" className="font-normal text-muted">({t!.termEn})</span>
                 </dt>
                 <dd>{t!.meaningBn}</dd>
               </div>

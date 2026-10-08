@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, type ComponentType } from 'react'
+import { useEffect, useId, useLayoutEffect, useRef, type ComponentType } from 'react'
 import { useDesktop } from './DesktopContext'
 import { comboFromEvent } from './shortcuts'
 import { ContextMenuHost } from './ui/ContextMenu'
@@ -14,6 +14,7 @@ export function Frame({ Shell, insetTop, insetBottom }: { Shell: ComponentType; 
   const d = useDesktop()
   const ref = d.rootRef as React.RefObject<HTMLDivElement | null>
   const dRef = useRef(d)
+  const helpId = useId()
   dRef.current = d
 
   useLayoutEffect(() => {
@@ -88,6 +89,8 @@ export function Frame({ Shell, insetTop, insetBottom }: { Shell: ComponentType; 
     <div
       ref={ref}
       tabIndex={0}
+      role="group"
+      aria-describedby={helpId}
       data-sim-root="true"
       aria-label={d.os === 'mac' ? 'অনুশীলনের Mac কম্পিউটার' : 'অনুশীলনের Windows কম্পিউটার'}
       className="relative h-[min(72vh,640px)] min-h-[420px] w-full overflow-hidden rounded-xl border-2 text-[14px] leading-normal outline-offset-2 select-none"
@@ -107,11 +110,16 @@ export function Frame({ Shell, insetTop, insetBottom }: { Shell: ComponentType; 
         if (d.dispatchCombo(combo)) e.preventDefault()
       }}
     >
-      <Shell />
-      <ContextMenuHost />
-      <AppSwitcher />
-      <ToastHost />
-      <LockScreen />
+      <span id={helpId} className="sr-only">
+        এটি একটি নকল কম্পিউটার। কিবোর্ডে Tab চেপে এক জিনিস থেকে আরেক জিনিসে যান, Enter চেপে খুলুন, Esc চেপে বন্ধ করুন। টার্মিনাল বা কোড এডিটরে আটকে গেলে Esc চেপে তারপর Tab চাপুন।
+      </span>
+      <div lang="en" className="contents">
+        <Shell />
+        <ContextMenuHost />
+        <AppSwitcher />
+        <ToastHost />
+        <LockScreen />
+      </div>
     </div>
   )
 }

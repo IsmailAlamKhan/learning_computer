@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { LEVELS, accuracy, applyInput, diffChars, encouragementBn, liveWpm, newSession, type CharState, type Session } from '../../lib/typing'
 import { useFmt } from '../../ui/useFmt'
+import { SmallScreenNote } from '../../ui/SmallScreenNote'
 
 const STYLE: Record<CharState, React.CSSProperties> = {
   correct: { background: 'var(--c-ok-soft)', color: 'var(--c-ok)' },
@@ -44,6 +45,7 @@ export default function TypingPractice() {
   return (
     <section className="card space-y-3" aria-label="টাইপিং অনুশীলন">
       <h3 className="m-0 text-lg font-bold">টাইপিং অনুশীলন</h3>
+      <SmallScreenNote />
       <div role="tablist" aria-label="স্তর" className="flex flex-wrap gap-2">
         {LEVELS.map((l, i) => (
           <button key={l.id} role="tab" type="button" aria-selected={i === levelIdx} data-level={l.id} onClick={() => reset(i, 0)} className={`btn ${i === levelIdx ? '' : 'btn-outline'}`}>

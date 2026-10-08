@@ -13,7 +13,7 @@ export default function CodeTrace() {
         <pre className="m-0 overflow-auto rounded-xl p-3 font-mono text-sm" style={{ background: 'var(--c-sunken)' }} aria-label="প্রোগ্রাম">
           {TRACE_PROGRAM.map((l, n) => (
             <div key={n} data-line={n + 1} data-active={f.line === n + 1 ? 'yes' : 'no'} style={f.line === n + 1 ? { background: 'var(--c-accent-soft)', fontWeight: 700 } : undefined}>
-              <span className="mr-3 opacity-60">{n + 1}</span>
+              <span className="mr-3 text-muted">{n + 1}</span>
               {l}
             </div>
           ))}

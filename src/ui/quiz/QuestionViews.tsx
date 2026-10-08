@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import type { QuizQuestion } from '../../engine/types'
 import { gradeClickTarget, gradeDragMatch, gradeMultipleChoice, gradeOrdering, gradePredictOutput, seededShuffle } from '../../engine/quiz'
 import { DropZone, useDrag } from '../../sim/dnd'
@@ -18,7 +18,7 @@ export function MultipleChoiceView({ q, onAnswer, locked }: ViewProps<Q<'multipl
   const [sel, setSel] = useState<string[]>([])
   const multi = q.multi ?? q.correct.length > 1
   return (
-    <fieldset disabled={locked} className="space-y-2">
+    <fieldset disabled={locked} className="min-w-0 space-y-2">
       <legend className="sr-only">{q.questionBn}</legend>
       {multi && <p className="text-sm text-muted">একাধিক উত্তর ঠিক হতে পারে।</p>}
       {q.options.map((o) => (
@@ -30,7 +30,7 @@ export function MultipleChoiceView({ q, onAnswer, locked }: ViewProps<Q<'multipl
             checked={sel.includes(o.id)}
             onChange={() => setSel((s) => (multi ? (s.includes(o.id) ? s.filter((x) => x !== o.id) : [...s, o.id]) : [o.id]))}
           />
-          <span>{o.textBn}</span>
+          <span className="min-w-0">{o.textBn}</span>
         </label>
       ))}
       <button className="btn" disabled={sel.length === 0 || locked} onClick={() => onAnswer(gradeMultipleChoice(q, sel))}>
@@ -49,7 +49,7 @@ export function ClickTargetView({ q, onAnswer, locked }: ViewProps<Q<'clickTarge
           key={it.id}
           disabled={locked}
           aria-pressed={picked === it.id}
-          className="flex min-h-24 flex-col items-center justify-center gap-1 rounded-xl border-2 p-3 text-center hover:bg-sunken aria-pressed:border-brand aria-pressed:bg-brand-soft"
+          className="flex min-h-24 min-w-0 flex-col items-center justify-center gap-1 rounded-xl border-2 p-3 text-center hover:bg-sunken aria-pressed:border-brand aria-pressed:bg-brand-soft"
           style={{ borderColor: 'var(--c-line)' }}
           onClick={() => {
             setPicked(it.id)
@@ -57,7 +57,7 @@ export function ClickTargetView({ q, onAnswer, locked }: ViewProps<Q<'clickTarge
           }}
         >
           {it.icon && <span className="text-3xl" aria-hidden="true">{it.icon}</span>}
-          <span>{it.labelBn}</span>
+          <span className="max-w-full [overflow-wrap:anywhere]">{it.labelBn}</span>
         </button>
       ))}
     </div>
@@ -70,6 +70,7 @@ function Chip({ id, text, disabled, selected, onPick }: { id: string; text: stri
     <button
       {...drag}
       type="button"
+      data-chip=""
       aria-pressed={selected}
       disabled={disabled}
       onClick={onPick}
@@ -85,6 +86,8 @@ function Chip({ id, text, disabled, selected, onPick }: { id: string; text: stri
 export function DragMatchView({ q, onAnswer, locked }: ViewProps<Q<'dragMatch'>>) {
   const [map, setMap] = useState<Record<string, string | undefined>>({})
   const [held, setHeld] = useState<string | null>(null)
+  const box = useRef<HTMLDivElement>(null)
+  const focusSoon = (sel: string) => window.setTimeout(() => box.current?.querySelector<HTMLElement>(sel)?.focus(), 0)
   const chips = useMemo(() => seededShuffle(q.pairs, q.id), [q])
   const place = (slot: string, chip: string) => {
     setMap((m) => {
@@ -94,17 +97,19 @@ export function DragMatchView({ q, onAnswer, locked }: ViewProps<Q<'dragMatch'>>
       return next
     })
     setHeld(null)
+    // keyboard flow: after placing, jump back to the next loose item
+    focusSoon('[data-chip]:not(:disabled)')
   }
   const placed = new Set(Object.values(map))
   const full = q.pairs.every((p) => map[p.id])
   return (
-    <div className="space-y-4">
+    <div ref={box} className="space-y-4">
       <p className="text-sm text-muted">ডান দিকের জিনিসটি টেনে এনে বাঁ দিকের সঠিক ঘরে ছাড়ুন। অথবা জিনিসটিতে ক্লিক করে তারপর ঘরটিতে ক্লিক করুন।</p>
       <div className="grid gap-3 sm:grid-cols-2">
         <div className="space-y-2">
           {q.pairs.map((p) => (
             <DropZone key={p.id} onDrop={(pl) => !locked && place(p.id, String(pl))} className="flex min-h-14 items-center justify-between gap-2 rounded-xl border-2 border-dashed p-2 data-[drop-over=true]:bg-brand-soft" style={{ borderColor: 'var(--c-line)' }}>
-              <button type="button" className="flex-1 text-left" disabled={locked || !held} onClick={() => held && place(p.id, held)} aria-label={`${p.leftBn} — এখানে বসান`}>
+              <button type="button" data-slot={map[p.id] ? undefined : ''} className="min-h-12 flex-1 text-left" disabled={locked || !held} onClick={() => held && place(p.id, held)} aria-label={`${p.leftBn}${map[p.id] ? ` (এখন: ${q.pairs.find((x) => x.id === map[p.id])?.rightBn})` : ''} — এখানে বসান`}>
                 {p.leftBn}
               </button>
               <span className="min-w-24 rounded-lg px-2 py-1 text-center" style={{ background: 'var(--c-sunken)' }}>
@@ -115,7 +120,10 @@ export function DragMatchView({ q, onAnswer, locked }: ViewProps<Q<'dragMatch'>>
         </div>
         <div className="flex flex-wrap content-start gap-2" aria-label="টেনে আনার জিনিস">
           {chips.filter((c) => !placed.has(c.id)).map((c) => (
-            <Chip key={c.id} id={c.id} text={c.rightBn} disabled={locked} selected={held === c.id} onPick={() => setHeld((h) => (h === c.id ? null : c.id))} />
+            <Chip key={c.id} id={c.id} text={c.rightBn} disabled={locked} selected={held === c.id} onPick={() => {
+              setHeld((h) => (h === c.id ? null : c.id))
+              if (held !== c.id) focusSoon('[data-slot]:not(:disabled)')
+            }} />
           ))}
         </div>
       </div>
@@ -149,7 +157,7 @@ export function OrderingView({ q, onAnswer, locked }: ViewProps<Q<'ordering'>>) 
         {order.map((id, i) => (
           <li key={id} className="flex items-center gap-2 rounded-xl border-2 p-2" style={{ borderColor: 'var(--c-line)' }}>
             <span className="w-6 text-center font-bold">{i + 1}</span>
-            <span className="flex-1">{text(id)}</span>
+            <span className="min-w-0 flex-1">{text(id)}</span>
             <button className="btn btn-outline" aria-label="ওপরে সরান" disabled={locked || i === 0} onClick={() => move(i, -1)}>↑</button>
             <button className="btn btn-outline" aria-label="নিচে সরান" disabled={locked || i === order.length - 1} onClick={() => move(i, 1)}>↓</button>
           </li>

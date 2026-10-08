@@ -100,6 +100,7 @@ export function TerminalApp({ win }: { win: WinState }) {
     }
   }
 
+  const leaveOnTab = useRef(false)
   const doTab = () => {
     const el = inputRef.current
     const cursor = el?.selectionStart ?? value.length
@@ -122,6 +123,13 @@ export function TerminalApp({ win }: { win: WinState }) {
     if (k === 'Enter') {
       e.preventDefault()
       void submit()
+      return
+    }
+    // keyboard-trap escape: Shift+Tab, or Esc then Tab, moves focus out of the terminal like in real editors
+    if (k === 'Escape') leaveOnTab.current = true
+    else if (k !== 'Tab') leaveOnTab.current = false
+    if (k === 'Tab' && (e.shiftKey || leaveOnTab.current)) {
+      leaveOnTab.current = false
       return
     }
     if (k === 'Tab' && !ctrl && !meta && !e.altKey) {

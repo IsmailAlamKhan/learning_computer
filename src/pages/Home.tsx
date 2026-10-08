@@ -30,7 +30,7 @@ function ModuleCard({ m, state }: { m: ModuleMeta; state: ModuleState }) {
       </span>
     </>
   )
-  const cls = `card flex flex-wrap items-center gap-4 ${clickable ? 'hover:border-brand' : 'opacity-80'}`
+  const cls = `card flex flex-wrap items-center gap-4 ${clickable ? 'hover:border-brand' : 'border-dashed'}`
   return clickable ? (
     <Link to={`/module/${m.module}`} className={cls}>{body}</Link>
   ) : (

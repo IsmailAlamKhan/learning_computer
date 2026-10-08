@@ -27,7 +27,7 @@ export default function Glossary() {
           {list.map((g) => (
             <div key={g.id} className="card">
               <dt className="text-lg font-bold">
-                {g.termBn} <span className="font-normal text-muted">({g.termEn})</span>
+                {g.termBn} <span lang="en" className="font-normal text-muted">({g.termEn})</span>
               </dt>
               <dd className="mt-1">{g.meaningBn}</dd>
               <dd className="mt-1 text-sm text-muted">পাঠ {n(g.module)}-এ শেখানো হয়েছে</dd>

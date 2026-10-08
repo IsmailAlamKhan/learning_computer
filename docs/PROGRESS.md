@@ -8,7 +8,7 @@
 | 4 | Modules 7–13 | DONE |
 | 5 | Terminal, editor, runners | DONE |
 | 6 | Part 2 (Modules 14–20) | DONE |
-| 7 | Hardening, PWA, QA, docs | NOT STARTED |
+| 7 | Hardening, PWA, QA, docs | DONE |
 
 ## Stage details
 
@@ -61,6 +61,17 @@
 - Cheat sheets: shortcuts, safety, terminal commands, setup checklist, HTML basics, Python basics.
 - Tests: 738 unit/component tests (incl. real Pyodide checks of every Python output in M20); Playwright walkthroughs for every module.
 - Bengali review for 14–20 + tools appended to docs/BENGALI_REVIEW.md (e.g. VS Code Mac download is normally a .zip).
+
+### Stage 7A — Offline, performance, privacy (2026-10-09)
+- PWA: `vite-plugin-pwa` service worker (precache ≈ 2.9 MB; Pyodide fetched in the background + CacheFirst route), Bengali manifest + icons (`npm run icons`), footer chip + update toast (`src/ui/PwaStatus.tsx`, `src/pwa/`). See docs/OFFLINE.md; e2e `offline.spec.ts`.
+- Performance: pages, SimStage (lazy in `Practice.tsx`) and the heavy simulated apps (code editor/CodeMirror, terminal, browser + sites, sim Settings; helper `src/sim/apps/lazyApp.tsx`, tests preload via `testUtils`) are code-split. Home-route JS+CSS: 457 kB gzip → 109 kB gzip.
+- Privacy: CSP meta in `index.html`, `npm run check:privacy`, `tests/privacy.test.ts`, e2e `privacy.spec.ts`. See docs/PRIVACY.md.
+
+### Stage 7 — DONE (2026-10-09)
+- PWA/offline (service worker precache of 117 files ≈2.9 MB; Pyodide ≈13 MB fetched in the background after first idle load + CacheFirst), manifest + icons, update toast, offline status chip; initial Home JS+CSS 457 → 109 kB gzip via lazy routes/sim/apps; CSP + privacy checks (`npm run check:privacy`, e2e request recording: only same-origin requests).
+- Accessibility audit (axe light/dark/xxlarge, keyboard-only flows, focus management, ~22 fixes), responsive checks at 1280/1024/768/390 px (+ small-screen note), A4 print fixes (certificate = exactly 1 landscape page; cheat sheets ≤ 2 pages).
+- Teacher dashboard (`/teacher`: progress, per-OS steps, quiz scores, weak topics, activity, certificates, JSON backup + HTML report export), README, QA checklist, architecture, offline and privacy docs.
+- Final pass: clean `npm ci`, `tsc -b` clean, lint (warnings only), 790 unit/component tests, production build, **171 Playwright tests pass** (all 20 modules, both OS, onboarding, export/import, offline, privacy, a11y, responsive, print).
 
 ## Decisions and assumptions
 

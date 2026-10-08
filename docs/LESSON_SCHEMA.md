@@ -132,3 +132,13 @@ steps never depend on a previous chapter's state. The module counts as "hands-on
 learner's OS) are completed. Step ids must be unique across the whole module. Module 20 uses chapters.
 
 The Code Editor also emits `custom` events `code-saved`, `code-edited`, `code-run-ok` and `code-run-error` (use these when the output depends on what she typed). State-based steps (`previewContains`, `fileContains`, `fileExists`) are re-checked once when they become the current step, so typing ahead never stalls the coach.
+
+## What the teacher dashboard reads from a lesson
+
+`src/lib/teacher.ts` (`lessonMetaOf`) reduces each lesson to: the guided step **ids per OS** (so step counts "n/total" for Windows and Mac;
+`chapters` are flattened), the quiz question `id`, `questionBn` and `hintBn` (so "weak topics" can show the question text for ids found in
+`quiz.wrongByQuestion`), and the number of real-world tasks. Consequences for authors:
+
+- Keep quiz question ids **stable**; a renamed id shows as "a question that is no longer in the lesson" for old attempts.
+- Step ids that no longer exist are ignored in the counts, so renaming a step id resets that step for the learner.
+- Write `questionBn` so it makes sense on its own (the teacher sees it without the answer options).

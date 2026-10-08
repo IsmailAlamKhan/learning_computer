@@ -15,7 +15,7 @@ export default function SignupForm() {
   const field = (k: keyof SignupValues, label: string, hint: string, type = 'text') => (
     <label className="block">
       <span className="font-medium">{label}</span>
-      <span className="block text-sm text-gray-600">{hint}</span>
+      <span className="block text-sm text-muted">{hint}</span>
       <input
         data-testid={`signup-${k}`}
         type={k === 'password' && show ? 'text' : type}
@@ -24,7 +24,7 @@ export default function SignupForm() {
         autoComplete="off"
         className="mt-1 min-h-11 w-full rounded border border-gray-400 bg-white px-3 text-gray-900"
       />
-      {tried && problems[k] && <span role="alert" className="mt-1 block text-sm text-amber-800">{problems[k]}</span>}
+      {tried && problems[k] && <span role="alert" className="mt-1 block text-sm text-accent">{problems[k]}</span>}
     </label>
   )
   return (
@@ -49,7 +49,7 @@ export default function SignupForm() {
           </label>
           <ul className="space-y-1 text-sm" data-testid="signup-rules">
             {rules.map((r) => (
-              <li key={r.id} className={r.ok ? 'text-green-700' : 'text-gray-600'}>
+              <li key={r.id} className={r.ok ? 'text-ok' : 'text-muted'}>
                 {r.ok ? '✓' : '○'} {r.textBn}
               </li>
             ))}
@@ -71,13 +71,13 @@ export default function SignupForm() {
               Verify my email
             </button>
           </div>
-          <p className="text-sm text-gray-600">আসল সাইটে ইমেইলে একটি লিংক থাকে; সেখানে ক্লিক করলেই যাচাই হয়। সেই ইমেইল না এলে Spam ফোল্ডারটিও দেখবেন।</p>
+          <p className="text-sm text-muted">আসল সাইটে ইমেইলে একটি লিংক থাকে; সেখানে ক্লিক করলেই যাচাই হয়। সেই ইমেইল না এলে Spam ফোল্ডারটিও দেখবেন।</p>
         </div>
       )}
       {stage === 'verified' && (
         <div className="space-y-3" data-testid="signup-done">
-          <p className="text-green-700">✓ ইমেইল যাচাই হয়েছে। এখন ইউজারনেম <b>{v.username}</b> আর আপনার পাসওয়ার্ড দিয়ে লগ ইন (Log in) করা যাবে।</p>
-          <p className="text-sm text-gray-600">খেয়াল করুন: পাসওয়ার্ড কাউকে বলবেন না, আর যাচাইয়ের কোড (OTP) কেউ চাইলে কখনো দেবেন না।</p>
+          <p className="text-ok">✓ ইমেইল যাচাই হয়েছে। এখন ইউজারনেম <b>{v.username}</b> আর আপনার পাসওয়ার্ড দিয়ে লগ ইন (Log in) করা যাবে।</p>
+          <p className="text-sm text-muted">খেয়াল করুন: পাসওয়ার্ড কাউকে বলবেন না, আর যাচাইয়ের কোড (OTP) কেউ চাইলে কখনো দেবেন না।</p>
           <button type="button" className="btn btn-outline" onClick={() => (setStage('form'), setTried(false), setV({ name: '', email: '', username: '', password: '' }))}>
             আবার শুরু করুন
           </button>

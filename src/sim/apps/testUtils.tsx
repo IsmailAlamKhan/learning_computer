@@ -6,6 +6,11 @@ import type { OsFlavor } from '../../engine/types'
 import { WindowLayer } from '../ui/WindowLayer'
 import { ContextMenuHost } from '../ui/ContextMenu'
 import { registerBuiltinApps } from './index'
+import { preloadApps } from './lazyApp'
+
+// lazy apps are fetched on first open in the real app; tests load them up-front so renders stay synchronous
+registerBuiltinApps()
+await preloadApps()
 
 export interface Rig {
   bus: SimBus

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { getModule } from '../content/modules'
 import { hasLesson, loadLesson } from '../content/lessons'
@@ -103,7 +103,19 @@ function LessonView({ lesson }: { lesson: Lesson }) {
     real: (prog?.realWorldChecked.length ?? 0) > 0,
     finish: !!prog?.completed,
   }
+  // the lesson loads lazily after navigation, so its heading is not there yet when Layout moves focus
+  useEffect(() => {
+    document.querySelector<HTMLElement>('main h1')?.setAttribute('tabindex', '-1')
+    document.querySelector<HTMLElement>('main h1')?.focus({ preventScroll: true })
+  }, [])
+  const sectionRef = useRef<HTMLElement>(null)
+  const changed = useRef(false)
+  // moving to another section: focus its heading so keyboard / screen-reader users land at the start of the new content
+  useEffect(() => {
+    if (changed.current) sectionRef.current?.querySelector<HTMLElement>('h2')?.focus()
+  }, [sec])
   const go = (s: SectionId) => {
+    changed.current = true
     setSec(s)
     window.scrollTo({ top: 0 })
   }
@@ -122,7 +134,7 @@ function LessonView({ lesson }: { lesson: Lesson }) {
       </div>
 
       <div className="flex flex-wrap items-center gap-3">
-        <fieldset className="flex items-center gap-2">
+        <fieldset className="flex min-w-0 flex-wrap items-center gap-2">
           <legend className="sr-only">কোন কম্পিউটারে দেখতে চান</legend>
           <span className="text-sm text-muted">দেখুন:</span>
           {(['windows', 'mac'] as const).map((o) => (
@@ -141,7 +153,10 @@ function LessonView({ lesson }: { lesson: Lesson }) {
         ))}
       </nav>
 
-      <section aria-label={SECTIONS[idx].label} className="space-y-4">
+      <section ref={sectionRef} aria-labelledby="lesson-section-title" className="space-y-4">
+        <h2 id="lesson-section-title" tabIndex={-1} className="sr-only">
+          {SECTIONS[idx].label}
+        </h2>
         {sec === 'learn' && <ExplanationSection lesson={lesson} module={mod} />}
         {sec === 'guided' && <GuidedPractice key={os} lesson={lesson} os={os} alreadyDone={stepsDone && steps.length > 0} onFinished={() => {}} />}
         {sec === 'free' && <FreePracticeSection key={os} lesson={lesson} os={os} done={!!prog?.freePracticeDone} onDone={() => store.markFreePracticeDone(mod)} />}

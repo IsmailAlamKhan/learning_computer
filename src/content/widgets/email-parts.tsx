@@ -24,14 +24,14 @@ export default function EmailParts() {
         <span className="rounded bg-emerald-100 px-2 py-1 text-emerald-900">{p.domain || '…'}</span>
       </div>
       <ul className="space-y-1 text-sm">
-        <li><span className="text-sky-800">নীল অংশ</span> = নাম বা ইউজারনেম: ডাকবাক্সটি কার।</li>
+        <li><span className="rounded bg-sky-100 px-1 text-sky-900">নীল অংশ</span> = নাম বা ইউজারনেম: ডাকবাক্সটি কার।</li>
         <li><b>@</b> (অ্যাট) = “-এ” বোঝায়: এই নামটি ওই জায়গায়।</li>
-        <li><span className="text-emerald-800">সবুজ অংশ</span> = ডোমেইন: কোন ইমেইল সেবা বা প্রতিষ্ঠানের ডাকঘর।</li>
+        <li><span className="rounded bg-emerald-100 px-1 text-emerald-900">সবুজ অংশ</span> = ডোমেইন: কোন ইমেইল সেবা বা প্রতিষ্ঠানের ডাকঘর।</li>
       </ul>
       <p className="text-sm" data-testid="email-parts-verdict">
         {p.valid ? '✓ এটি একটি ঠিক গড়নের ঠিকানা।' : 'এখনও ঠিক গড়ন হয়নি — নাম, @ আর ডোমেইন (মাঝে একটি ডট সহ) লাগবে।'}
       </p>
-      {text.includes('_99') && <p className="text-sm text-gray-600">চাকরি বা কোডিংয়ের অ্যাকাউন্টের জন্য এমন মজার নাম না রেখে নিজের নামের মতো ঠিকানা (firstname.lastname) রাখাই ভালো।</p>}
+      {text.includes('_99') && <p className="text-sm text-muted">চাকরি বা কোডিংয়ের অ্যাকাউন্টের জন্য এমন মজার নাম না রেখে নিজের নামের মতো ঠিকানা (firstname.lastname) রাখাই ভালো।</p>}
     </div>
   )
 }
