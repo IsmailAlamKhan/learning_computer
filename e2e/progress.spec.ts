@@ -6,7 +6,6 @@ import { coach, openModule, seedProfile, skipToPractice, startGuided, startUnit 
 import m02 from '../src/content/lessons/m02'
 import { lessonSteps } from '../src/engine/lessonSteps'
 import { stepsFor } from '../src/engine/runner'
-import m20 from '../src/content/lessons/m20'
 
 const KEY = 'computer-shikhi:v1'
 const stored = (page: Page) => page.evaluate((k) => JSON.parse(localStorage.getItem(k) ?? 'null'), KEY)
@@ -260,7 +259,9 @@ for (const osName of ['windows', 'mac'] as const) {
     await seedProfile(page, osName)
     const errors: string[] = []
     page.on('pageerror', (e) => errors.push(String(e)))
-    await startGuided(page, 17)
+    await openModule(page, 17)
+    await startUnit(page, 0)
+    await skipToPractice(page)
     const input = hw(page, 'terminal-input')
     await expect(input).toBeVisible()
     for (const cmd of ['pwd', osName === 'windows' ? 'dir' : 'ls', 'cd Documents', 'pwd']) {
@@ -278,19 +279,16 @@ for (const osName of ['windows', 'mac'] as const) {
     expect(errors).toEqual([])
   })
 
-  test(`smoke: Module 20 HTML chapter 1, first steps (${osName})`, async ({ page }) => {
+  test(`smoke: Module 20 HTML unit 1, first steps (${osName})`, async ({ page }) => {
     await seedProfile(page, osName)
     const errors: string[] = []
     page.on('pageerror', (e) => errors.push(String(e)))
-    const ch = m20.chapters!.find((c) => c.id === 'html-1')!
-    await page.goto('/#/module/20')
-    await page.getByRole('button', { name: /হাতে-কলমে/ }).click()
-    await page.locator('li', { hasText: ch.titleBn }).getByRole('button', { name: /শুরু করি|আবার করি/ }).click()
-    await page.getByRole('button', { name: /▶ শুরু করি/ }).click()
+    await openModule(page, 20)
+    await startUnit(page, 0)
+    await skipToPractice(page)
     await expect(hw(page, 'code-editor')).toBeVisible()
     await hw(page, 'code-explorer-index.html').click()
     await expect(hw(page, 'code-preview')).toBeVisible()
-    await page.getByRole('button', { name: /বুঝেছি/ }).click()
     // type the first heading at the end of line 8, like the full walkthrough
     await page.locator(`${SIM} .cm-content`).click()
     await page.keyboard.press('ControlOrMeta+Home')

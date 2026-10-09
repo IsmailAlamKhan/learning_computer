@@ -1,33 +1,23 @@
 import { expect, test, type Page } from '@playwright/test'
-import { coach, seedProfile, startGuided } from './helpers'
+import { answerChoice, answerClick, checkAnswer, coach, expectPracticeDone, expectRight, expectWrong, matchPairs, nextCard, openModule, orderItems, primary, savedProgress, seedProfile, skipToPractice, slideKind, startUnit, watchProblems } from './helpers'
 import lesson from '../src/content/lessons/m13'
 
+/** Module 13 (capstone): three units, then the module celebration with the certificate link. */
+
 const hw = (page: Page, id: string) => page.locator(`[data-coach="${id}"]`).first()
-const esc = (s: string) => s.replace(/[.*+?^${}()|[\]\\/]/g, '\\$&')
 
 async function pad(page: Page, mods: string[], key: string) {
   for (const m of mods) await hw(page, `pad-${m}`).click()
   await hw(page, `pad-key-${key}`).click()
 }
 
-async function typeAddress(page: Page, text: string) {
-  const a = coach(page, 'browser-address')
-  await a.click()
-  await a.fill(text)
-  await page.keyboard.press('Enter')
-}
-
-async function walk(page: Page, os: 'windows' | 'mac') {
-  const win = os === 'windows'
-  // 1 folder
+async function unit1(page: Page, win: boolean) {
   await coach(page, win ? 'taskbar-app-files' : 'dock-files').click()
   await coach(page, 'fm-sidebar-Documents').click()
   await coach(page, win ? 'fm-new' : 'fm-new-folder').click()
   if (win) await coach(page, 'ctx-new-folder').click()
-  const rename = coach(page, 'rename-input')
-  await rename.fill('MyWork')
+  await coach(page, 'rename-input').fill('MyWork')
   await page.keyboard.press('Enter')
-  // 2 note
   if (win) {
     await coach(page, 'start-button').click()
     await coach(page, 'start-app-editor').click()
@@ -42,17 +32,23 @@ async function walk(page: Page, os: 'windows' | 'mac') {
   await coach(page, 'save-dialog-folder-MyWork').click()
   await coach(page, 'save-dialog-name').fill('note')
   await coach(page, 'save-dialog-save').click()
-  // 3 search
+}
+
+async function unit2(page: Page, win: boolean) {
   if (win) {
     await coach(page, 'start-button').click()
     await coach(page, 'start-app-browser').click()
   } else await coach(page, 'dock-browser').click()
-  await typeAddress(page, 'dal recipe')
+  const a = coach(page, 'browser-address')
+  await a.click()
+  await a.fill('dal recipe')
+  await page.keyboard.press('Enter')
   await coach(page, 'search-result-1').click()
-  // 4 screenshot
   if (win) await pad(page, ['cmd'], 'prtscn')
   else await pad(page, ['shift', 'cmd'], '3')
-  // 5 mail
+}
+
+async function unit3(page: Page, win: boolean) {
   if (win) {
     await coach(page, 'start-button').click()
     await coach(page, 'start-app-mail').click()
@@ -67,64 +63,84 @@ async function walk(page: Page, os: 'windows' | 'mac') {
   await coach(page, 'mail-send').click()
 }
 
-async function quiz(page: Page) {
-  await page.getByRole('button', { name: /৪ কুইজ/ }).click()
-  // q1 ordering
-  const want = ['Notepad বা TextEdit খুলি', 'লেখাটি লিখি', 'Save As বেছে নিই', 'নিজের ফোল্ডার বেছে']
-  for (let i = 0; i < want.length; i++) {
-    for (let guard = 0; guard < 6; guard++) {
-      const items = await page.locator('ol > li').allInnerTexts()
-      const cur = items.findIndex((t) => t.includes(want[i]))
-      if (cur <= i) break
-      await page.locator('ol > li').nth(cur).getByRole('button', { name: 'ওপরে সরান' }).click()
-    }
-  }
-  await page.getByRole('button', { name: 'যাচাই করুন' }).click()
-  await page.getByRole('button', { name: /পরের প্রশ্ন/ }).click()
-  // q2 drag-match (tap, tap)
-  for (const [chip, slot] of [['কপি', 'C'], ['পেস্ট', 'V'], ['ভুল ফিরিয়ে নেওয়া', 'Z'], ['সেভ', 'S']]) {
-    await page.getByRole('button', { name: chip, exact: true }).click()
-    await page.getByRole('button', { name: new RegExp(`^${esc(`Ctrl/Command + ${slot}`)} — এখানে বসান`) }).click()
-  }
-  await page.getByRole('button', { name: 'যাচাই করুন' }).click()
-  await page.getByRole('button', { name: /পরের প্রশ্ন/ }).click()
-  // q3 click target (wrong first)
-  await page.getByRole('button', { name: /MyWork/ }).click()
-  await expect(page.getByText(/একটু আবার ভেবে দেখি/)).toBeVisible()
-  await page.getByRole('button', { name: /\.txt/ }).click()
-  await page.getByRole('button', { name: /পরের প্রশ্ন/ }).click()
-  // q4, q5
-  await page.getByLabel(/ক্লিক করব না, ওটিপি কাউকে দেব না/).check()
-  await page.getByRole('button', { name: 'উত্তর দিন' }).click()
-  await page.getByRole('button', { name: /পরের প্রশ্ন/ }).click()
-  await page.getByLabel(/কিছুক্ষণ অপেক্ষা করব/).check()
-  await page.getByRole('button', { name: 'উত্তর দিন' }).click()
-  await page.getByRole('button', { name: /কুইজ শেষ করি/ }).click()
+async function quiz1(page: Page) {
+  await answerClick(page, 'MyWork')
+  await expectWrong(page)
+  await answerClick(page, '.txt')
+  await expectRight(page)
+  await nextCard(page)
+  await orderItems(page, ['Notepad বা TextEdit খুলি', 'লেখাটি লিখি', 'Save As বেছে নিই', 'নিজের ফোল্ডার বেছে'])
+  await checkAnswer(page)
+  await expectRight(page)
+  await nextCard(page)
+  await matchPairs(page, [['Ctrl/Command \\+ C', 'কপি'], ['Ctrl/Command \\+ V', 'পেস্ট'], ['Ctrl/Command \\+ Z', 'ভুল ফিরিয়ে নেওয়া'], ['Ctrl/Command \\+ S', 'সেভ']])
+  await checkAnswer(page)
+  await expectRight(page)
+  await nextCard(page)
+}
+
+async function quiz2(page: Page) {
+  await answerChoice(page, /এটা বিজ্ঞাপন/)
+  await expectRight(page)
+  await nextCard(page)
+  await answerChoice(page, /আসল অ্যাপে নিজে যাব/)
+  await expectRight(page)
+  await nextCard(page)
+  await answerClick(page, 'স্ক্রিনশট')
+  await expectRight(page)
+  await nextCard(page)
+}
+
+async function quiz3(page: Page) {
+  await answerChoice(page, /ক্লিপ \(Attach\)/)
+  await expectRight(page)
+  await nextCard(page)
+  await orderItems(page, ['Compose চাপি', 'To আর Subject', 'ফাইল Attach', 'Send চাপি'])
+  await checkAnswer(page)
+  await expectRight(page)
+  await nextCard(page)
+  await answerChoice(page, /একটু অপেক্ষা/)
+  await expectRight(page)
+  await nextCard(page)
 }
 
 for (const os of ['windows', 'mac'] as const) {
-  test(`Module 13 capstone, quiz, completion and certificate (${os})`, async ({ page }) => {
-    await seedProfile(page, os, { settings: { numerals: 'western', unlockAll: true } })
-    const errors: string[] = []
-    page.on('pageerror', (e) => errors.push(String(e)))
-    page.on('console', (m) => m.type() === 'error' && errors.push(m.text()))
-    await startGuided(page, 13)
-    await walk(page, os)
-    await expect(page.getByText(/সব ধাপ শেষ/)).toBeVisible()
-    await expect(page.getByLabel('কাজের তালিকা').getByText('(বাকি)')).toHaveCount(0)
-    const saved = await page.evaluate((o) => JSON.parse(localStorage.getItem('computer-shikhi:v1')!).modules['13'].stepsDone[o].length, os)
-    expect(saved).toBe(lesson.steps.filter((s) => s.osVariant === os || s.osVariant === 'both').length)
-
-    await quiz(page)
-    const q = await page.evaluate(() => JSON.parse(localStorage.getItem('computer-shikhi:v1')!).modules['13'].quiz)
-    expect(q.total).toBe(5)
-    expect(q.score).toBe(4)
-
-    await page.getByRole('button', { name: /৭ শেষ/ }).click()
-    await page.getByRole('button', { name: /পাঠ সম্পন্ন করি/ }).click()
+  test(`Module 13 capstone: three units, completion and certificate (${os})`, async ({ page }) => {
+    const win = os === 'windows'
+    await seedProfile(page, os)
+    const problems = watchProblems(page)
+    await openModule(page, 13)
+    const units: [(p: Page, w: boolean) => Promise<void>, (p: Page) => Promise<void>][] = [[unit1, quiz1], [unit2, quiz2], [unit3, quiz3]]
+    for (let i = 0; i < 3; i++) {
+      await startUnit(page, i)
+      await skipToPractice(page)
+      await expect(page.getByLabel('কাজের তালিকা')).toBeVisible()
+      await units[i][0](page, win)
+      await expectPracticeDone(page)
+      await expect(page.getByLabel('কাজের তালিকা').getByText('(বাকি)')).toHaveCount(0)
+      await nextCard(page)
+      expect(await slideKind(page)).toBe('quiz')
+      await units[i][1](page)
+      expect(await slideKind(page)).toBe('celebrate')
+      if (i < 2) await primary(page).click()
+    }
+    const saved = await savedProgress(page)
+    expect(saved.modules['13'].stepsDone[os]).toHaveLength(lesson.units.flatMap((u) => u.steps).filter((s) => s.osVariant === os || s.osVariant === 'both').length)
+    expect(saved.modules['13'].completed).toBe(true)
+    expect(saved.modules['13'].unitsDone).toEqual(['folder-note', 'search-shot', 'mail-certificate'])
+    expect(saved.badges).toContain('part1')
     await page.getByRole('link', { name: /সনদ.*দেখুন/ }).click()
     await expect(page).toHaveURL(/#\/certificate\/1/)
     await expect(page.getByLabel('সনদপত্র')).toContainText('রুমা')
-    expect(errors).toEqual([])
+    expect(problems).toEqual([])
   })
 }
+
+test('unit 3 starts with the saved note already in the folder (fresh sim)', async ({ page }) => {
+  await seedProfile(page, 'windows')
+  await openModule(page, 13)
+  await startUnit(page, 2)
+  await skipToPractice(page)
+  await unit3(page, true)
+  await expectPracticeDone(page)
+})

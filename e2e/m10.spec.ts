@@ -1,188 +1,256 @@
 import { expect, test, type Page } from '@playwright/test'
-import { coach, seedProfile, startGuided } from './helpers'
+import {
+  answerChoice,
+  answerClick,
+  checkAnswer,
+  coach,
+  expectNoScroll,
+  expectPracticeDone,
+  expectRight,
+  expectWrong,
+  matchPairs,
+  nextCard,
+  openModule,
+  orderItems,
+  primary,
+  savedProgress,
+  seedProfile,
+  skipToPractice,
+  slideKind,
+  startUnit,
+  watchProblems,
+} from './helpers'
 
-const SETTINGS = { settings: { numerals: 'western', unlockAll: true } }
-const esc = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-const pause = (page: Page) => page.waitForTimeout(1600)
+/** Module 10 (Settings): four units, each hook → cards → practice → 3 questions → celebration. Windows 32 steps, Mac 26 steps. */
 
-/** wallpaper, dark mode and zoom: check the real effect on the sim after each change */
-async function effects(page: Page, mac: boolean) {
+const pause = (page: Page) => page.waitForTimeout(400)
+
+// ---------------- unit 1: look ----------------
+async function look(page: Page, mac: boolean) {
   const bg = page.locator('[data-sim-root] [data-wallpaper]').first()
   if (mac) {
     await coach(page, 'settings-nav-personalization').click()
     await coach(page, 'settings-wallpaper-2').click()
     await expect(bg).toHaveAttribute('data-wallpaper', '2')
-    await pause(page)
     await coach(page, 'settings-nav-appearance').click()
     await coach(page, 'settings-darkMode').click()
     await expect(coach(page, 'win-settings-content')).toHaveAttribute('data-dark', 'true')
-    await pause(page)
     await coach(page, 'settings-darkMode').click()
     await expect(coach(page, 'win-settings-content')).not.toHaveAttribute('data-dark', 'true')
-    await pause(page)
   } else {
     await coach(page, 'settings-nav-personalization').click()
     await coach(page, 'settings-link-background').click()
     await coach(page, 'settings-wallpaper-2').click()
-    await pause(page)
     await coach(page, 'settings-nav-personalization').click()
     await coach(page, 'settings-link-colors').click()
     await coach(page, 'settings-mode').selectOption('Dark')
     await expect(coach(page, 'win-settings-content')).toHaveAttribute('data-dark', 'true')
-    await pause(page)
     await coach(page, 'settings-mode').selectOption('Light')
-    await pause(page)
   }
   await coach(page, 'settings-nav-display').click()
   await coach(page, 'settings-zoom').selectOption('150')
   await expect(coach(page, 'win-settings-content')).toHaveAttribute('data-zoom', '150')
-  await pause(page)
   await coach(page, 'settings-zoom').selectOption('100')
   await expect(coach(page, 'win-settings-content')).not.toHaveAttribute('data-zoom', /.+/)
-  await pause(page)
-  await coach(page, 'settings-nav-sound').click()
-  await coach(page, 'settings-volume').fill('90')
-  await pause(page)
 }
 
-test.describe('Module 10 guided practice', () => {
-  test('Windows flow completes end to end', async ({ page }) => {
-    await seedProfile(page, 'windows', SETTINGS)
-    const errors: string[] = []
-    page.on('pageerror', (e) => errors.push(String(e)))
-    await startGuided(page, 10)
-    await effects(page, false)
-    // mute from the tray's quick settings
-    await coach(page, 'tray-wifi').click()
-    await coach(page, 'qs-mute').click()
-    await expect(coach(page, 'qs-mute')).toHaveAttribute('aria-checked', 'true')
-    await pause(page)
-    await coach(page, 'qs-mute').click()
-    await pause(page)
-    // Wi-Fi with the practice password (wrong first, gently)
-    await coach(page, 'settings-nav-network').click()
-    await coach(page, 'settings-network-PracticeNet').click()
-    await coach(page, 'settings-wifi-connect').click()
-    await coach(page, 'settings-wifi-password').fill('wrong')
-    await coach(page, 'settings-wifi-next').click()
-    await expect(coach(page, 'settings-wifi-error')).toContainText('isn’t right')
-    await coach(page, 'settings-wifi-password').fill('practice123')
-    await coach(page, 'settings-wifi-next').click()
-    await expect(coach(page, 'settings-network-PracticeNet')).toContainText('Connected')
-    await pause(page)
-    // timezone starts in New York, change to Dhaka
-    await coach(page, 'settings-nav-time').click()
-    await expect(coach(page, 'settings-timezone')).toHaveValue('America/New_York')
-    await coach(page, 'settings-timezone').selectOption('Asia/Dhaka')
-    await pause(page)
-    // Bluetooth + printer
-    await coach(page, 'settings-nav-bluetooth').click()
-    await coach(page, 'settings-bluetoothOn').click()
-    await coach(page, 'settings-bt-add').click()
-    await coach(page, 'settings-bt-kind').click()
-    await coach(page, 'settings-bt-device-Practice Speaker').click()
-    await coach(page, 'settings-bt-done').click()
-    await coach(page, 'settings-link-printers').click()
-    await coach(page, 'settings-printer-add').click()
-    await coach(page, 'settings-printer-found-Practice Inkjet').click()
-    await expect(page.getByText(/সব ধাপ শেষ/)).toBeVisible()
-    expect(errors).toEqual([])
-    const saved = await page.evaluate(() => JSON.parse(localStorage.getItem('computer-shikhi:v1')!).modules['10'].stepsDone.windows.length)
-    expect(saved).toBe(31)
-  })
+async function lookQuiz(page: Page) {
+  await matchPairs(page, [['Wallpaper', 'পেছনের ছবি বদলায়'], ['Dark mode', 'সাদা জায়গা কালচে হয়'], ['Scale', 'সবকিছু বড় বা ছোট হয়']])
+  await checkAnswer(page)
+  await expectRight(page)
+  await nextCard(page)
+  await answerChoice(page, /কিছুই হয় না/)
+  await expectRight(page)
+  await nextCard(page)
+  await answerChoice(page, /ওয়ালপেপার বদলাব/) // wrong first
+  await expectWrong(page)
+  await answerChoice(page, /Scale বা Display size/)
+  await expectRight(page)
+  await nextCard(page)
+}
 
-  test('Mac flow completes end to end', async ({ page }) => {
-    await seedProfile(page, 'mac', SETTINGS)
-    const errors: string[] = []
-    page.on('pageerror', (e) => errors.push(String(e)))
-    await startGuided(page, 10)
-    await effects(page, true)
+// ---------------- unit 2: sound & brightness ----------------
+async function sound(page: Page, mac: boolean) {
+  await coach(page, 'settings-nav-sound').click()
+  await coach(page, 'settings-volume').fill('90')
+  if (mac) {
     await coach(page, 'control-center').click()
     await coach(page, 'cc-volume').fill('0')
     await pause(page)
     await coach(page, 'cc-volume').fill('50')
-    await pause(page)
-    await coach(page, 'settings-nav-network').click()
-    await coach(page, 'settings-network-PracticeNet').click()
-    await coach(page, 'settings-wifi-password').fill('wrong')
-    await coach(page, 'settings-wifi-join').click()
-    await expect(coach(page, 'settings-wifi-error')).toBeVisible()
-    await coach(page, 'settings-wifi-password').fill('practice123')
-    await coach(page, 'settings-wifi-join').click()
-    await pause(page)
-    await coach(page, 'settings-nav-time').click()
-    await coach(page, 'settings-timezone').selectOption('Asia/Dhaka')
-    await pause(page)
-    await coach(page, 'settings-nav-bluetooth').click()
-    await coach(page, 'settings-bluetoothOn').click()
+  } else {
+    await coach(page, 'tray-wifi').click()
+    await coach(page, 'qs-mute').click()
+    await expect(coach(page, 'qs-mute')).toHaveAttribute('aria-checked', 'true')
+    await coach(page, 'qs-mute').click()
+  }
+}
+
+async function soundQuiz(page: Page) {
+  await answerClick(page, 'স্পিকার') // wrong first
+  await expectWrong(page)
+  await answerClick(page, 'সূর্য')
+  await expectRight(page)
+  await nextCard(page)
+  await answerChoice(page, /মিউট চালু আছে/)
+  await expectRight(page)
+  await nextCard(page)
+  await matchPairs(page, [['Brightness', 'পর্দার আলো'], ['Volume', 'শব্দের জোর'], ['Mute', 'শব্দ একদম বন্ধ']])
+  await checkAnswer(page)
+  await expectRight(page)
+  await nextCard(page)
+}
+
+// ---------------- unit 3: Wi-Fi & Bluetooth ----------------
+async function wifiBluetooth(page: Page, mac: boolean) {
+  await coach(page, 'settings-nav-network').click()
+  await coach(page, 'settings-network-PracticeNet').click()
+  if (!mac) await coach(page, 'settings-wifi-connect').click()
+  await expect(coach(page, 'settings-wifi-practice')).toContainText('practice123')
+  await coach(page, 'settings-wifi-password').fill('wrong')
+  await coach(page, mac ? 'settings-wifi-join' : 'settings-wifi-next').click()
+  await expect(coach(page, 'settings-wifi-error')).toBeVisible() // wrong password: gentle error, step does not advance
+  await coach(page, 'settings-wifi-password').fill('practice123')
+  await coach(page, mac ? 'settings-wifi-join' : 'settings-wifi-next').click()
+  await expect(coach(page, 'settings-network-PracticeNet')).toContainText('Connected')
+  await coach(page, 'settings-nav-bluetooth').click()
+  await coach(page, 'settings-bluetoothOn').click()
+  if (mac) {
     await coach(page, 'settings-bt-connect-Practice Speaker').click()
+  } else {
+    await coach(page, 'settings-bt-add').click()
+    await coach(page, 'settings-bt-kind').click()
+    await coach(page, 'settings-bt-device-Practice Speaker').click()
+    await coach(page, 'settings-bt-done').click()
+  }
+}
+
+async function wifiQuiz(page: Page) {
+  await answerClick(page, 'স্পিকারের ছবি') // wrong first
+  await expectWrong(page)
+  await answerClick(page, 'তরঙ্গের ছবি')
+  await expectRight(page)
+  await nextCard(page)
+  await orderItems(page, ['Settings খুলি', 'ওয়াই-ফাইয়ের বিভাগে', 'নেটওয়ার্কের নাম', 'পাসওয়ার্ড লিখে', '“Connected”'])
+  await checkAnswer(page)
+  await expectRight(page)
+  await nextCard(page)
+  await answerChoice(page, /ধীরে আবার লিখব/)
+  await expectRight(page)
+  await nextCard(page)
+}
+
+// ---------------- unit 4: time, printer, language ----------------
+async function timePrinter(page: Page, mac: boolean) {
+  await coach(page, 'settings-nav-time').click()
+  await expect(coach(page, 'settings-timezone')).toHaveValue('America/New_York') // the lesson starts in New York on purpose
+  await coach(page, 'settings-timezone').selectOption('Asia/Dhaka')
+  if (mac) {
     await coach(page, 'settings-nav-printers').click()
     await coach(page, 'settings-printer-add').click()
     await coach(page, 'settings-printer-pick-Practice Inkjet').click()
     await coach(page, 'settings-printer-confirm').click()
-    await expect(page.getByText(/সব ধাপ শেষ/)).toBeVisible()
-    expect(errors).toEqual([])
-    const saved = await page.evaluate(() => JSON.parse(localStorage.getItem('computer-shikhi:v1')!).modules['10'].stepsDone.mac.length)
-    expect(saved).toBe(26)
-  })
-})
+  } else {
+    await coach(page, 'settings-nav-bluetooth').click()
+    await coach(page, 'settings-link-printers').click()
+    await coach(page, 'settings-printer-add').click()
+    await coach(page, 'settings-printer-found-Practice Inkjet').click()
+  }
+}
 
-test.describe('Module 10 widget', () => {
-  test('settings map shows both systems', async ({ page }) => {
-    await seedProfile(page, 'mac', SETTINGS)
-    await page.goto('/#/module/10')
+async function timeQuiz(page: Page) {
+  await matchPairs(page, [['Time zone', 'কোন অঞ্চলের সময় দেখাবে'], ['Bluetooth', 'তার ছাড়া স্পিকার জোড়া'], ['Printer', 'কাগজে ছাপা'], ['Language', 'মেনু কোন ভাষায় দেখাবে']])
+  await checkAnswer(page)
+  await expectRight(page)
+  await nextCard(page)
+  await answerChoice(page, /New York/) // wrong first
+  await expectWrong(page)
+  await answerChoice(page, /Dhaka \(UTC\+6\)/)
+  await expectRight(page)
+  await nextCard(page)
+  await answerChoice(page, /প্রিন্টার চালু আর একই ওয়াই-ফাইয়ে/)
+  await expectRight(page)
+  await nextCard(page)
+}
+
+const UNITS = [
+  { id: 'look', cards: { windows: 5, mac: 5 }, practice: look, quiz: lookQuiz, steps: { windows: 10, mac: 8 } },
+  { id: 'sound-light', cards: { windows: 4, mac: 4 }, practice: sound, quiz: soundQuiz, steps: { windows: 5, mac: 5 } },
+  { id: 'wifi-bluetooth', cards: { windows: 4, mac: 4 }, practice: wifiBluetooth, quiz: wifiQuiz, steps: { windows: 11, mac: 7 } },
+  { id: 'time-printer', cards: { windows: 5, mac: 5 }, practice: timePrinter, quiz: timeQuiz, steps: { windows: 6, mac: 6 } },
+] as const
+
+test.describe('Module 10 cards flow', () => {
+  for (const os of ['windows', 'mac'] as const) {
+    test(`${os}: all four units end to end, progress saved`, async ({ page }) => {
+      await seedProfile(page, os)
+      const problems = watchProblems(page)
+      await openModule(page, 10)
+      await expect(page.getByTestId('units-overview')).toBeVisible()
+      for (let i = 0; i < UNITS.length; i++) {
+        const u = UNITS[i]
+        if (i === 0) await startUnit(page, 0)
+        else {
+          await primary(page).click() // from the previous celebration to the next unit
+          await expect(page.getByTestId('deck-hook')).toBeVisible()
+        }
+        // every card must fit without scrolling (the widget card scrolls inside itself)
+        for (let c = 0; c < u.cards[os]; c++) {
+          await nextCard(page)
+          if (u.id !== 'look' || c !== 1) await expectNoScroll(page)
+        }
+        await skipToPractice(page)
+        await expect(primary(page)).toBeDisabled() // practice cannot be skipped
+        await u.practice(page, os === 'mac')
+        await expectPracticeDone(page)
+        await nextCard(page)
+        expect(await slideKind(page)).toBe('quiz')
+        await u.quiz(page)
+        expect(await slideKind(page)).toBe('celebrate')
+      }
+      const done = await savedProgress(page)
+      expect(done.modules['10'].unitsDone).toEqual(UNITS.map((u) => u.id))
+      expect(done.modules['10'].completed).toBe(true)
+      expect(done.modules['10'].stepsDone[os]).toHaveLength(UNITS.reduce((n, u) => n + u.steps[os], 0)) // 32 / 26
+      expect(done.modules['10'].stepsDone[os === 'mac' ? 'windows' : 'mac']).toEqual([])
+      for (const u of UNITS) expect(done.modules['10'].unitQuiz[u.id].total).toBe(3)
+      await page.getByTestId('real-world-toggle').click()
+      await expect(page.getByRole('region', { name: 'এবার আসল কম্পিউটারে' })).toBeVisible()
+      expect(problems).toEqual([])
+    })
+  }
+
+  test('the settings-map widget card works and shows both systems', async ({ page }) => {
+    await seedProfile(page, 'mac')
+    await openModule(page, 10)
+    await startUnit(page, 0)
+    await nextCard(page, 2) // compare card, then the widget card
     await page.locator('[data-setting="printer"]').click()
     await expect(page.getByTestId('settings-map-result')).toContainText('Printers & Scanners')
     await expect(page.getByTestId('settings-map-result').locator('[data-os="mac"]')).toContainText('আপনার')
+    await expect(page.getByTestId('settings-map-result').locator('[data-os="windows"]')).toContainText('Printers & scanners')
   })
-})
 
-test.describe('Module 10 quiz', () => {
-  for (const os of ['windows', 'mac'] as const) {
-    test(`quiz completes (${os})`, async ({ page }) => {
-      await seedProfile(page, os, SETTINGS)
-      await page.goto('/#/module/10')
-      await page.getByRole('button', { name: /কুইজ/ }).first().click()
-      // q1 click the Wi-Fi icon (wrong first)
-      await page.getByRole('button', { name: /স্পিকারের ছবি/ }).click()
-      await expect(page.getByText(/একটু আবার ভেবে দেখি/)).toBeVisible()
-      await page.getByRole('button', { name: /তরঙ্গের ছবি/ }).click()
-      await page.getByRole('button', { name: /পরের প্রশ্ন/ }).click()
-      // q2 ordering
-      const want = ['Settings খুলুন', 'Network & internet', 'নেটওয়ার্কের নামটি', 'পাসওয়ার্ড লিখে', '“Connected”']
-      for (let i = 0; i < want.length; i++) {
-        for (let guard = 0; guard < 8; guard++) {
-          const items = await page.locator('ol > li').allInnerTexts()
-          const cur = items.findIndex((t) => t.includes(want[i]))
-          if (cur <= i) break
-          await page.locator('ol > li').nth(cur).getByRole('button', { name: 'ওপরে সরান' }).click()
-        }
-      }
-      await page.getByRole('button', { name: 'যাচাই করুন' }).click()
-      await page.getByRole('button', { name: /পরের প্রশ্ন/ }).click()
-      // q3 drag-match
-      for (const [slot, chip] of [
-        ['Brightness (উজ্জ্বলতা)', 'পর্দার আলো কম-বেশি করা'],
-        ['Volume (আওয়াজ)', 'স্পিকারের শব্দ জোরে বা আস্তে করা'],
-        ['Wallpaper', 'ডেস্কটপের পেছনের ছবি বদলানো'],
-        ['Time zone', 'ঘড়িতে কোন অঞ্চলের সময় দেখাবে'],
-        ['Bluetooth', 'তার ছাড়া স্পিকার বা হেডফোন জোড়া'],
-      ]) {
-        await page.getByRole('button', { name: chip, exact: true }).click()
-        await page.getByRole('button', { name: new RegExp(`^${esc(slot)} — এখানে বসান`) }).click()
-      }
-      await page.getByRole('button', { name: 'যাচাই করুন' }).click()
-      await page.getByRole('button', { name: /পরের প্রশ্ন/ }).click()
-      // q4, q5 multiple choice
-      await page.getByLabel(/Display সেটিংসে Scale/).check()
-      await page.getByRole('button', { name: 'উত্তর দিন' }).click()
-      await page.getByRole('button', { name: /পরের প্রশ্ন/ }).click()
-      await page.getByLabel(/ধীরে আবার লিখব/).check()
-      await page.getByRole('button', { name: 'উত্তর দিন' }).click()
-      await page.getByRole('button', { name: /কুইজ শেষ করি/ }).click()
-      const q = await page.evaluate(() => JSON.parse(localStorage.getItem('computer-shikhi:v1')!).modules['10'].quiz)
-      expect(q.total).toBe(5)
-      expect(q.score).toBe(4)
-    })
-  }
+  test('unit 4 starts the clock in New York and the Wi-Fi password is shown on screen (Windows)', async ({ page }) => {
+    await seedProfile(page, 'windows')
+    await openModule(page, 10)
+    await startUnit(page, 3)
+    await skipToPractice(page)
+    await expect(page.getByTestId('coach-bubble')).toContainText('Time & language')
+    await coach(page, 'settings-nav-time').click()
+    await expect(coach(page, 'settings-timezone')).toHaveValue('America/New_York')
+  })
+
+  test('a wrong action does not advance the practice; hint is one tap away', async ({ page }) => {
+    await seedProfile(page, 'mac')
+    await openModule(page, 10)
+    await startUnit(page, 1)
+    await skipToPractice(page)
+    const bubble = page.getByTestId('coach-bubble')
+    await expect(bubble).toContainText('Sound')
+    await coach(page, 'settings-nav-network').click()
+    await expect(bubble).toContainText('Sound')
+    await bubble.getByRole('button', { name: /হিন্ট/ }).click()
+    await expect(page.getByTestId('coach-hint')).toContainText('Displays')
+  })
 })

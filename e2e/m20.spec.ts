@@ -1,21 +1,37 @@
 import { expect, test, type Page } from '@playwright/test'
-import { seedProfile } from './helpers'
+import {
+  answerChoice,
+  answerClick,
+  checkAnswer,
+  expectNoScroll,
+  expectPracticeDone,
+  expectRight,
+  nextCard,
+  openModule,
+  orderItems,
+  predict as predictQuiz,
+  primary,
+  savedProgress,
+  seedProfile,
+  skipToPractice,
+  slideKind,
+  startUnit,
+  watchProblems,
+} from './helpers'
 import lesson from '../src/content/lessons/m20'
+
+/**
+ * Module 20 (প্রথম কোড, the finale): eight units. Each unit: cards (code visuals, widgets) → practice in the Code Editor
+ * (HTML/CSS/Python, real Pyodide) → three quiz questions → celebration. The last unit finishes the module:
+ * certificate 2 and the /next-steps roadmap.
+ */
 
 const SIM = '[data-sim-root]'
 const hw = (page: Page, id: string) => page.locator(`${SIM} [data-coach="${id}"]`).first()
 const cm = (page: Page) => page.locator(`${SIM} .cm-content`)
 const frame = (page: Page) => page.frameLocator(`${SIM} [data-coach="code-preview"]`)
-const ids = (chId: string, os: 'windows' | 'mac') => lesson.chapters!.find((c) => c.id === chId)!.steps.filter((s) => s.osVariant === os || s.osVariant === 'both').map((s) => s.id)
-
-async function openChapter(page: Page, chapterId: string) {
-  const ch = lesson.chapters!.find((c) => c.id === chapterId)!
-  await page.goto('/#/module/20')
-  await page.getByRole('button', { name: /হাতে-কলমে/ }).click()
-  await page.locator('li', { hasText: ch.titleBn }).getByRole('button', { name: /শুরু করি|আবার করি/ }).click()
-  await page.getByRole('button', { name: /▶ শুরু করি/ }).click()
-  await expect(hw(page, 'code-editor')).toBeVisible()
-}
+const unitSteps = (unitId: string) => lesson.units.find((u) => u.id === unitId)!.steps.map((s) => s.id)
+const UNIT_IDS = lesson.units.map((u) => u.id)
 
 const openFile = (page: Page, name: string) => hw(page, `code-explorer-${name}`).click()
 
@@ -39,19 +55,13 @@ async function save(page: Page, os: 'windows' | 'mac') {
   await page.keyboard.press(os === 'mac' ? 'Meta+s' : 'Control+s')
   await page.waitForTimeout(300)
 }
-const predict = async (page: Page, answer: string) => {
+/** the coach bubble's "what will be printed?" box */
+const predictStep = async (page: Page, answer: string) => {
   await page.getByLabel(/আপনার মনে হয় কী ছাপা হবে/).fill(answer)
   await page.getByRole('button', { name: 'উত্তর দিন' }).click()
 }
 const run = (page: Page) => hw(page, 'code-run').click()
 const output = (page: Page) => hw(page, 'code-output')
-
-async function expectChapterDone(page: Page, os: 'windows' | 'mac', chapterId: string) {
-  await expect(page.getByText(/সব ধাপ শেষ/)).toBeVisible({ timeout: 20000 })
-  const saved = await page.evaluate((o) => JSON.parse(localStorage.getItem('computer-shikhi:v1')!).modules['20'].stepsDone[o] as string[], os)
-  for (const id of ids(chapterId, os)) expect(saved, id).toContain(id)
-}
-
 async function answerPrompt(page: Page, value: string) {
   const box = hw(page, 'code-input')
   await expect(box).toBeVisible({ timeout: 20000 })
@@ -59,33 +69,40 @@ async function answerPrompt(page: Page, value: string) {
   await hw(page, 'code-input-send').click()
 }
 
+const esc = (t: string) => t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+/** dragMatch by tap-then-tap; the labels are matched literally (some are code like "*" or "**") */
+async function match(page: Page, pairs: [string, string][]) {
+  for (const [left, right] of pairs) {
+    await page.getByTestId('match-chip').filter({ hasText: new RegExp(`^${esc(right)}$`) }).click()
+    await page.getByTestId('match-slot').and(page.getByRole('button', { name: new RegExp(`^${esc(left)} — এখানে বসান`) })).click()
+  }
+}
+const finish = async (page: Page) => {
+  await expectRight(page)
+  await nextCard(page)
+}
+
 type Walk = (page: Page, os: 'windows' | 'mac') => Promise<void>
 
-const WALKS: Record<string, Walk> = {
-  'html-1': async (page, os) => {
+/** practice walks, by unit id */
+const PRACTICE: Record<string, Walk> = {
+  'html-basics': async (page, os) => {
     await openFile(page, 'index.html')
     await expect(hw(page, 'code-preview')).toBeVisible()
-    await page.getByRole('button', { name: /বুঝেছি, পরের ধাপ/ }).click()
     await endOfLine(page, 8)
     await typeText(page, '<h1>Hello, world</h1>')
     await expect(frame(page).locator('h1')).toHaveText('Hello, world')
     await typeText(page, '\n<p>I am learning to code.</p>')
     await typeText(page, '\n<h2>About me</h2>')
-    await save(page, os)
-  },
-  'html-2': async (page, os) => {
-    await openFile(page, 'index.html')
-    await endOfLine(page, 9)
-    await typeText(page, '<ul>\n<li>Rice</li>')
+    await typeText(page, '\n<ul>\n<li>Rice</li>')
     await typeText(page, '\n<li>Dal</li>')
     await typeText(page, '\n</ul>')
     await expect(frame(page).locator('li')).toHaveCount(2)
     await typeText(page, '\n<a href="https://example.com">My link</a>')
     await save(page, os)
   },
-  'html-3': async (page, os) => {
+  'html-extras': async (page, os) => {
     await openFile(page, 'index.html')
-    await page.getByRole('button', { name: /বুঝেছি, পরের ধাপ/ }).click()
     await expect(frame(page).locator('p')).toContainText('ক্ষ, স্ত, ন্দ')
     await endOfLine(page, 5)
     await typeText(page, '<meta charset="utf-8">')
@@ -94,7 +111,7 @@ const WALKS: Record<string, Walk> = {
     await typeText(page, '\n<!-- my first image -->')
     await save(page, os)
   },
-  'css-1': async (page, os) => {
+  css: async (page, os) => {
     await openFile(page, 'index.html')
     await endOfLine(page, 6)
     await typeText(page, '<link rel="stylesheet" href="style.css">')
@@ -106,23 +123,19 @@ const WALKS: Record<string, Walk> = {
     await typeText(page, '\nfont-size: 48px;')
     await typeText(page, '\ntext-align: center;')
     await expect.poll(() => frame(page).locator('h1').evaluate((e) => getComputedStyle(e).textAlign)).toBe('center')
-    await save(page, os)
-  },
-  'css-2': async (page, os) => {
-    await openFile(page, 'style.css')
-    await endOfLine(page, 3)
+    // h1 now spans lines 2-6, so the body rule's empty line is 9
+    await endOfLine(page, 9)
     await typeText(page, 'background-color: lightyellow;')
     await typeText(page, '\nmargin: 40px;')
-    await endOfLine(page, 8)
-    await page.keyboard.press('ArrowUp') // the blank line inside p { }
-    await page.keyboard.press('End')
+    // body spans 8-11, p's empty line is 14
+    await endOfLine(page, 14)
     await typeText(page, 'background-color: white;')
     await typeText(page, '\npadding: 16px;')
     await save(page, os)
   },
-  'py-1': async (page) => {
+  'py-print': async (page) => {
     await openFile(page, 'hello.py')
-    await predict(page, 'Hello, Python!')
+    await predictStep(page, 'Hello, Python!')
     await run(page)
     await expect(output(page)).toContainText('Hello, Python!', { timeout: 30000 })
     await endOfDoc(page)
@@ -130,33 +143,42 @@ const WALKS: Record<string, Walk> = {
     await run(page)
     await expect(output(page)).toContainText('My name is Rumi', { timeout: 30000 })
     await openFile(page, 'greet.py')
-    await predict(page, 'hello, rumi') // wrong first (gentle nudge) ...
+    await predictStep(page, 'hello, rumi') // wrong first (gentle nudge) ...
     await expect(page.getByText(/প্রায় হয়েছে/)).toBeVisible()
-    await page.getByLabel(/আপনার মনে হয় কী ছাপা হবে/).fill('Hello, Rumi')
-    await page.getByRole('button', { name: 'উত্তর দিন' }).click()
+    await predictStep(page, 'Hello, Rumi')
     await cm(page).click()
     await page.getByText('"Rumi"').first().dblclick() // select the name only
     await page.keyboard.type('Anika')
     await run(page)
     await expect(output(page)).toContainText('Hello, Anika', { timeout: 30000 })
+    // the deliberate typo: friendly Bengali error, then fix
+    await openFile(page, 'oops.py')
+    await run(page)
+    await expect(hw(page, 'code-error')).toBeVisible({ timeout: 30000 })
+    await expect(hw(page, 'code-error')).toContainText('NameError')
+    await expect(hw(page, 'code-error')).toContainText('prnt')
+    await endOfLine(page, 1)
+    await page.keyboard.press('Shift+Home')
+    await page.keyboard.type('print("Hello")')
+    await run(page)
+    await expect(output(page)).toContainText('Hello', { timeout: 30000 })
   },
-  'py-2': async (page) => {
+  'py-input': async (page) => {
     await openFile(page, 'ask.py')
     await run(page)
     await answerPrompt(page, 'Anika')
     await openFile(page, 'calc.py')
-    await predict(page, '100')
+    await predictStep(page, '100')
     await run(page)
     await expect(output(page)).toContainText('3.5', { timeout: 30000 })
     await openFile(page, 'next.py')
-    await predict(page, '31')
+    await predictStep(page, '31')
     await run(page)
     await answerPrompt(page, '30')
   },
-  'py-3': async (page) => {
+  'py-logic': async (page) => {
     await openFile(page, 'check.py')
-    await page.getByRole('button', { name: /বুঝেছি, পরের ধাপ/ }).click()
-    await predict(page, 'Adult')
+    await predictStep(page, 'Adult')
     await run(page)
     await expect(output(page)).toContainText('Adult', { timeout: 30000 })
     await endOfLine(page, 1)
@@ -169,10 +191,8 @@ const WALKS: Record<string, Walk> = {
     await page.keyboard.type('age = 18')
     await run(page)
     await expect(output(page)).toContainText('Adult', { timeout: 30000 })
-  },
-  'py-4': async (page) => {
     await openFile(page, 'loop.py')
-    await predict(page, 'Hello 0')
+    await predictStep(page, 'Hello 0')
     await run(page)
     await expect(output(page)).toContainText('Hello 2', { timeout: 30000 })
     await endOfLine(page, 1)
@@ -180,15 +200,6 @@ const WALKS: Record<string, Walk> = {
     await page.keyboard.type('for i in range(5):')
     await run(page)
     await expect(output(page)).toContainText('Hello 4', { timeout: 30000 })
-    await openFile(page, 'oops.py')
-    await run(page)
-    await expect(hw(page, 'code-error')).toBeVisible({ timeout: 30000 })
-    await expect(hw(page, 'code-error')).toContainText('NameError')
-    await endOfLine(page, 1)
-    await page.keyboard.press('Shift+Home')
-    await page.keyboard.type('print("Hello")')
-    await run(page)
-    await expect(output(page)).toContainText('Hello', { timeout: 30000 })
   },
   'proj-web': async (page, os) => {
     await openFile(page, 'index.html')
@@ -234,74 +245,172 @@ const WALKS: Record<string, Walk> = {
   },
 }
 
-const FULL = ['html-1', 'html-2', 'html-3', 'css-1', 'css-2', 'py-1', 'py-2', 'py-3', 'py-4', 'proj-web', 'proj-py']
-// Mac runs the chapters whose Mac-specific behaviour matters (saving with Cmd+S, typing, Python)
-const MAC = ['html-1', 'css-1', 'py-1', 'proj-py']
+/** quiz walks (three questions each), by unit id */
+const QUIZ: Record<string, (page: Page) => Promise<void>> = {
+  'html-basics': async (page) => {
+    await match(page, [['<h1>', 'বড় শিরোনাম'], ['<p>', 'অনুচ্ছেদ'], ['<ul>', 'বুলেট-তালিকা'], ['<a href>', 'লিংক']])
+    await checkAnswer(page)
+    await finish(page)
+    await answerChoice(page, '</p>')
+    await finish(page)
+    await orderItems(page, ['<ul> দিয়ে শুরু', '<li>Rice</li>', '<li>Dal</li>', '</ul> দিয়ে শেষ'])
+    await checkAnswer(page)
+    await finish(page)
+  },
+  'html-extras': async (page) => {
+    await answerChoice(page, '<meta charset="utf-8">')
+    await finish(page)
+    await answerClick(page, 'alt="Tea"')
+    await finish(page)
+    await match(page, [['alt', 'ছবির বর্ণনা'], ['src', 'ছবির ফাইল'], ['<!-- -->', 'নিজের নোট'], ['utf-8', 'বাংলা ঠিক রাখে']])
+    await checkAnswer(page)
+    await finish(page)
+  },
+  css: async (page) => {
+    await answerChoice(page, 'color: red;')
+    await finish(page)
+    await answerClick(page, 'font-size: 48px')
+    await finish(page)
+    await match(page, [['color', 'লেখার রং'], ['font-size', 'লেখার আকার'], ['margin', 'বাইরের ফাঁক'], ['padding', 'ভেতরের ফাঁক']])
+    await checkAnswer(page)
+    await finish(page)
+  },
+  'py-print': async (page) => {
+    await predictQuiz(page, '12')
+    await checkAnswer(page)
+    await finish(page)
+    await answerClick(page, 'prnt("Hi")')
+    await finish(page)
+    await answerChoice(page, 'Anika')
+    await finish(page)
+  },
+  'py-input': async (page) => {
+    await predictQuiz(page, '42')
+    await checkAnswer(page)
+    await finish(page)
+    await answerChoice(page, 'লেখা (স্ট্রিং)')
+    await finish(page)
+    await match(page, [['+', 'যোগ'], ['*', 'গুণ'], ['/', 'ভাগ'], ['**', 'ঘাত']])
+    await checkAnswer(page)
+    await finish(page)
+  },
+  'py-logic': async (page) => {
+    await answerChoice(page, 'if-এর ভেতরের লাইন চলে')
+    await finish(page)
+    await answerClick(page, 'if name ==')
+    await finish(page)
+    await predictQuiz(page, 'small')
+    await checkAnswer(page)
+    await finish(page)
+  },
+  'proj-web': async (page) => {
+    await orderItems(page, ['index.html ফাইল খুলি', 'ট্যাগ দিয়ে লেখা লিখি', 'ফাইল সেভ করি', 'প্রিভিউ দেখে ঠিক করি'])
+    await checkAnswer(page)
+    await finish(page)
+    await answerChoice(page, /<link rel="stylesheet"/)
+    await finish(page)
+    await answerClick(page, 'h1 { color: teal; }')
+    await finish(page)
+  },
+  'proj-py': async (page) => {
+    await predictQuiz(page, '18')
+    await checkAnswer(page)
+    await finish(page)
+    await orderItems(page, ['নাম জিজ্ঞেস করি', 'বয়স জিজ্ঞেস করি', 'শুভেচ্ছা ছাপি', 'if / else দিয়ে সিদ্ধান্ত'])
+    await checkAnswer(page)
+    await finish(page)
+    await match(page, [['input()', 'প্রশ্ন করে'], ['print()', 'পর্দায় ছাপে'], ['if / else', 'সিদ্ধান্ত নেয়'], ['int()', 'লেখা থেকে সংখ্যা']])
+    await checkAnswer(page)
+    await finish(page)
+  },
+}
+
+/** a card the walk visits before the practice (checks the visuals render) */
+const CARD_CHECKS: Record<string, (page: Page) => Promise<void>> = {
+  'html-basics': async (page) => {
+    await nextCard(page) // editor mock
+    await expectNoScroll(page)
+    await nextCard(page) // html-anatomy widget
+    await expect(page.getByTestId('html-anatomy')).toBeVisible()
+    await nextCard(page) // code: h1 / p / h2 with a live preview
+    await expect(page.getByTestId('code-visual')).toBeVisible()
+    await expect(page.getByTestId('code-output')).toBeVisible({ timeout: 8000 })
+    await expectNoScroll(page)
+  },
+  css: async (page) => {
+    await nextCard(page)
+    await expect(page.getByTestId('html-anatomy')).toBeVisible()
+  },
+  'py-print': async (page) => {
+    await nextCard(page) // print card
+    await expect(page.getByTestId('code-visual')).toBeVisible()
+    await expect(page.getByTestId('code-output')).toContainText('Hello, Python!', { timeout: 8000 })
+    await expectNoScroll(page)
+  },
+  'py-input': async (page) => {
+    await nextCard(page, 4) // code-trace widget
+    await expect(page.getByTestId('code-trace')).toBeVisible()
+  },
+  'py-logic': async (page) => {
+    await nextCard(page, 3) // if-else explorer
+    await expect(page.getByTestId('if-else-explorer')).toBeVisible()
+  },
+}
+
+async function playUnit(page: Page, os: 'windows' | 'mac', unitId: string, expectedStepsSoFar?: number) {
+  const idx = UNIT_IDS.indexOf(unitId)
+  await startUnit(page, idx)
+  await expect(page.getByTestId('deck-hook')).toBeVisible()
+  await CARD_CHECKS[unitId]?.(page)
+  await skipToPractice(page)
+  await expect(hw(page, 'code-editor')).toBeVisible({ timeout: 20000 })
+  await expect(primary(page)).toBeDisabled()
+  await PRACTICE[unitId](page, os)
+  await expectPracticeDone(page)
+  const saved = await savedProgress(page)
+  for (const id of unitSteps(unitId)) expect(saved.modules['20'].stepsDone[os], id).toContain(id)
+  if (expectedStepsSoFar !== undefined) expect(saved.modules['20'].stepsDone[os]).toHaveLength(expectedStepsSoFar)
+  await nextCard(page) // to the quiz
+  await QUIZ[unitId](page)
+  expect(await slideKind(page)).toBe('celebrate')
+}
+
+const WIN_UNITS = UNIT_IDS.slice(0, 7) // the finale unit has its own test below
+// Mac runs the units whose Mac-specific behaviour matters (saving with Cmd+S, typing, Python)
+const MAC_UNITS = ['html-basics', 'css', 'py-print', 'proj-web']
 
 for (const os of ['windows', 'mac'] as const) {
-  for (const id of os === 'windows' ? FULL : MAC) {
-    test(`Module 20 chapter ${id} walkthrough (${os})`, async ({ page }) => {
+  for (const unitId of os === 'windows' ? WIN_UNITS : MAC_UNITS) {
+    test(`Module 20 unit ${unitId} end to end (${os})`, async ({ page }) => {
       await seedProfile(page, os)
-      const errors: string[] = []
       // (the seed init-script also runs inside the sandboxed preview iframe, where localStorage is blocked: not an app error)
-      page.on('pageerror', (e) => !/sandboxed/.test(String(e)) && errors.push(String(e)))
-      await openChapter(page, id)
-      await WALKS[id](page, os)
-      await expectChapterDone(page, os, id)
-      expect(errors).toEqual([])
+      const problems = watchProblems(page)
+      await openModule(page, 20)
+      await playUnit(page, os, unitId)
+      expect(problems.filter((p) => !/sandboxed|img-src data:/.test(p))).toEqual([])
     })
   }
 }
 
-test('Module 20: quiz, completion, certificate 2 and the next-steps page', async ({ page }) => {
-  const all = lesson.chapters!.flatMap((c) => c.steps.map((s) => s.id))
+test('Module 20: the finale unit, module celebration, certificate 2 and the next-steps page', async ({ page }) => {
+  const others = UNIT_IDS.slice(0, 7)
+  const doneSteps = lesson.units.slice(0, 7).flatMap((u) => u.steps.map((s) => s.id))
   await seedProfile(page, 'windows', {
-    modules: { 20: { stepsDone: { windows: all, mac: all }, explanationRead: true, freePracticeDone: true, realWorldChecked: [], completed: false } },
+    modules: { 20: { stepsDone: { windows: doneSteps, mac: doneSteps }, explanationRead: true, unitsDone: others, unitQuiz: {}, freePracticeDone: true, realWorldChecked: [], completed: false } },
   })
-  await page.goto('/#/module/20')
-  await expect(page.getByRole('heading', { name: 'প্রথম কোড' })).toBeVisible()
-  // explanation widgets render
-  await expect(page.getByTestId('html-anatomy').first()).toBeVisible()
-  await expect(page.getByTestId('code-trace')).toBeVisible()
-  await page.getByRole('button', { name: /৪ কুইজ/ }).click()
-  // q1 predict
-  await page.getByRole('textbox').fill('12')
-  await page.getByRole('button', { name: /যাচাই করুন|উত্তর দিন/ }).click()
-  await page.getByRole('button', { name: /পরের প্রশ্ন/ }).click()
-  // q2 drag-match (tap, tap)
-  for (const [chip, slot] of [['বড় শিরোনাম', '<h1>'], ['অনুচ্ছেদ', '<p>'], ['বুলেট-তালিকা', '<ul>'], ['লিংক', '<a href="…">'], ['ছবি', '<img alt="…">']]) {
-    await page.getByRole('button', { name: chip, exact: true }).click()
-    await page.getByRole('button', { name: new RegExp(`^${slot.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')} — এখানে বসান`) }).click()
-  }
-  await page.getByRole('button', { name: 'যাচাই করুন' }).click()
-  await page.getByRole('button', { name: /পরের প্রশ্ন/ }).click()
-  // q3 multiple choice
-  await page.getByLabel('color: red;').check()
-  await page.getByRole('button', { name: 'উত্তর দিন' }).click()
-  await page.getByRole('button', { name: /পরের প্রশ্ন/ }).click()
-  // q4 ordering
-  const want = ['index.html ফাইল খুলি', 'ট্যাগ দিয়ে শিরোনাম', 'ফাইলটি সেভ করি', 'প্রিভিউতে ফল']
-  for (let i = 0; i < want.length; i++) {
-    for (let guard = 0; guard < 6; guard++) {
-      const items = await page.locator('ol > li').allInnerTexts()
-      const cur = items.findIndex((t) => t.includes(want[i]))
-      if (cur <= i) break
-      await page.locator('ol > li').nth(cur).getByRole('button', { name: 'ওপরে সরান' }).click()
-    }
-  }
-  await page.getByRole('button', { name: 'যাচাই করুন' }).click()
-  await page.getByRole('button', { name: /পরের প্রশ্ন/ }).click()
-  // q5 click the mistake (wrong first)
-  await page.getByRole('button', { name: /লাইন ১/ }).click()
-  await expect(page.getByText(/একটু আবার ভেবে দেখি/)).toBeVisible()
-  await page.getByRole('button', { name: /লাইন ২/ }).click()
-  await page.getByRole('button', { name: /কুইজ শেষ করি/ }).click()
-  const q = await page.evaluate(() => JSON.parse(localStorage.getItem('computer-shikhi:v1')!).modules['20'].quiz)
-  expect(q.total).toBe(5)
-  expect(q.score).toBe(4)
-
-  await page.getByRole('button', { name: /৭ শেষ/ }).click()
-  await page.getByRole('button', { name: /পাঠ সম্পন্ন করি/ }).click()
+  const problems = watchProblems(page)
+  await openModule(page, 20)
+  await playUnit(page, 'windows', 'proj-py')
+  // module celebration
+  await expect(page.getByTestId('deck-celebrate')).toContainText('পুরো পাঠ সম্পন্ন')
+  const done = await savedProgress(page)
+  expect(done.modules['20'].unitsDone).toEqual([...others, 'proj-py'])
+  expect(done.modules['20'].completed).toBe(true)
+  // real-world tasks sheet, certificate link and the roadmap link
+  await page.getByTestId('real-world-toggle').click()
+  await expect(page.getByText('python hello.py')).toBeVisible()
+  await page.keyboard.press('Escape')
+  await expect(page.getByRole('link', { name: /পরের ধাপের পথ/ })).toBeVisible()
   await page.getByRole('link', { name: /সনদ.*দেখুন/ }).click()
   await expect(page).toHaveURL(/#\/certificate\/2/)
   await expect(page.getByLabel('সনদপত্র')).toContainText('রুমা')
@@ -315,6 +424,7 @@ test('Module 20: quiz, completion, certificate 2 and the next-steps page', async
   // the home page now offers the card
   await page.goto('/#/')
   await expect(page.getByTestId('home-next-steps')).toBeVisible()
+  expect(problems.filter((p) => !/sandboxed|img-src data:/.test(p))).toEqual([])
 })
 
 test('cheat sheets for HTML and Python render', async ({ page }) => {

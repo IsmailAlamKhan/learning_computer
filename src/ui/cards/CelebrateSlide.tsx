@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import type { Lesson, OsFlavor, Unit } from '../../engine/types'
 import { store, useProgress } from '../../state/store'
+import { AddToNotebook } from '../AddToNotebook'
 import { Celebration } from '../Celebration'
 import { InFooter, PrimaryButton } from './DeckFooter'
 import { FitBox } from './FitBox'
@@ -59,9 +60,14 @@ export function CelebrateSlide({ lesson, unit, os, isLastUnit, outcome, primary,
               💻 এবার আসল কম্পিউটারে
             </button>
           )}
-          {isLastUnit && lesson.certificatePart && outcome?.moduleDone && (
+          {isLastUnit && lesson.certificatePart && (outcome?.moduleDone || progress?.completed) && (
             <Link to={`/certificate/${lesson.certificatePart}`} className="btn btn-outline">
               🏆 সনদ দেখুন
+            </Link>
+          )}
+          {isLastUnit && lesson.certificatePart === 2 && (outcome?.moduleDone || progress?.completed) && (
+            <Link to="/next-steps" className="btn btn-outline" data-testid="next-steps-link">
+              🧭 পরের ধাপের পথ
             </Link>
           )}
           {isLastUnit && lesson.teacherTipBn && (
@@ -69,6 +75,7 @@ export function CelebrateSlide({ lesson, unit, os, isLastUnit, outcome, primary,
               👨‍🏫 শিক্ষকের জন্য
             </button>
           )}
+          <AddToNotebook title={`${lesson.titleBn} — ${unit.titleBn}`} body={unit.recapBn.map((t) => `• ${t}`).join('\n')} label="📓 নোটবুকে যোগ করুন" />
           <button type="button" className="deck-more" onClick={onHome}>
             হোমে ফিরি
           </button>
