@@ -1,5 +1,6 @@
 import { expect, test, type Page } from '@playwright/test'
 import { seedA11y, type TextSize } from './a11y-util'
+import { nextCard, openModule, skipToPractice, slideKind, startUnit } from './helpers'
 
 const SIZES = [
   { name: 'laptop', width: 1280, height: 800 },
@@ -8,13 +9,11 @@ const SIZES = [
   { name: 'phone', width: 390, height: 844 },
 ]
 const PAGES = ['/', '/settings', '/glossary', '/notebook', '/cheatsheets', '/cheatsheet/keyboard-shortcuts', '/cheatsheet/terminal-commands', '/certificate/1', '/certificate/2', '/next-steps', '/teacher']
-const SECTIONS = ['১ জানুন', '২ হাতে-কলমে', '৩ নিজে করুন', '৪ কুইজ', '৫ মনে রাখুন', '৬ আসল কম্পিউটারে', '৭ শেষ']
 // modules with the widest widgets (computer parts, keyboard, path explorer, spot-the-scam, flowchart builder, terminal / editor)
 const MODULES = [1, 4, 5, 9, 16, 17, 20]
 const SHOTS = process.env.SHOTS ? '/tmp/s7b-shots' : ''
 
 const overflow = (page: Page) => page.evaluate(() => ({ sw: document.scrollingElement!.scrollWidth, iw: window.innerWidth }))
-const sectionBtn = (page: Page, label: string) => page.getByRole('navigation', { name: 'পাঠের অংশ' }).getByRole('button', { name: label })
 
 /** Widest elements that stick out of the viewport (helps debugging an overflow failure). */
 async function offenders(page: Page) {
@@ -58,25 +57,22 @@ for (const size of SIZES) {
         }
       })
 
-      test('module page sections (incl. widgets and simulator) do not overflow', async ({ page }) => {
+      test('lesson decks (cards, widgets, practice with the simulator) do not overflow', async ({ page }) => {
         test.setTimeout(300_000)
         await page.emulateMedia({ reducedMotion: 'reduce' })
         await seedA11y(page, { textSize: text })
         for (const m of MODULES) {
-          await page.goto(`/#/module/${m}`)
-          await expect(page.getByRole('navigation', { name: 'পাঠের অংশ' })).toBeVisible()
-          for (const label of SECTIONS) {
-            await sectionBtn(page, label).click()
-            if (label.startsWith('২')) {
-              const start = page.getByRole('button', { name: /শুরু করি/ }).first()
-              if (await start.count()) await start.click()
-              await page.waitForTimeout(400)
-            }
-            await check(page, `module ${m} / ${label}`)
-            if (SHOTS && ['normal'].includes(text) && [1, 5].includes(m) && ['১', '২', '৪'].includes(label[0])) {
-              await page.screenshot({ path: `${SHOTS}/${size.name}-${text}-m${m}-${label[0]}.png`, fullPage: size.name === 'phone' })
-            }
+          await openModule(page, m)
+          await startUnit(page, 0)
+          for (let i = 0; i < 12; i++) {
+            await check(page, `module ${m} slide ${i}`)
+            const kind = await slideKind(page)
+            if (kind === 'practice') break
+            await nextCard(page)
           }
+          await expect(page.locator('[data-sim-root]')).toBeVisible({ timeout: 20_000 })
+          await check(page, `module ${m} practice`)
+          if (SHOTS && ['normal'].includes(text) && [1, 5].includes(m)) await page.screenshot({ path: `${SHOTS}/${size.name}-${text}-m${m}-practice.png` })
         }
       })
     })
@@ -85,34 +81,34 @@ for (const size of SIZES) {
 
 test.describe('small screen note', () => {
   test.use({ viewport: { width: 390, height: 844 } })
-  test('is shown on phones for simulator sections, can be dismissed and stays dismissed for the session', async ({ page }) => {
+  test('is shown on phones on the practice slide, can be dismissed', async ({ page }) => {
     await seedA11y(page)
-    await page.goto('/#/module/1')
-    await sectionBtn(page, '৩ নিজে করুন').click()
+    await openModule(page, 1)
+    await startUnit(page, 0)
+    await skipToPractice(page)
     const note = page.getByTestId('small-screen-note')
     await expect(note).toBeVisible()
     await expect(note).toContainText('ল্যাপটপে করলে সবচেয়ে ভালো লাগে')
     await note.getByRole('button', { name: /বন্ধ/ }).click()
     await expect(note).toHaveCount(0)
-    await sectionBtn(page, '২ হাতে-কলমে').click()
-    await expect(page.getByTestId('small-screen-note')).toHaveCount(0)
   })
 
   test('is not shown on laptops', async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 800 })
     await seedA11y(page)
-    await page.goto('/#/module/1')
-    await sectionBtn(page, '৩ নিজে করুন').click()
+    await openModule(page, 1)
+    await startUnit(page, 0)
+    await skipToPractice(page)
     await expect(page.locator('[data-sim-root]')).toBeVisible()
     await expect(page.getByTestId('small-screen-note')).toHaveCount(0)
   })
 
   test('coach bubble does not cover the whole simulator on a phone', async ({ page }) => {
     await seedA11y(page)
-    await page.goto('/#/module/1')
-    await sectionBtn(page, '২ হাতে-কলমে').click()
-    await page.getByRole('button', { name: /শুরু করি/ }).first().click()
-    const bubble = page.getByTestId('coach-overlay').getByRole('status')
+    await openModule(page, 1)
+    await startUnit(page, 0)
+    await skipToPractice(page)
+    const bubble = page.getByTestId('coach-bubble')
     await expect(bubble).toBeVisible()
     const [b, s] = await Promise.all([bubble.boundingBox(), page.locator('[data-sim-root]').boundingBox()])
     expect(b!.height).toBeLessThan(s!.height * 0.75)

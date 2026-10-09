@@ -5,7 +5,7 @@ import { advance, feed, initialRunner, pickPraise, type RunnerState } from '../r
 
 export const HINT_MS = 10_000
 export const DEMO_MS = 20_000
-export const SUCCESS_MS = 1400
+export const SUCCESS_MS = 900
 
 export interface GuidedRun {
   steps: Step[]

@@ -172,9 +172,11 @@ test.describe('keyboard', () => {
     await expect(page.getByTestId('deck-quiz')).toBeVisible()
     const qs = slides.flatMap((x) => (x.kind === 'quiz' ? [x.question] : []))
     // the first answer of the first question is deliberately wrong
+    await expect(page.getByTestId('deck-question')).toHaveText(qs[0].questionBn)
     await answerByKeyboard(page, qs[0], false)
     await expect(page.getByTestId('quiz-wrong')).toBeVisible()
     for (const q of qs) {
+      await expect(page.getByTestId('deck-question')).toHaveText(q.questionBn) // the slide transition is over
       await answerByKeyboard(page, q, true)
       await expect(page.getByTestId('quiz-right')).toBeVisible()
       const next = page.getByTestId('deck-primary')

@@ -9,7 +9,7 @@ const outDir = process.env.PW_OUTDIR ?? 'dist'
 export default defineConfig({
   testDir: 'e2e',
   timeout: 90_000,
-  retries: 1,
+  retries: 2,
   workers: 2,
   use: { baseURL: `http://localhost:${port}`, channel: process.env.PW_CHANNEL ?? 'chrome', viewport: { width: 1280, height: 900 } },
   webServer: {

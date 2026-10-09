@@ -1,4 +1,4 @@
-import { createContext, useContext, type ReactNode } from 'react'
+import { createContext, useContext, useEffect, useRef, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 
 /** The footer slot of the deck (next to the back button). Slides put their ONE primary button there via <InFooter>. */
@@ -10,8 +10,16 @@ export function InFooter({ children }: { children: ReactNode }) {
 }
 
 export function PrimaryButton({ label, disabled, onClick, tone, autoFocus }: { label: string; disabled?: boolean; onClick?: () => void; tone?: 'ok'; autoFocus?: boolean }) {
+  const ref = useRef<HTMLButtonElement>(null)
+  // `autoFocus` only fires when the element mounts; the footer button can be re-used by React, so focus explicitly (and once more a frame later)
+  useEffect(() => {
+    if (!autoFocus || disabled) return
+    ref.current?.focus()
+    const id = requestAnimationFrame(() => ref.current?.focus())
+    return () => cancelAnimationFrame(id)
+  }, [autoFocus, disabled])
   return (
-    <button type="button" className="btn btn-lg deck-primary" data-testid="deck-primary" data-tone={tone} disabled={disabled} onClick={onClick} autoFocus={autoFocus}>
+    <button ref={ref} type="button" className="btn btn-lg deck-primary" data-testid="deck-primary" data-tone={tone} disabled={disabled} onClick={onClick}>
       {label}
     </button>
   )
