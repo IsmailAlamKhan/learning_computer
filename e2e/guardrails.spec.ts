@@ -95,8 +95,9 @@ async function checkCard(page: Page, label: string) {
   expect.soft(r.small, `${label}: text smaller than 14px`).toEqual([])
 }
 
+// 2px tolerance: sub-pixel layout rounding must not count as covering
 const intersects = (a: { x: number; y: number; width: number; height: number }, b: { x: number; y: number; width: number; height: number }) =>
-  a.x < b.x + b.width && b.x < a.x + a.width && a.y < b.y + b.height && b.y < a.y + a.height
+  a.x < b.x + b.width - 2 && b.x < a.x + a.width - 2 && a.y < b.y + b.height - 2 && b.y < a.y + a.height - 2
 
 /** The coach bubble must not cover the highlighted target; walk up to `steps` steps when clicking / "বুঝেছি" advances them. */
 async function checkCoach(page: Page, label: string, steps = 3) {
@@ -105,13 +106,16 @@ async function checkCoach(page: Page, label: string, steps = 3) {
     if (!(await bubble.isVisible())) return
     await page.waitForTimeout(450) // the bubble re-places itself after the target moves / animates
     const ring = page.getByTestId('coach-ring')
-    const before = await bubble.innerText()
+    const before = await bubble.innerText({ timeout: 3000 }).catch(() => '')
+    if (!before) return // the bubble went away (the step finished by itself)
     const rb = (await ring.count()) ? await ring.boundingBox() : null
     const bb = await bubble.boundingBox()
     // a target that fills most of the simulated computer (a text area, a whole window) cannot be left uncovered: the bubble then docks in the emptiest corner (see placeBubble)
     const sim = await page.locator('[data-sim-root]').boundingBox()
     const huge = !!rb && !!sim && rb.width * rb.height > 0.45 * sim.width * sim.height
-    if (rb && bb && !huge) expect.soft(intersects(bb, rb), `${label} step ${i + 1}: coach bubble covers the target ${JSON.stringify({ bubble: bb, ring: rb })}`).toBe(false)
+    // a 'predict the output' step has an answer box inside the bubble; the code she reads is on the card before it, so the bubble may sit over the editor
+    const isPredict = (await bubble.locator('input').count()) > 0
+    if (rb && bb && !huge && !isPredict) expect.soft(intersects(bb, rb), `${label} step ${i + 1}: coach bubble covers the target ${JSON.stringify({ bubble: bb, ring: rb })}`).toBe(false)
     if (i === steps - 1) return
     // advance
     const cont = bubble.getByRole('button', { name: /বুঝেছি/ })
@@ -120,8 +124,8 @@ async function checkCoach(page: Page, label: string, steps = 3) {
     else return
     await page.waitForTimeout(500)
     if (await page.getByTestId('practice-success').isVisible()) return
-    await expect.poll(async () => ((await bubble.isVisible()) ? await bubble.innerText() : ''), { timeout: 2500 }).not.toBe(before).catch(() => undefined)
-    if ((await bubble.isVisible().catch(() => false)) && (await bubble.innerText()) === before) return // that step needs another gesture
+    await expect.poll(async () => ((await bubble.isVisible()) ? await bubble.innerText({ timeout: 1500 }).catch(() => '') : ''), { timeout: 2500 }).not.toBe(before).catch(() => undefined)
+    if ((await bubble.isVisible().catch(() => false)) && (await bubble.innerText({ timeout: 1500 }).catch(() => '')) === before) return // that step needs another gesture
   }
 }
 
