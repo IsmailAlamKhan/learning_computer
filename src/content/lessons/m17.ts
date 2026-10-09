@@ -1,4 +1,4 @@
-import type { ExpectedAction, Lesson, OsFlavor, Step } from '../../engine/types'
+import type { ExpectedAction, LegacyLesson as Lesson, OsFlavor, Step } from '../../engine/types'
 
 const TI = 'terminal-input'
 

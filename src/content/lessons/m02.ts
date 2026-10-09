@@ -1,4 +1,4 @@
-import type { Lesson } from '../../engine/types'
+import type { LegacyLesson as Lesson } from '../../engine/types'
 
 const lesson: Lesson = {
   module: 2,

@@ -16,7 +16,7 @@ import {
   type Fmt,
   type LessonMeta,
 } from './teacher'
-import type { Lesson } from '../engine/types'
+import type { LegacyLesson as Lesson } from '../engine/types'
 import m02 from '../content/lessons/m02'
 import m17 from '../content/lessons/m17'
 import m20 from '../content/lessons/m20'

@@ -4,7 +4,7 @@
  */
 import { lessonSteps } from '../engine/lessonSteps'
 import { MODULES } from '../content/modules'
-import type { Lesson, ModuleMeta, OsFlavor } from '../engine/types'
+import type { LegacyLesson as Lesson, ModuleMeta, OsFlavor } from '../engine/types'
 import type { ModuleProgress, ProgressData } from '../state/progress'
 
 /** Quiz score below this share counts as "needs another look". */

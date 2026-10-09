@@ -1,4 +1,4 @@
-import type { Lesson } from '../../engine/types'
+import type { LegacyLesson as Lesson } from '../../engine/types'
 
 const HELLO_PY = `# এটি Python-এ লেখা একটি ছোট প্রোগ্রাম
 print("স্বাগতম! আমি প্রোগ্রামিং শিখছি")

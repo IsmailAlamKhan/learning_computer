@@ -1,5 +1,5 @@
 import { lazy, Suspense, useCallback, useMemo, useRef, useState, type ComponentProps } from 'react'
-import type { Chapter, Lesson, OsFlavor, Step } from '../../engine/types'
+import type { Chapter, LegacyLesson as Lesson, OsFlavor, Step } from '../../engine/types'
 import { stepsFor } from '../../engine/runner'
 import { useGuidedRun } from '../../engine/coach/useGuidedRun'
 import { CoachOverlay } from '../../engine/coach/CoachOverlay'

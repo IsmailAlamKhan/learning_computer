@@ -1,4 +1,4 @@
-import type { Chapter, Lesson, SimSetup, Step } from '../../engine/types'
+import type { Chapter, LegacyLesson as Lesson, SimSetup, Step } from '../../engine/types'
 import { beginToolPractice } from '../../sim/apps/extra-support/toolState'
 import { INSTALLER_FILES } from '../../sim/apps/extra-support/setupModel'
 

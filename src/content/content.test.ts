@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import type { GlossaryEntry, Lesson } from '../engine/types'
+import type { GlossaryEntry, LegacyLesson as Lesson } from '../engine/types'
 import { MODULES } from './modules'
 import { lessonSteps } from '../engine/lessonSteps'
 

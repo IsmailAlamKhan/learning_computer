@@ -1,4 +1,4 @@
-import type { Lesson, Step } from '../../engine/types'
+import type { LegacyLesson as Lesson, Step } from '../../engine/types'
 
 const MAIL_NOTE = 'Mail প্রোগ্রামটি Windows আর Mac দুই কম্পিউটারেই একই রকম। আসল ইমেইল সেবায় (যেমন ব্রাউজারে ইমেইল খুললে) বোতামের জায়গা একটু আলাদা দেখাতে পারে।'
 

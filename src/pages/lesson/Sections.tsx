@@ -1,5 +1,5 @@
 import { Suspense, useEffect, useState } from 'react'
-import type { ExplanationBlock, Lesson, OsFlavor } from '../../engine/types'
+import type { ExplanationBlock, LegacyLesson as Lesson, OsFlavor } from '../../engine/types'
 import { filterByOs } from '../../engine/filter'
 import { WIDGETS } from '../../content/widgets'
 import { getGlossaryEntry } from '../../content/glossary'

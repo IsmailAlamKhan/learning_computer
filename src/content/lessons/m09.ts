@@ -1,4 +1,4 @@
-import type { Lesson } from '../../engine/types'
+import type { LegacyLesson as Lesson } from '../../engine/types'
 
 const DIFF = 'আপনার কম্পিউটারে একটু আলাদা দেখাতে পারে'
 

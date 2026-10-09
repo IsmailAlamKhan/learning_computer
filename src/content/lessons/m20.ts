@@ -1,4 +1,4 @@
-import type { Chapter, Lesson, SimSetup, Step } from '../../engine/types'
+import type { Chapter, LegacyLesson as Lesson, SimSetup, Step } from '../../engine/types'
 
 /* ------------------------------------------------------------------ *
  * Module 20 — প্রথম কোড (the finale of the course).

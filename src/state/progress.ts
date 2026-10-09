@@ -2,7 +2,8 @@
  * Progress store: pure data + safe persistence. No React in here (see store.ts for the hook).
  * Everything touching localStorage is wrapped in try/catch with an in-memory fallback.
  */
-import type { OsFlavor } from '../engine/types'
+import type { InputKind, OsFlavor, } from '../engine/types'
+import { advanceStreak, dayKey, rollDaily, XP, type DailyProgress, type Streak } from './gamification'
 
 export const STORAGE_KEY = 'computer-shikhi:v1'
 export const SCHEMA_VERSION = 1
@@ -15,6 +16,10 @@ export interface Profile {
   name: string
   os: OsFlavor
   motivation: string
+  /** pointing device: detected automatically, can be changed in Settings */
+  input: InputKind
+  /** true when `os`/`input` were detected by the browser (shown as "detected" in Settings) */
+  autoDetected: boolean
   onboarded: boolean
   createdAt: string
 }
@@ -25,6 +30,8 @@ export interface Settings {
   numerals: NumeralStyle
   /** Teacher option: show every module as unlocked. */
   unlockAll: boolean
+  /** daily goal: number of mini-lessons per day */
+  dailyGoal: number
 }
 
 export interface QuizAttempt {
@@ -39,6 +46,10 @@ export interface ModuleProgress {
   /** step ids completed, per OS flavor, so Windows and Mac progress are tracked separately */
   stepsDone: Record<OsFlavor, string[]>
   explanationRead: boolean
+  /** ids of finished units (mini-lessons) of this module */
+  unitsDone: string[]
+  /** quiz result per unit id */
+  unitQuiz: Record<string, QuizAttempt>
   freePracticeDone: boolean
   quiz?: QuizAttempt
   bestQuizScore?: number
@@ -62,6 +73,10 @@ export interface ProgressData {
   modules: Record<number, ModuleProgress>
   notebook: NotebookNote[]
   certificates: { part: 1 | 2; issuedAt: string; name: string }[]
+  xp: number
+  streak: Streak
+  badges: string[]
+  daily: DailyProgress
   /** Free-form per-module data lessons may stash (capstone checklists, vfs snapshots...). */
   extras: Record<string, unknown>
 }
@@ -70,6 +85,8 @@ export const defaultProfile = (): Profile => ({
   name: '',
   os: 'windows',
   motivation: '',
+  input: 'mouse',
+  autoDetected: false,
   onboarded: false,
   createdAt: new Date().toISOString(),
 })
@@ -79,11 +96,14 @@ export const defaultSettings = (): Settings => ({
   textSize: 'normal',
   numerals: 'bengali',
   unlockAll: false,
+  dailyGoal: 1,
 })
 
 export const emptyModuleProgress = (): ModuleProgress => ({
   stepsDone: { windows: [], mac: [] },
   explanationRead: false,
+  unitsDone: [],
+  unitQuiz: {},
   freePracticeDone: false,
   completed: false,
   realWorldChecked: [],
@@ -96,6 +116,10 @@ export const defaultData = (): ProgressData => ({
   modules: {},
   notebook: [],
   certificates: [],
+  xp: 0,
+  streak: { count: 0, best: 0, lastDay: '' },
+  badges: [],
+  daily: { day: '', lessons: 0, xp: 0 },
   extras: {},
 })
 
@@ -159,9 +183,25 @@ function sanitizeModule(v: unknown): ModuleProgress {
         at: asStr(v.quiz.at),
       }
     : undefined
+  const unitQuiz: Record<string, QuizAttempt> = {}
+  if (isObj(v.unitQuiz)) {
+    for (const [k, q] of Object.entries(v.unitQuiz)) {
+      if (!isObj(q)) continue
+      unitQuiz[k] = {
+        wrongByQuestion: isObj(q.wrongByQuestion)
+          ? (Object.fromEntries(Object.entries(q.wrongByQuestion).filter(([, n]) => typeof n === 'number')) as Record<string, number>)
+          : {},
+        score: asNum(q.score),
+        total: asNum(q.total),
+        at: asStr(q.at),
+      }
+    }
+  }
   return {
     stepsDone: { windows: asStrArr(sd.windows), mac: asStrArr(sd.mac) },
     explanationRead: asBool(v.explanationRead),
+    unitsDone: asStrArr(v.unitsDone),
+    unitQuiz,
     freePracticeDone: asBool(v.freePracticeDone),
     quiz,
     bestQuizScore: typeof v.bestQuizScore === 'number' ? v.bestQuizScore : undefined,
@@ -195,6 +235,8 @@ export function sanitize(raw: unknown): ProgressData {
       name: asStr(p.name).slice(0, 80),
       os: oneOf(p.os, ['windows', 'mac'] as const, 'windows'),
       motivation: asStr(p.motivation).slice(0, 1000),
+      input: oneOf(p.input, ['mouse', 'touchpad'] as const, 'mouse'),
+      autoDetected: asBool(p.autoDetected),
       onboarded: asBool(p.onboarded),
       createdAt: asStr(p.createdAt, d.profile.createdAt),
     },
@@ -203,6 +245,7 @@ export function sanitize(raw: unknown): ProgressData {
       textSize: oneOf(s.textSize, ['normal', 'large', 'xlarge', 'xxlarge'] as const, 'normal'),
       numerals: oneOf(s.numerals, ['bengali', 'western'] as const, 'bengali'),
       unlockAll: asBool(s.unlockAll),
+      dailyGoal: Math.min(5, Math.max(1, Math.round(asNum(s.dailyGoal, 1)))),
     },
     modules: mods,
     notebook: Array.isArray(raw.notebook)
@@ -219,6 +262,12 @@ export function sanitize(raw: unknown): ProgressData {
           .filter((c) => c.part === 1 || c.part === 2)
           .map((c) => ({ part: c.part as 1 | 2, issuedAt: asStr(c.issuedAt), name: asStr(c.name) }))
       : [],
+    xp: Math.max(0, Math.round(asNum(raw.xp))),
+    streak: isObj(raw.streak)
+      ? { count: Math.max(0, asNum(raw.streak.count)), best: Math.max(0, asNum(raw.streak.best)), lastDay: asStr(raw.streak.lastDay) }
+      : d.streak,
+    badges: asStrArr(raw.badges),
+    daily: isObj(raw.daily) ? { day: asStr(raw.daily.day), lessons: Math.max(0, asNum(raw.daily.lessons)), xp: Math.max(0, asNum(raw.daily.xp)) } : d.daily,
     extras: isObj(raw.extras) ? raw.extras : {},
   }
 }
@@ -353,6 +402,52 @@ export class ProgressStore {
     }))
   }
 
+  // ---------- gamification ----------
+  /** Add XP (also counts for today) and keep today's streak alive. */
+  addXp(amount: number, today = dayKey()) {
+    if (amount <= 0) return
+    this.update((d) => {
+      const daily = rollDaily(d.daily, today)
+      return { ...d, xp: d.xp + amount, streak: advanceStreak(d.streak, today), daily: { ...daily, xp: daily.xp + amount } }
+    })
+  }
+
+  awardBadge(id: string) {
+    this.update((d) => (d.badges.includes(id) ? d : { ...d, badges: [...d.badges, id] }))
+  }
+
+  /** Mark a unit (mini-lesson) finished. Returns badges newly earned. */
+  completeUnit(n: number, unitId: string, today = dayKey()): string[] {
+    const before = this.data.badges
+    this.patchModule(n, (m) => (m.unitsDone.includes(unitId) ? m : { ...m, unitsDone: [...m.unitsDone, unitId] }))
+    const first = !this.data.daily || this.data.daily.day !== today || true
+    void first
+    this.update((d) => {
+      const daily = rollDaily(d.daily, today)
+      const already = d.modules[n]?.unitsDone.filter((u) => u === unitId).length ?? 0
+      void already
+      return { ...d, daily: { ...daily, lessons: daily.lessons + 1 } }
+    })
+    this.addXp(XP.unitDone, today)
+    const s = this.data.streak
+    this.awardBadge('first-lesson')
+    if (s.count >= 3) this.awardBadge('streak-3')
+    if (s.count >= 7) this.awardBadge('streak-7')
+    return this.data.badges.filter((b) => !before.includes(b))
+  }
+
+  recordUnitQuiz(n: number, unitId: string, attempt: Omit<QuizAttempt, 'at'>) {
+    const at = new Date().toISOString()
+    this.patchModule(n, (m) => ({
+      ...m,
+      unitQuiz: { ...m.unitQuiz, [unitId]: { ...attempt, at } },
+      quiz: { ...attempt, at },
+      bestQuizScore: Math.max(m.bestQuizScore ?? 0, attempt.score),
+    }))
+    this.addXp(attempt.score * XP.quizQuestionFirstTry + (attempt.score === attempt.total && attempt.total > 0 ? XP.quizPerfectBonus : 0))
+    if (attempt.score === attempt.total && attempt.total > 0) this.awardBadge('perfect-quiz')
+  }
+
   setExtra(key: string, value: unknown) {
     this.update((d) => ({ ...d, extras: { ...d.extras, [key]: value } }))
   }
@@ -374,7 +469,7 @@ export class ProgressStore {
 
   /** Reset only learning progress, keep profile and settings. */
   resetProgress() {
-    this.update((d) => ({ ...d, modules: {}, certificates: [], extras: {} }))
+    this.update((d) => ({ ...d, modules: {}, certificates: [], extras: {}, xp: 0, streak: { count: 0, best: 0, lastDay: '' }, badges: [], daily: { day: '', lessons: 0, xp: 0 } }))
   }
 
   resetAll() {
