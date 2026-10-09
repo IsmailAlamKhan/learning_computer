@@ -5,6 +5,9 @@
 
 export type OsFlavor = 'windows' | 'mac'
 export type OsVariant = OsFlavor | 'both'
+/** What the learner points with. Detected automatically; 'touch' (touchscreen) is treated like 'touchpad'. */
+export type InputKind = 'mouse' | 'touchpad'
+export type InputVariant = InputKind | 'both'
 
 /** The thing the learner must do to finish a step. */
 export type ExpectedAction =
@@ -64,6 +67,8 @@ export interface Step {
   successMessageBn?: string
   teacherTipBn?: string
   osVariant: OsVariant
+  /** only for learners using this pointing device (auto-detected; see src/lib/device.ts). Default: both. */
+  inputVariant?: InputVariant
 }
 
 interface QuizBase {
@@ -107,34 +112,14 @@ export type QuizQuestion =
 
 export type QuizQuestionType = QuizQuestion['type']
 
-export interface FreePractice {
-  titleBn: string
-  instructionBn: string
-  /** Optional small checklist of things she can try (self-ticked). */
-  checklistBn?: string[]
-}
-
-export interface SummaryCard {
-  titleBn: string
-  pointsBn: string[]
-  extraBn?: string
-}
-
 export interface RealWorldTasks {
+  /** short heading, e.g. "এবার আসল কম্পিউটারে" */
   titleBn: string
+  /** 2–3 safe tasks, each max ~14 words */
   tasksBn: string[]
   windowsTasksBn?: string[]
   macTasksBn?: string[]
 }
-
-/** Blocks used by the "explanation" section. */
-export type ExplanationBlock =
-  | { kind: 'p'; textBn: string }
-  | { kind: 'analogy'; textBn: string }
-  | { kind: 'list'; itemsBn: string[] }
-  | { kind: 'note'; textBn: string }
-  | { kind: 'widget'; widget: string; props?: Record<string, unknown> }
-  | { kind: 'code'; code: string; language?: string }
 
 /** Initial state of the simulated computer for this lesson's practice. */
 export interface SimSetup {
@@ -148,15 +133,86 @@ export interface SimSetup {
   hardware?: boolean
 }
 
-/** An independent micro-lesson inside a module (own steps, own starting state). Progress is saved per step id as usual. */
-export interface Chapter {
+// ---------------------------------------------------------------------------------------------
+// Cards flow (readability overhaul). A Lesson is a list of Units; each Unit is one swipeable deck:
+//   hook → 3–6 micro cards → guided practice (steps) → 3-question quiz → celebration.
+// The deck builder (src/engine/deck.ts) turns a Unit into slides; authors only write the data below.
+// ---------------------------------------------------------------------------------------------
+import type { ArtName, MockName } from '../ui/illustrations/names'
+export type { ArtName, MockName }
+
+/** A small picture used inside compare cards. */
+export type MiniVisual =
+  | { kind: 'art'; name: ArtName }
+  | { kind: 'mock'; name: MockName; os?: OsFlavor; highlight?: string }
+  | { kind: 'big'; emoji: string }
+
+export interface CompareSide {
+  visual: MiniVisual
+  /** 1–3 words, e.g. "Windows" */
+  labelBn: string
+  /** optional one short line under the label (max ~8 words) */
+  captionBn?: string
+}
+
+/** The visual of a card. Every explanation card MUST have one. */
+export type Visual =
+  /** one big original illustration */
+  | { kind: 'art'; name: ArtName; captionBn?: string }
+  /** 2–4 items in a row joined by arrows (input → processing → output) */
+  | { kind: 'flow'; items: { art: ArtName; labelBn: string }[] }
+  /** side-by-side (before/after, Windows vs Mac, right vs wrong) */
+  | { kind: 'compare'; left: CompareSide; right: CompareSide; vs?: string }
+  /** annotated mini-screenshot of the simulated OS with one region highlighted */
+  | { kind: 'mock'; name: MockName; os?: OsFlavor; highlight?: string; captionBn?: string }
+  /** looping 3–4 s animation of a gesture (animated cursor) on a mock */
+  | { kind: 'demo'; gesture: 'click' | 'double-click' | 'right-click' | 'drag' | 'scroll' | 'type' | 'keys' | 'two-finger-tap' | 'two-finger-scroll'; mock?: MockName; os?: OsFlavor; keys?: string; textBn?: string; captionBn?: string }
+  /** annotated code with an animated line-by-line "run" and the output appearing */
+  | { kind: 'code'; lang: 'python' | 'html' | 'css' | 'javascript' | 'shell'; lines: { code: string; noteBn?: string }[]; output?: string[]; browserPreview?: boolean }
+  /** an interactive widget from src/content/widgets (a "পারেন?" challenge moment) */
+  | { kind: 'widget'; widget: string; props?: Record<string, unknown>; captionBn?: string }
+  /** fallback: one huge emoji (use sparingly) */
+  | { kind: 'big'; emoji: string; captionBn?: string }
+
+/**
+ * One screen. ONE idea. `textBn` max ~25 words (hard cap 35), at most 2 short sentences.
+ * Bold key words with **double asterisks** (max 2 per card).
+ */
+export interface Card {
+  id: string
+  /** 'hook' = the relatable 1-line why; 'visual' = one idea + picture; 'compare' = two pictures side by side; 'code' = annotated code */
+  type: 'hook' | 'visual' | 'compare' | 'code'
+  textBn: string
+  visual: Visual
+  /** up to 3 chips (2–3 words each) summarising the idea */
+  chipsBn?: string[]
+  /** extra detail hidden behind "আরও জানুন" (any length, but keep it useful) */
+  learnMoreBn?: string
+  /** only show on this OS (Windows/Mac-specific cards) */
+  osVariant?: OsVariant
+  /** only show for this pointing device (mouse / touchpad) — auto-detected */
+  inputVariant?: InputVariant
+}
+
+/** A sub-lesson: one complete deck. Most modules have one unit; long modules have two or more. */
+export interface Unit {
   id: string
   titleBn: string
-  /** one or two sentences shown on the chapter card */
-  introBn?: string
+  hook: Card
+  /** 3–6 micro cards */
+  cards: Card[]
+  /** guided practice: one action per step; filtered by osVariant and inputVariant */
   steps: Step[]
+  /** starting state of the simulated computer for this unit's practice */
   setup?: SimSetup
+  /** optional progress checklist shown during practice; ticks when all its steps are done */
   checklist?: { id: string; textBn: string; stepIds: string[] }[]
+  /** exactly 3 questions */
+  quiz: QuizQuestion[]
+  /** "মনে রাখুন": max 3 very short items (max ~8 words each) */
+  recapBn: string[]
+  /** optional one-line challenge after the quiz ("পারেন?") */
+  freeTryBn?: string
 }
 
 export interface Lesson {
@@ -166,26 +222,16 @@ export interface Lesson {
   id: string
   titleBn: string
   oneLineBn: string
+  /** minutes for the whole module */
   minutes: number
-  explanation: ExplanationBlock[]
-  /** Steps run in the simulator; osVariant filters which are shown. */
-  steps: Step[]
-  freePractice?: FreePractice
-  quiz: QuizQuestion[]
-  summaryCard: SummaryCard
+  units: Unit[]
+  /** shown on the last celebration card of the module ("এবার আসল কম্পিউটারে") */
   realWorld: RealWorldTasks
+  /** hidden behind a small toggle ("শিক্ষকের জন্য") */
   teacherTipBn?: string
-  /** Glossary term ids introduced here (see src/content/glossary.ts). */
+  /** Glossary term ids introduced here (see src/content/glossary/*.ts). */
   glossaryIds: string[]
-  /** Which simulation hosts the steps. Default 'desktop'. */
-  simulation?: 'desktop' | 'terminal' | 'editor' | 'none' | 'custom'
-  /** starting state of the simulated desktop (open windows, extra files, settings) */
-  setup?: SimSetup
-  /** Micro-lessons: if present, the guided section lists these chapters (each runs on a fresh simulated computer) instead of `steps`. `steps` may then be empty. */
-  chapters?: Chapter[]
-  /** Optional progress checklist shown above the guided practice; an item ticks when all its steps are done. */
-  checklist?: { id: string; textBn: string; stepIds: string[] }[]
-  /** If set, completing this lesson issues the certificate (সনদপত্র) of that part. */
+  /** If set, completing the module issues the certificate (সনদপত্র) of that part. */
   certificatePart?: 1 | 2
 }
 
@@ -204,7 +250,12 @@ export interface GlossaryEntry {
   id: string
   termBn: string
   termEn: string
+  /** ONE short line (max ~18 words) */
   meaningBn: string
+  /** a single emoji shown on the flip card */
+  icon?: string
+  /** optional illustration name from the art library (preferred over `icon`) */
+  art?: ArtName
   /** Introduced in module N. */
   module: number
 }
