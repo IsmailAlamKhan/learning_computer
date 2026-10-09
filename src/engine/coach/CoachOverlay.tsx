@@ -1,16 +1,86 @@
-import { useEffect, useLayoutEffect, useRef, useState, type RefObject } from 'react'
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, type RefObject } from 'react'
 import type { OsFlavor } from '../types'
 import { coachTarget } from '../actions'
 import { demoPlan, type DemoPlan } from '../runner'
 import { comboLabel, normalizeCombo } from '../../sim/shortcuts'
 import type { GuidedRun } from './useGuidedRun'
 import { targetId } from '../actions'
+import { ArtView } from '../../ui/illustrations/ArtView'
+import { useFmt } from '../../ui/useFmt'
 
 interface Rect {
   x: number
   y: number
   w: number
   h: number
+}
+
+export interface Placement {
+  left: number
+  top: number
+  /** slim full-width bar docked to an edge (narrow wrappers) */
+  bar?: boolean
+}
+
+const overlap = (a: Rect, b: Rect) => Math.max(0, Math.min(a.x + a.w, b.x + b.w) - Math.max(a.x, b.x)) * Math.max(0, Math.min(a.y + a.h, b.y + b.h) - Math.max(a.y, b.y))
+const grow = (r: Rect, m: number): Rect => ({ x: r.x - m, y: r.y - m, w: r.w + 2 * m, h: r.h + 2 * m })
+const union = (a: Rect, b: Rect): Rect => {
+  const x = Math.min(a.x, b.x)
+  const y = Math.min(a.y, b.y)
+  return { x, y, w: Math.max(a.x + a.w, b.x + b.w) - x, h: Math.max(a.y + a.h, b.y + b.h) - y }
+}
+
+/**
+ * Pick where the bubble goes so it never covers the highlighted target (+12 px margin) and stays inside the wrapper.
+ * Order: below, above, right, left, then the corners; a huge target (> 45 % of the wrapper) docks to the emptiest corner;
+ * a narrow wrapper (< 520 px) docks a slim bar to the bottom (or the top when the target is down there).
+ */
+export function placeBubble(target: Rect | null, W: number, H: number, bw: number, bh: number): Placement {
+  const M = 8
+  const clampX = (x: number) => Math.max(M, Math.min(x, W - bw - M))
+  const clampY = (y: number) => Math.max(M, Math.min(y, H - bh - M))
+  if (!target) return { left: clampX((W - bw) / 2), top: M }
+  const t = grow(target, 12)
+  const fits = (l: number, tp: number) => l >= M - 0.5 && tp >= M - 0.5 && l + bw <= W - M + 0.5 && tp + bh <= H - M + 0.5
+  const hits = (l: number, tp: number) => overlap({ x: l, y: tp, w: bw, h: bh }, t) > 0
+  if (W < 520) {
+    const barW = W - 2 * M
+    const cand = [H - bh - M, M]
+    const best = cand.map((y) => ({ y, o: overlap({ x: M, y, w: barW, h: bh }, t) })).sort((a, b) => a.o - b.o)[0]
+    return { left: M, top: Math.max(M, best.y), bar: true }
+  }
+  const corners: [number, number][] = [
+    [W - bw - M, H - bh - M],
+    [M, H - bh - M],
+    [W - bw - M, M],
+    [M, M],
+  ]
+  if (target.w * target.h > 0.45 * W * H) {
+    const best = corners.map(([l, tp]) => ({ l, tp, o: overlap({ x: l, y: tp, w: bw, h: bh }, target) })).sort((a, b) => a.o - b.o)[0]
+    return { left: best.l, top: best.tp }
+  }
+  const cx = target.x + target.w / 2 - bw / 2
+  const cy = target.y + target.h / 2 - bh / 2
+  const candidates: [number, number][] = [
+    [clampX(cx), target.y + target.h + 12 + 4],
+    [clampX(cx), target.y - bh - 16],
+    [target.x + target.w + 16, clampY(cy)],
+    [target.x - bw - 16, clampY(cy)],
+    ...corners,
+  ]
+  for (const [l, tp] of candidates) if (fits(l, tp) && !hits(l, tp)) return { left: l, top: tp }
+  // nothing fits cleanly: least overlap
+  const best = [...candidates, ...corners].map(([l, tp]) => ({ l: clampX(l), tp: clampY(tp) })).map((c) => ({ ...c, o: overlap({ x: c.l, y: c.tp, w: bw, h: bh }, target) })).sort((a, b) => a.o - b.o)[0]
+  return { left: best.l, top: best.tp }
+}
+
+/** **bold** markup → <strong>. */
+function Bold({ text }: { text: string }) {
+  return (
+    <>
+      {text.split(/\*\*(.+?)\*\*/g).map((part, i) => (i % 2 ? <strong key={i}>{part}</strong> : <span key={i}>{part}</span>))}
+    </>
+  )
 }
 
 function findEl(wrapper: HTMLElement, id: string | undefined): HTMLElement | null {
@@ -60,9 +130,9 @@ function PredictBox({ run, step }: { run: GuidedRun; step: NonNullable<GuidedRun
     <div className="mt-2 space-y-2">
       <label className="block">
         <span className="text-sm font-medium">আপনার মনে হয় কী ছাপা হবে?</span>
-        <input className="field mt-1 font-mono" value={ans} onChange={(e) => setAns(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && submit()} />
+        <input className="field mt-1 font-mono !min-h-10 !text-base" value={ans} onChange={(e) => setAns(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && submit()} />
       </label>
-      <button className="btn" onClick={submit} disabled={!ans.trim()}>
+      <button className="btn btn-sm" onClick={submit} disabled={!ans.trim()}>
         উত্তর দিন
       </button>
       {tries > 0 && <p className="rounded-lg px-3 py-2 text-sm" style={{ background: 'var(--c-accent-soft)' }}>প্রায় হয়েছে! একটু আবার ভেবে দেখুন — কোড লাইন ধরে ধরে পড়ুন। আন্দাজ ভুল হলেও দোষ নেই, চালিয়ে দেখলেই শেখা হয়।</p>}
@@ -116,41 +186,43 @@ export function CoachOverlay({ run, os, wrapperRef }: Props) {
   const targetKey = step ? coachTarget(step) : undefined
   const active = !!step && !run.state.finished
   const rect = useTargetRect(wrapperRef, targetKey, active && run.phase === 'waiting')
+  // a drag step also needs the drop target to stay visible and reachable: the bubble must not cover it either
+  const dropKey = step?.expectedAction.type === 'drag' ? targetId(step.expectedAction.dropTarget) : undefined
+  const dropRect = useTargetRect(wrapperRef, dropKey, active && run.phase === 'waiting' && !!dropKey)
+  const avoid = useMemo(() => (rect && dropRect ? union(rect, dropRect) : rect), [rect, dropRect])
   const bubbleRef = useRef<HTMLDivElement>(null)
-  const [bubblePos, setBubblePos] = useState<{ left: number; top: number }>({ left: 12, top: 12 })
+  const { n } = useFmt()
+  const [pos, setPos] = useState<Placement>({ left: 12, top: 12 })
+  const [hintOpen, setHintOpen] = useState(false)
+  const [sizeTick, setSizeTick] = useState(0)
   const [cursor, setCursor] = useState<{ x: number; y: number; ripple: number; visible: boolean }>({ x: 0, y: 0, ripple: 0, visible: false })
   const [demoText, setDemoText] = useState('')
   const plan: DemoPlan = step ? demoPlan(step.expectedAction) : { kind: 'none' }
 
-  // place the bubble near the target without covering it
+  // a new step closes the manual hint
+  useEffect(() => setHintOpen(false), [step?.id])
+
+  // re-place when the bubble's own size changes (hint opened, predict box, wrapped text)
+  useEffect(() => {
+    const b = bubbleRef.current
+    if (!b || typeof ResizeObserver === 'undefined') return
+    const ro = new ResizeObserver(() => setSizeTick((t) => t + 1))
+    ro.observe(b)
+    return () => ro.disconnect()
+  })
+
+  // place the bubble near the target without ever covering it
   useLayoutEffect(() => {
     const w = wrapperRef.current
     const b = bubbleRef.current
     if (!w || !b) return
     const W = w.clientWidth
     const H = w.clientHeight
-    const bw = b.offsetWidth
-    const bh = b.offsetHeight
-    if (!rect) return setBubblePos({ left: Math.max(8, (W - bw) / 2), top: 10 })
-    // a huge target (the whole desktop): float the bubble in the middle so icons stay visible
-    if (rect.w * rect.h > 0.45 * W * H) {
-      const l = Math.max(8, (W - bw) / 2)
-      const t = Math.max(8, (H - bh) / 2)
-      return setBubblePos((p) => (p.left === l && p.top === t ? p : { left: l, top: t }))
-    }
-    let left = rect.x + rect.w / 2 - bw / 2
-    left = Math.max(8, Math.min(left, W - bw - 8))
-    const below = rect.y + rect.h + 16
-    const above = rect.y - bh - 16
-    let top = below + bh <= H - 8 ? below : above >= 8 ? above : Math.max(8, Math.min(H - bh - 8, rect.y + rect.h / 2 - bh / 2))
-    // if neither fits, sit beside the target
-    if (below + bh > H - 8 && above < 8) {
-      const right = rect.x + rect.w + 16
-      left = right + bw <= W - 8 ? right : Math.max(8, rect.x - bw - 16)
-      top = Math.max(8, Math.min(H - bh - 8, rect.y))
-    }
-    setBubblePos((p) => (p.left === left && p.top === top ? p : { left, top }))
-  }, [rect, wrapperRef, step?.id, run.level, run.simplerOpen, run.phase])
+    const bar = W < 520
+    const bw = bar ? W - 16 : Math.min(300, W - 16)
+    const next = placeBubble(avoid, W, H, bw, b.offsetHeight)
+    setPos((p) => (p.left === next.left && p.top === next.top && p.bar === next.bar ? p : next))
+  }, [avoid, wrapperRef, step?.id, run.level, run.simplerOpen, run.phase, hintOpen, sizeTick, demoText])
 
   // "দেখিয়ে দিন": animate the correct action
   useEffect(() => {
@@ -210,6 +282,7 @@ export function CoachOverlay({ run, os, wrapperRef }: Props) {
   const waiting = run.phase === 'waiting'
   const isContinue = step.expectedAction.type === 'continue'
   const text = run.simplerOpen && step.simplerBn ? step.simplerBn : step.explanationBn
+  const showHint = hintOpen || run.level >= 1
 
   return (
     <div className="pointer-events-none absolute inset-0 z-40" data-testid="coach-overlay">
@@ -235,61 +308,62 @@ export function CoachOverlay({ run, os, wrapperRef }: Props) {
         ref={bubbleRef}
         role="status"
         aria-live="polite"
-        className="pointer-events-auto absolute w-[min(340px,calc(100%-16px))] rounded-2xl border-2 p-4 shadow-2xl"
-        style={{ left: bubblePos.left, top: bubblePos.top, background: 'var(--c-surface)', borderColor: 'var(--c-brand)', color: 'var(--c-ink)', fontSize: '1rem', lineHeight: 1.6 }}
+        className="coach-card pointer-events-auto absolute px-3 py-2.5"
+        style={{ left: pos.left, top: pos.top, width: pos.bar ? 'calc(100% - 16px)' : 'min(300px, calc(100% - 16px))' }}
+        data-testid="coach-bubble"
+        data-bar={pos.bar ? 'true' : 'false'}
       >
         {waiting ? (
           <>
-            <div className="mb-1 flex items-center justify-between text-sm" style={{ color: 'var(--c-muted)' }}>
-              <span>
-                ধাপ {run.index + 1} / {run.steps.length}
-              </span>
+            <div className="flex items-start gap-2.5">
+              <span className="flex-none" aria-hidden="true"><ArtView name="didi" size={44} tile={false} /></span>
+              <p className="min-w-0 flex-1 font-medium"><Bold text={text} /></p>
+
             </div>
-            <p className="font-bold">{step.titleBn}</p>
-            <p className="mt-1">{text}</p>
             {plan.kind === 'command' && (
-              <p className="mt-2 rounded-lg px-3 py-2" style={{ background: 'var(--c-sunken)' }}>
-                টার্মিনালে এটি লিখে Enter চাপুন: <code className="font-bold">{Array.isArray((step.expectedAction as { command: string | string[] }).command) ? (step.expectedAction as { command: string[] }).command[0] : (step.expectedAction as { command: string }).command}</code>
+              <p className="mt-1.5 rounded-lg px-2.5 py-1.5 text-sm" style={{ background: 'var(--c-sunken)' }}>
+                লিখে Enter চাপুন: <code className="font-bold">{Array.isArray((step.expectedAction as { command: string | string[] }).command) ? (step.expectedAction as { command: string[] }).command[0] : (step.expectedAction as { command: string }).command}</code>
               </p>
             )}
             {step.expectedAction.type === 'predictOutput' && <PredictBox run={run} step={step} />}
             {plan.kind === 'keys' && (
-              <p className="mt-2">
+              <p className="mt-1.5">
                 <Keycaps keys={plan.keys} os={os} />
               </p>
             )}
             {demoText && (
-              <p className="mt-2 rounded-lg px-3 py-1" style={{ background: 'var(--c-sunken)' }} aria-hidden="true">
+              <p className="mt-1.5 rounded-lg px-2.5 py-1 text-sm" style={{ background: 'var(--c-sunken)' }} aria-hidden="true">
                 লিখুন: <code className="font-bold">{demoText}</code>
               </p>
             )}
-            {run.level >= 1 && (
-              <p className="mt-2 rounded-lg px-3 py-2" style={{ background: 'var(--c-accent-soft)' }}>
-                💡 {step.hintBn}
-              </p>
+            {showHint && (
+              <div className="mt-1.5 rounded-lg px-2.5 py-1.5 text-sm" style={{ background: 'var(--c-accent-soft)' }} data-testid="coach-hint">
+                <p>💡 <Bold text={step.hintBn} /></p>
+                {step.simplerBn && <p className="mt-0.5"><Bold text={step.simplerBn} /></p>}
+              </div>
             )}
-            <div className="mt-3 flex flex-wrap gap-2">
+            <div className="mt-2 flex flex-wrap items-center gap-2">
               {isContinue && (
-                <button className="btn" onClick={run.complete}>
-                  বুঝেছি, পরের ধাপ →
+                <button className="coach-btn" data-primary="true" onClick={run.complete}>
+                  বুঝেছি →
                 </button>
               )}
-              {run.level >= 2 && !isContinue && (
-                <button className="btn" onClick={run.showDemo}>
-                  👀 দেখিয়ে দিন
-                </button>
-              )}
+              <button className="coach-btn" onClick={() => setHintOpen(true)} aria-pressed={showHint}>
+                <span aria-hidden="true">💡</span> হিন্ট
+              </button>
               {!isContinue && (
-                <button className="btn btn-outline" onClick={run.toggleSimpler} aria-pressed={run.simplerOpen}>
-                  🤔 আমি আটকে গেছি
+                <button className={`coach-btn ${run.level >= 2 ? 'coach-nudge' : ''}`} onClick={run.showDemo}>
+                  <span aria-hidden="true">👀</span> দেখিয়ে দিন
                 </button>
               )}
+                            <span className="ml-auto flex-none rounded-full px-2 text-xs font-bold" style={{ background: 'var(--c-sunken)', color: 'var(--c-muted)' }} aria-label={`ধাপ ${n(run.index + 1)} এর মধ্যে ${n(run.steps.length)}`}>
+                {n(run.index + 1)}/{n(run.steps.length)}
+              </span>
             </div>
-            {run.simplerOpen && !step.simplerBn && <p className="mt-2 text-sm">কোনো তাড়া নেই। ওপরের লেখাটি আরেকবার ধীরে পড়ুন, তারপর যেখানে চিহ্ন দেওয়া আছে সেখানে চেষ্টা করুন। দরকার হলে “দেখিয়ে দিন” চাপুন।</p>}
           </>
         ) : (
-          <p className="font-bold" style={{ color: 'var(--c-ok)' }}>
-            ✓ {run.praise}
+          <p className="flex items-center gap-2 font-bold" style={{ color: 'var(--c-ok)' }}>
+            <span aria-hidden="true">✓</span> <span>{run.praise}</span> <span aria-hidden="true" className="spark" style={{ position: 'static' }}>✨</span>
           </p>
         )}
       </div>

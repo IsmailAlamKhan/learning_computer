@@ -1,20 +1,31 @@
 import { expect, test } from '@playwright/test'
-import { seedProfile } from './helpers'
+import { answerChoice, checkAnswer, expectRight, matchPairs, nextCard, openModule, primary, savedProgress, seedProfile, slideKind, startUnit } from './helpers'
 
-test('finishing requires steps + quiz, then completes and persists', async ({ page }) => {
-  await seedProfile(page, 'windows')
-  await page.goto('/#/module/2')
-  await page.getByRole('button', { name: /শেষ/ }).last().click()
-  await expect(page.getByRole('button', { name: /পাঠ সম্পন্ন করি/ })).toBeDisabled()
-  await page.evaluate(() => {
-    const d = JSON.parse(localStorage.getItem('computer-shikhi:v1')!)
-    d.modules['2'] = { stepsDone: { windows: ['w-tour-desktop','w-tour-taskbar','w-select','w-open','w-close','w-rightclick','w-new','w-folder','w-name','w-drag','w-start','w-start-app','w-minimize','w-taskbar-back','w-close-files','w-tray','w-tray-close'], mac: [] }, quiz: { score: 5, total: 5, wrongByQuestion: {}, at: '' }, explanationRead: true, freePracticeDone: false, completed: false, realWorldChecked: [] }
-    localStorage.setItem('computer-shikhi:v1', JSON.stringify(d))
+test('finishing the last unit completes the module, shows it on the overview and home, and persists', async ({ page }) => {
+  // unit 1 finished earlier; she stopped unit 2 at its first quiz question
+  await seedProfile(page, 'windows', {
+    modules: { 2: { stepsDone: { windows: [], mac: [] }, explanationRead: false, unitsDone: ['desktop-click'], unitQuiz: {}, freePracticeDone: false, completed: false, realWorldChecked: [] } },
+    extras: { 'deck:2:taskbar-dock': { index: 6 } },
   })
+  await openModule(page, 2)
+  await expect(page.getByTestId('unit-card-0')).toHaveAttribute('data-state', 'done')
+  await expect(page.getByTestId('unit-card-1')).toHaveAttribute('data-current', 'true')
+  await expect(page.getByTestId('unit-card-1')).toContainText('চালিয়ে যান')
+  await startUnit(page, 1, 'continue')
+  await matchPairs(page, [['একবার ক্লিক', 'বেছে নেওয়া'], ['ডাবল ক্লিক', 'খোলা'], ['রাইট ক্লিক', 'মেনু দেখা'], ['ড্র্যাগ অ্যান্ড ড্রপ', 'ধরে টেনে সরানো']])
+  await checkAnswer(page)
+  await expectRight(page)
+  await nextCard(page)
+  await answerChoice(page, /স্টার্ট \(Windows\)/)
+  await nextCard(page)
+  await answerChoice(page, /নিচের বারে নেমে থাকে/)
+  await nextCard(page)
+  expect(await slideKind(page)).toBe('celebrate')
+  await expect(page.getByTestId('deck-celebrate')).toContainText('পুরো পাঠ সম্পন্ন')
+  const p = await savedProgress(page)
+  expect(p.modules['2'].completed).toBe(true)
   await page.reload()
-  await page.getByRole('button', { name: /শেষ/ }).last().click()
-  await page.getByRole('button', { name: /পাঠ সম্পন্ন করি/ }).click()
-  await expect(page.getByText(/এই পাঠ সম্পন্ন হয়েছে/)).toBeVisible()
+  expect((await savedProgress(page)).modules['2'].completed).toBe(true)
   await page.goto('/#/')
-  await expect(page.getByText('✓ সম্পন্ন').first()).toBeVisible()
+  await expect(page.getByRole('link', { name: /ডেস্কটপ ও স্ক্রিন, সম্পন্ন/ })).toBeVisible()
 })

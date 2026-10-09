@@ -1,6 +1,7 @@
 import { expect, test, type Page } from '@playwright/test'
 import lesson from '../src/content/lessons/m01'
 import type { QuizQuestion } from '../src/engine/types'
+import { mockPlatform } from './platform'
 import { axeScan, fmtViolations, seedA11y, type TextSize, type Theme } from './a11y-util'
 
 const PAGES = [
@@ -99,13 +100,19 @@ test.describe('keyboard', () => {
     await expect(page.getByRole('main')).toHaveCount(1)
     await expect(page.getByRole('navigation', { name: 'প্রধান মেনু' })).toHaveCount(1)
     await expect(page.getByRole('heading', { level: 1 })).toHaveCount(1)
+    // module 2 is a card deck: the units overview has one h1; inside a unit the lesson title is the (visually hidden) h1
     await page.goto('/#/module/2')
     await expect(page.getByRole('heading', { level: 1 })).toHaveCount(1)
-    await expect(page.getByRole('heading', { level: 2 })).toHaveCount(1)
+    await page.getByTestId('unit-card-0').click()
+    await expect(page.getByTestId('deck-slide')).toBeVisible()
+    await expect(page.getByRole('heading', { level: 1 })).toHaveCount(1)
+    // the page behind the full-screen deck takes no focus (header, skip link, help button are inert)
+    expect(await page.evaluate(() => (document.querySelector('header') as HTMLElement).inert)).toBe(true)
   })
 
   test('onboarding -> home -> module -> quiz using the keyboard only', async ({ page }) => {
     test.setTimeout(120_000)
+    await mockPlatform(page, 'Linux') // unknown OS -> the app asks
     await seedA11y(page, { onboarded: false })
     await page.goto('/#/welcome')
     // name field is focused first; type, then Tab to the next button
@@ -114,7 +121,7 @@ test.describe('keyboard', () => {
     await page.keyboard.press('Tab')
     await expect(page.getByRole('button', { name: /পরের ধাপ/ })).toBeFocused()
     await page.keyboard.press('Enter') // -> OS step
-    await expect(page.getByRole('heading', { name: /কোনটি চলে/ })).toBeVisible()
+    await expect(page.getByRole('heading', { name: /কম্পিউটার কোনটি/ })).toBeVisible()
     // radio group: arrow keys change the choice
     await page.getByRole('radio', { name: /Windows/ }).focus()
     await page.keyboard.press('ArrowDown')
@@ -127,7 +134,7 @@ test.describe('keyboard', () => {
     await page.keyboard.press('Enter')
     await expect(page.getByRole('heading', { level: 1, name: /স্বাগতম/ })).toBeVisible()
     // Tab from the top reaches the lesson card link and Enter opens it
-    await page.getByRole('link', { name: /আজকের পাঠ|শুরু করুন|পাঠ ১/ }).first().focus()
+    await page.getByRole('link', { name: /চালিয়ে যান|শুরু করি|পাঠ ১/ }).first().focus()
     await page.keyboard.press('Enter')
     await expect(page).toHaveURL(/#\/module\/1$/)
     await expect(page.getByRole('heading', { level: 1 })).toBeFocused()

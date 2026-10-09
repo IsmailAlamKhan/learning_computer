@@ -9,6 +9,7 @@ const Glossary = lazy(() => import('./pages/Glossary'))
 const ModulePage = lazy(() => import('./pages/ModulePage'))
 const Teacher = lazy(() => import('./pages/Teacher'))
 const ArtGallery = lazy(() => import('./pages/demo/ArtGallery'))
+const DeckGallery = lazy(() => import('./pages/demo/DeckGallery'))
 const Certificate = lazy(() => import('./pages/Certificate'))
 const NextSteps = lazy(() => import('./pages/NextSteps'))
 const ToolsDemo = lazy(() => import('./pages/ToolsDemo'))
@@ -41,6 +42,7 @@ export default function App() {
         <Route path="/demo/tools" element={<L><ToolsDemo /></L>} />
         <Route path="/teacher" element={<L><Teacher /></L>} />
         <Route path="/demo/art" element={<L><ArtGallery /></L>} />
+        <Route path="/demo/deck" element={<L><DeckGallery /></L>} />
         <Route path="/certificate/:part" element={<L><Certificate /></L>} />
         <Route path="/next-steps" element={<L><NextSteps /></L>} />
         <Route path="/cheatsheets" element={<L><CheatSheetList /></L>} />

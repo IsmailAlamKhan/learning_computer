@@ -1,7 +1,7 @@
-import type { ExpectedAction, MatchContext, OsFlavor, Step } from './types'
+import type { ExpectedAction, InputKind, MatchContext, OsFlavor, Step } from './types'
 import { matchAction } from './actions'
 import type { SimEvent } from '../sim/bus'
-import { filterByOs } from './filter'
+import { filterByInput, filterByOs } from './filter'
 
 export interface RunnerState {
   index: number
@@ -12,7 +12,8 @@ export interface RunnerState {
 
 export const initialRunner = (): RunnerState => ({ index: 0, done: [], finished: false })
 
-export const stepsFor = (steps: Step[], os: OsFlavor): Step[] => filterByOs(steps, os)
+/** Steps for this OS and (when given) this pointing device ('touch' counts as 'touchpad'). Without `input` nothing is filtered by device. */
+export const stepsFor = (steps: Step[], os: OsFlavor, input?: InputKind | 'touch'): Step[] => filterByInput(filterByOs(steps, os), input)
 
 /** Result of feeding an event to the runner: did the current step complete? */
 export function feed(state: RunnerState, steps: Step[], ev: SimEvent, os: OsFlavor, ctx: MatchContext = {}): { matched: boolean } {

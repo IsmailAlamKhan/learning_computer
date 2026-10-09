@@ -1,46 +1,68 @@
 import { expect, test } from '@playwright/test'
-import { seedProfile } from './helpers'
+import { answerChoice, answerClick, checkAnswer, expectRight, expectWrong, matchPairs, nextCard, openModule, orderItems, primary, savedProgress, seedProfile, slideKind, startUnit } from './helpers'
+
+/**
+ * Module 2 quizzes, reached with "continue where you left off": the saved deck position is the first quiz slide
+ * (hook + 4 cards + practice = 6 slides before it), so these tests do not repeat the practice.
+ */
+const AT_QUIZ = { 'deck:2:desktop-click': { index: 6 }, 'deck:2:taskbar-dock': { index: 6 } }
 
 for (const os of ['windows', 'mac'] as const) {
-  test(`Module 2 quiz scores and completes (${os})`, async ({ page }) => {
-    await seedProfile(page, os)
-    await page.goto('/#/module/2')
-    await page.getByRole('button', { name: /কুইজ/ }).first().click()
-    // q1 click the right thing — first a wrong pick, then right
-    await page.getByRole('button', { name: /ছবি/ }).click()
-    await expect(page.getByText(/একটু আবার ভেবে দেখি/)).toBeVisible()
-    await page.getByRole('button', { name: /ফোল্ডার/ }).click()
-    await page.getByRole('button', { name: /পরের প্রশ্ন/ }).click()
-    // q2 multiple choice
-    await page.getByLabel(/ডাবল ক্লিক \(পরপর/).check()
-    await page.getByRole('button', { name: 'উত্তর দিন' }).click()
-    await page.getByRole('button', { name: /পরের প্রশ্ন/ }).click()
-    // q3 drag-match using tap-then-tap
-    for (const [chip, slot] of [['বেছে নেওয়া', 'একবার ক্লিক'], ['খোলা', 'ডাবল ক্লিক'], ['অপশনের মেনু দেখা', 'রাইট ক্লিক'], ['ধরে টেনে সরানো', 'ড্র্যাগ অ্যান্ড ড্রপ']]) {
-      await page.getByRole('button', { name: chip, exact: true }).click()
-      await page.getByRole('button', { name: new RegExp(`^${slot} — এখানে বসান`) }).click()
-    }
-    await page.getByRole('button', { name: 'যাচাই করুন' }).click()
-    await page.getByRole('button', { name: /পরের প্রশ্ন/ }).click()
-    // q4 OS-specific
-    await page.getByLabel(os === 'windows' ? /টাস্কবারে/ : /ডক \(Dock\)/).check()
-    await page.getByRole('button', { name: 'উত্তর দিন' }).click()
-    await page.getByRole('button', { name: /পরের প্রশ্ন/ }).click()
-    // q5 ordering
-    const want = ['ফাঁকা জায়গায় রাইট ক্লিক', 'নতুন ফোল্ডার (New Folder) বেছে', 'ফোল্ডারের নাম লিখি', 'Enter চাপি']
-    for (let i = 0; i < want.length; i++) {
-      for (let guard = 0; guard < 6; guard++) {
-        const items = await page.locator('ol > li').allInnerTexts()
-        const cur = items.findIndex((t) => t.includes(want[i]))
-        if (cur <= i) break
-        await page.locator('ol > li').nth(cur).getByRole('button', { name: 'ওপরে সরান' }).click()
-      }
-    }
-    await page.getByRole('button', { name: 'যাচাই করুন' }).click()
-    await page.getByRole('button', { name: /কুইজ শেষ করি/ }).click()
-    await expect(page.getByText(/আপনি 5টির মধ্যে 4টি প্রথমবারেই/)).toBeVisible()
-    const q = await page.evaluate(() => JSON.parse(localStorage.getItem('computer-shikhi:v1')!).modules['2'].quiz)
-    expect(q.total).toBe(5)
-    expect(q.score).toBe(4)
+  test(`Module 2 quizzes score first-try answers and complete the module (${os})`, async ({ page }) => {
+    await seedProfile(page, os, { extras: AT_QUIZ })
+    await openModule(page, 2)
+    await startUnit(page, 0, 'show')
+    // "continue where you left off"
+    await expect(page.getByTestId('deck-resume')).toBeVisible()
+    await primary(page).click()
+    expect(await slideKind(page)).toBe('quiz')
+    await expect(page.getByTestId('deck-question')).toHaveText('নিচের কোনটি ফোল্ডারের আইকন?')
+
+    // q1 clickTarget: a wrong pick (gentle hint, can retry), then right
+    await answerClick(page, 'ছবি')
+    await expectWrong(page)
+    await expect(page.getByTestId('quiz-wrong')).toContainText('আলমারির তাকের মতো')
+    await expect(primary(page)).toBeDisabled()
+    await answerClick(page, 'ফোল্ডার')
+    await expectRight(page)
+    await expect(page.getByTestId('quiz-right')).toContainText('ফোল্ডারে ফাইল সাজিয়ে রাখা হয়')
+    await nextCard(page)
+    // q2 multiple choice, right first time
+    await answerChoice(page, /ডাবল ক্লিক/)
+    await expectRight(page)
+    await nextCard(page)
+    // q3 ordering, wrong once (not sorted), then sorted
+    await checkAnswer(page)
+    await expectWrong(page)
+    await orderItems(page, ['ফাঁকা জায়গায় রাইট ক্লিক', 'নতুন ফোল্ডার বেছে', 'ফোল্ডারের নাম লিখি', 'Enter'])
+    await checkAnswer(page)
+    await expectRight(page)
+    await nextCard(page)
+    expect(await slideKind(page)).toBe('celebrate')
+    const q = (await savedProgress(page)).modules['2'].unitQuiz['desktop-click']
+    expect(q.total).toBe(3)
+    expect(q.score).toBe(1)
+    expect(q.wrongByQuestion['q-folder']).toBe(1)
+    expect(q.wrongByQuestion['q-order']).toBe(1)
+
+    // unit 2: also resumes at its quiz; drag-match with tap-then-tap
+    await primary(page).click()
+    await primary(page).click()
+    await matchPairs(page, [['একবার ক্লিক', 'বেছে নেওয়া'], ['ডাবল ক্লিক', 'খোলা'], ['রাইট ক্লিক', 'মেনু দেখা'], ['ড্র্যাগ অ্যান্ড ড্রপ', 'ধরে টেনে সরানো']])
+    await checkAnswer(page)
+    await expectRight(page)
+    await nextCard(page)
+    await answerChoice(page, /স্টার্ট \(Windows\)/)
+    await expectRight(page)
+    await nextCard(page)
+    await answerChoice(page, 'ফাইলটা মুছে যায়')
+    await expectWrong(page)
+    await answerChoice(page, /নিচের বারে নেমে থাকে/)
+    await expectRight(page)
+    await nextCard(page)
+    const d = await savedProgress(page)
+    expect(d.modules['2'].unitQuiz['taskbar-dock']).toMatchObject({ score: 2, total: 3 })
+    expect(d.modules['2'].completed).toBe(true)
+    expect(d.modules['2'].unitsDone).toEqual(['desktop-click', 'taskbar-dock'])
   })
 }

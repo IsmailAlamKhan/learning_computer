@@ -4,6 +4,12 @@ import { MemoryRouter } from 'react-router-dom'
 import Teacher from '../Teacher'
 import { store } from '../../state/store'
 import m02 from '../../content/lessons/m02'
+import { lessonSteps } from '../../engine/lessonSteps'
+import { stepsFor } from '../../engine/runner'
+
+// module 2 is in the cards format: units with steps (filtered by OS and pointing device) and 3 quiz questions each
+const quiz = m02.units.flatMap((u) => u.quiz)
+const stepsOf = (os: 'windows' | 'mac') => stepsFor(lessonSteps(m02), os, 'mouse')
 
 const ui = () => (
   <MemoryRouter>
@@ -29,11 +35,11 @@ afterEach(() => {
 })
 
 const seed = () => {
-  const ids = m02.steps.filter((s) => s.osVariant !== 'mac').map((s) => s.id)
+  const ids = stepsOf('windows').map((s) => s.id)
   store.setProfile({ name: 'রুমা', os: 'windows', motivation: 'ওয়েবসাইট বানাতে চাই', onboarded: true })
   store.visitModule(2)
   for (const id of ids.slice(0, 3)) store.markStepDone(2, 'windows', id)
-  store.recordQuiz(2, { score: 1, total: m02.quiz.length, wrongByQuestion: { [m02.quiz[0].id]: 2, [m02.quiz[1].id]: 1 } })
+  store.recordUnitQuiz(2, m02.units[0].id, { score: 1, total: 3, wrongByQuestion: { [quiz[0].id]: 2, [quiz[1].id]: 1 } })
   store.setRealWorldChecked(2, 0, true)
   store.markFreePracticeDone(2)
   store.completeModule(1)
@@ -80,8 +86,8 @@ describe('Teacher dashboard', () => {
   it('shows per-module step counts using real lesson data, quiz score and retries', async () => {
     seed()
     render(ui())
-    const total = m02.steps.filter((s) => s.osVariant !== 'mac').length
-    const totalMac = m02.steps.filter((s) => s.osVariant !== 'windows').length
+    const total = stepsOf('windows').length
+    const totalMac = stepsOf('mac').length
     const table = screen.getByTestId('module-table')
     const row = () => table.querySelectorAll('tbody tr')[1]
     await waitFor(() => expect(row().textContent).toContain(`৩/${String(total).replace(/\d/g, (d) => '০১২৩৪৫৬৭৮৯'[Number(d)])}`))
@@ -95,11 +101,11 @@ describe('Teacher dashboard', () => {
   it('lists weak topics with question text, module link and suggestion', async () => {
     seed()
     render(ui())
-    await waitFor(() => expect(screen.getAllByText(m02.quiz[0].questionBn).length).toBeGreaterThan(0))
+    await waitFor(() => expect(screen.getAllByText(quiz[0].questionBn).length).toBeGreaterThan(0))
     const weakTable = screen.getByText(/যেসব কুইজ-প্রশ্নে/).closest('table') as HTMLTableElement
     const rows = weakTable.querySelectorAll('tbody tr')
     expect(rows).toHaveLength(2)
-    expect(rows[0].textContent).toContain(m02.quiz[0].questionBn) // most missed first
+    expect(rows[0].textContent).toContain(quiz[0].questionBn) // most missed first
     expect(rows[0].textContent).toContain('২ বার')
     expect(rows[0].textContent).toContain('এই পাঠটি আবার দেখুন')
     expect(rows[0].querySelector('a')?.getAttribute('href')).toBe('/module/2')

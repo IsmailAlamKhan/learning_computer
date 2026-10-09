@@ -3,11 +3,16 @@ import { store, useProgress } from '../state/store'
 import { Choice } from '../ui/Choice'
 import { Dialog } from '../ui/Dialog'
 import { downloadText } from '../lib/download'
-import type { OsFlavor } from '../engine/types'
+import type { InputKind, OsFlavor } from '../engine/types'
+import { detectInputCapabilities, initialInput, OS_LABEL } from '../lib/device'
+import { INPUT_MANUAL_KEY } from '../lib/useInputDetection'
+import { useFmt } from '../ui/useFmt'
 import type { NumeralStyle, TextSize, ThemeSetting } from '../state/progress'
 
 export default function Settings() {
-  const { profile, settings } = useProgress()
+  const { profile, settings, extras } = useProgress()
+  const { n } = useFmt()
+  const manual = extras[INPUT_MANUAL_KEY] === true
   const [msg, setMsg] = useState('')
   const [confirm, setConfirm] = useState<null | 'progress' | 'all'>(null)
   const file = useRef<HTMLInputElement>(null)
@@ -35,8 +40,20 @@ export default function Settings() {
           <span className="font-bold">নাম</span>
           <input className="field" value={profile.name} maxLength={60} onChange={(e) => store.setProfile({ name: e.target.value })} />
         </label>
+        <label className="block space-y-1">
+          <span className="font-bold">আমার লক্ষ্য</span>
+          <textarea className="field min-h-24" value={profile.motivation} maxLength={500} onChange={(e) => store.setProfile({ motivation: e.target.value })} />
+        </label>
+      </section>
+
+      <section className="card space-y-4" aria-labelledby="s-pc">
+        <h2 id="s-pc" className="text-xl font-bold">আমার কম্পিউটার</h2>
+        <p className="chip chip-brand text-base" data-testid="my-computer">
+          {OS_LABEL[profile.os]} {profile.os === 'windows' ? '💻' : '🍎'} · {profile.input === 'mouse' ? 'মাউস 🖱️' : 'টাচপ্যাড 👆'}
+        </p>
+        {profile.autoDetected && !manual && <p className="text-muted" data-testid="auto-note">স্বয়ংক্রিয়ভাবে চেনা হয়েছে ✓</p>}
         <Choice<OsFlavor>
-          legend="আমার কম্পিউটার"
+          legend="কম্পিউটারের ধরন"
           value={profile.os}
           onChange={(v) => store.setProfile({ os: v })}
           options={[
@@ -44,10 +61,39 @@ export default function Settings() {
             { value: 'mac', label: 'Mac (macOS)' },
           ]}
         />
-        <label className="block space-y-1">
-          <span className="font-bold">আমার লক্ষ্য</span>
-          <textarea className="field min-h-24" value={profile.motivation} maxLength={500} onChange={(e) => store.setProfile({ motivation: e.target.value })} />
-        </label>
+        <Choice<InputKind>
+          legend="পয়েন্টিং ডিভাইস"
+          value={profile.input}
+          onChange={(v) => {
+            store.setExtra(INPUT_MANUAL_KEY, true)
+            store.setProfile({ input: v })
+          }}
+          options={[
+            { value: 'mouse', label: '🖱️ মাউস' },
+            { value: 'touchpad', label: '👆 টাচপ্যাড' },
+          ]}
+        />
+        {manual && (
+          <button
+            className="btn btn-outline btn-sm"
+            onClick={() => {
+              store.setExtra(INPUT_MANUAL_KEY, false)
+              store.setProfile({ input: initialInput(detectInputCapabilities()), autoDetected: true })
+            }}
+          >
+            আবার নিজে থেকে চিনুক
+          </button>
+        )}
+      </section>
+
+      <section className="card space-y-4" aria-labelledby="s-goal">
+        <h2 id="s-goal" className="text-xl font-bold">দৈনিক লক্ষ্য</h2>
+        <Choice<string>
+          legend="দিনে কয়টি ছোট পাঠ?"
+          value={String(settings.dailyGoal)}
+          onChange={(v) => store.setSettings({ dailyGoal: Number(v) })}
+          options={[1, 2, 3].map((k) => ({ value: String(k), label: `${n(k)}টি` }))}
+        />
       </section>
 
       <section className="card space-y-4" aria-labelledby="s-look">

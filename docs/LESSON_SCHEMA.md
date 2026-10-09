@@ -1,5 +1,11 @@
 # Lesson schema
 
+> **Two formats during the migration.** New lessons use the *cards* format (`Lesson` with `units`, one-idea cards, 3 quiz questions per unit) — see
+> [UX_CONTRACT.md](UX_CONTRACT.md) ("Deck engine, UI and authoring guide") and the reference lesson `src/content/lessons/m02.ts`.
+> Everything below describes the *legacy* format (`LegacyLesson`), which keeps working until its module is migrated. Step fields
+> (`id`, `target`, `expectedAction`, `hintBn`, `osVariant`, `inputVariant`…) and the action types are shared by both formats.
+
+
 Lessons are plain TypeScript data files in `src/content/lessons/mNN.ts` (m01 … m20), each with
 `export default lesson satisfies Lesson`. The authoritative types are in
 [`src/engine/types.ts`](../src/engine/types.ts). **No engine code is needed to add or edit a lesson.**

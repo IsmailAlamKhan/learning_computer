@@ -102,7 +102,10 @@ export class InputDetector {
   private burst: number[] = []
   private burstCounted = false
 
-  constructor(public threshold = DEFAULT_THRESHOLD) {}
+  private threshold: number
+  constructor(threshold = DEFAULT_THRESHOLD) {
+    this.threshold = threshold
+  }
 
   feed(e: DetectEvent): Verdict {
     if (e.type === 'pointer') {
@@ -133,7 +136,7 @@ export class InputDetector {
 
     // dense burst of varying magnitudes = finger scrolling (with inertia tail)
     if (!this.burstCounted && this.burst.length >= 6 && new Set(this.burst).size >= 3) {
-      this.touchpad += 4
+      this.touchpad += 6
       this.burstCounted = true
     }
     return this.verdict()

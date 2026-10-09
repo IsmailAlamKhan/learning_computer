@@ -8,7 +8,7 @@ export function HelpButton() {
   return (
     <>
       <button
-        className="btn no-print fixed right-3 bottom-3 z-40 shadow-lg max-sm:h-12 max-sm:w-12 max-sm:rounded-full max-sm:px-0 sm:right-4 sm:bottom-4"
+        className="btn no-print fixed right-3 bottom-3 max-sm:bottom-[4.75rem] z-40 shadow-lg max-sm:h-12 max-sm:w-12 max-sm:rounded-full max-sm:px-0 sm:right-4 sm:bottom-4"
         style={{ background: 'var(--c-accent)', borderColor: 'var(--c-accent)', color: 'var(--c-canvas)' }}
         onClick={() => setOpen(true)}
         aria-haspopup="dialog"

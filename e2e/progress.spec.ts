@@ -2,21 +2,26 @@ import { expect, test, type Page } from '@playwright/test'
 import fs from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'
-import { coach, cont, seedProfile, startGuided } from './helpers'
+import { coach, openModule, seedProfile, skipToPractice, startGuided, startUnit } from './helpers'
 import m02 from '../src/content/lessons/m02'
+import { lessonSteps } from '../src/engine/lessonSteps'
+import { stepsFor } from '../src/engine/runner'
 import m20 from '../src/content/lessons/m20'
 
 const KEY = 'computer-shikhi:v1'
 const stored = (page: Page) => page.evaluate((k) => JSON.parse(localStorage.getItem(k) ?? 'null'), KEY)
 const tmp = (name: string) => path.join(fs.mkdtempSync(path.join(os.tmpdir(), 'cs-e2e-')), name)
 
-/** Module 2 on Windows: the first three steps (two tour steps and selecting the icon). */
+const quizOfM02 = m02.units.flatMap((u) => u.quiz)
+const stepsOfM02 = (os: 'windows' | 'mac') => stepsFor(lessonSteps(m02), os, 'mouse')
+
+/** Module 2 on Windows: open the first unit, go to the practice and select the icon (the first step). */
 async function doFirstSteps(page: Page) {
-  await startGuided(page, 2)
-  await cont(page)
-  await cont(page)
+  await openModule(page, 2)
+  await startUnit(page, 0)
+  await skipToPractice(page)
   await coach(page, 'icon-Welcome.txt').click()
-  await expect(page.getByText('3 / 17')).toBeVisible()
+  await expect(page.getByRole('progressbar', { name: 'ধাপের অগ্রগতি' })).toHaveAttribute('aria-valuenow', '1')
 }
 
 test.describe('step progress', () => {
@@ -24,41 +29,51 @@ test.describe('step progress', () => {
     await seedProfile(page, 'windows')
     await doFirstSteps(page)
     const before = await stored(page)
-    expect(before.modules['2'].stepsDone.windows).toEqual(['w-tour-desktop', 'w-tour-taskbar', 'w-select'])
+    expect(before.modules['2'].stepsDone.windows).toEqual(['select'])
     expect(before.modules['2'].stepsDone.mac).toEqual([])
 
     await page.reload()
     const after = await stored(page)
-    expect(after.modules['2'].stepsDone.windows).toEqual(['w-tour-desktop', 'w-tour-taskbar', 'w-select'])
+    expect(after.modules['2'].stepsDone.windows).toEqual(['select'])
 
-    // the teacher dashboard shows 3 of the Windows steps and none for Mac
+    // the teacher dashboard shows 1 of the Windows steps and none for Mac
     await page.goto('/#/teacher')
     const row = page.getByTestId('module-table').locator('tbody tr').nth(1)
     await expect(row).toContainText('চলছে')
-    const wTotal = m02.steps.filter((s) => s.osVariant !== 'mac').length
-    const mTotal = m02.steps.filter((s) => s.osVariant !== 'windows').length
-    await expect(row.locator('td').nth(3)).toHaveText(`3/${wTotal}`)
+    const wTotal = stepsOfM02('windows').length
+    const mTotal = stepsOfM02('mac').length
+    await expect(row.locator('td').nth(3)).toHaveText(`1/${wTotal}`)
     await expect(row.locator('td').nth(4)).toHaveText(`0/${mTotal}`)
   })
 
-  test('a fully finished guided part is announced when returning', async ({ page }) => {
-    const ids = m02.steps.filter((s) => s.osVariant !== 'mac').map((s) => s.id)
+  test('a finished unit is announced on the overview and when replaying its practice', async ({ page }) => {
+    const ids = stepsOfM02('windows').map((s) => s.id)
     await seedProfile(page, 'windows', {
-      modules: { 2: { stepsDone: { windows: ids, mac: [] }, explanationRead: true, freePracticeDone: false, completed: false, realWorldChecked: [] } },
+      modules: { 2: { stepsDone: { windows: ids, mac: [] }, explanationRead: true, unitsDone: ['desktop-click'], unitQuiz: {}, freePracticeDone: false, completed: false, realWorldChecked: [] } },
     })
-    await page.goto('/#/module/2')
-    await page.getByRole('button', { name: /হাতে-কলমে/ }).click()
-    await expect(page.getByText(/আপনি আগেই এই অংশ শেষ করেছেন/)).toBeVisible()
+    await openModule(page, 2)
+    await expect(page.getByTestId('unit-card-0')).toHaveAttribute('data-state', 'done')
+    await expect(page.getByTestId('unit-card-0')).toContainText('আবার করি')
+    await expect(page.getByTestId('unit-card-1')).toHaveAttribute('data-current', 'true')
+    await startUnit(page, 0)
+    await skipToPractice(page)
+    await expect(page.getByTestId('practice-success')).toContainText('আগেই করেছেন')
+    await expect(page.getByTestId('deck-primary')).toBeEnabled()
   })
 
-  test('the module nav marks sections as done after progress is saved', async ({ page }) => {
-    await seedProfile(page, 'windows', {
-      modules: { 2: { stepsDone: { windows: [], mac: [] }, explanationRead: true, freePracticeDone: true, completed: false, realWorldChecked: [0] } },
-    })
-    await page.goto('/#/module/2')
-    await expect(page.getByRole('button', { name: /সম্পন্ন.*১ জানুন/ })).toBeVisible()
-    await expect(page.getByRole('button', { name: /সম্পন্ন.*৩ নিজে করুন/ })).toBeVisible()
-    await expect(page.getByRole('button', { name: /সম্পন্ন.*৬ আসল কম্পিউটারে/ })).toBeVisible()
+  test('a half-finished unit says "continue" on the overview and resumes at the same card', async ({ page }) => {
+    await seedProfile(page, 'windows')
+    await openModule(page, 2)
+    await startUnit(page, 0)
+    await page.getByTestId('deck-primary').click()
+    await page.getByTestId('deck-primary').click()
+    const at = await page.getByTestId('deck-slide').getAttribute('data-slide-id')
+    await page.reload()
+    await expect(page.getByTestId('unit-card-0')).toContainText('চালিয়ে যান')
+    await startUnit(page, 0, 'show')
+    await expect(page.getByTestId('deck-resume')).toBeVisible()
+    await page.getByTestId('deck-primary').click()
+    await expect(page.getByTestId('deck-slide')).toHaveAttribute('data-slide-id', at ?? '')
   })
 })
 
@@ -75,7 +90,7 @@ test.describe('backup: export, reset, import', () => {
     const exported = JSON.parse(fs.readFileSync(file, 'utf8'))
     expect(exported.app).toBe('computer-shikhi')
     expect(exported.profile.name).toBe('রুমা')
-    expect(exported.modules['2'].stepsDone.windows).toHaveLength(3)
+    expect(exported.modules['2'].stepsDone.windows).toHaveLength(1)
     await expect(page.locator('p[role="status"]')).toContainText('ব্যাকআপ ফাইলটি আপনার কম্পিউটারে সেভ হয়েছে')
 
     // reset progress (confirm dialog), name and settings stay
@@ -88,15 +103,15 @@ test.describe('backup: export, reset, import', () => {
     await page.locator('input[type="file"]').setInputFiles(file)
     await expect(page.locator('p[role="status"]')).toContainText('আগের অগ্রগতি ফিরে এসেছে')
     const restored = await stored(page)
-    expect(restored.modules['2'].stepsDone.windows).toEqual(['w-tour-desktop', 'w-tour-taskbar', 'w-select'])
+    expect(restored.modules['2'].stepsDone.windows).toEqual(['select'])
 
     // still there after a reload
     await page.reload()
-    expect((await stored(page)).modules['2'].stepsDone.windows).toHaveLength(3)
+    expect((await stored(page)).modules['2'].stepsDone.windows).toHaveLength(1)
   })
 
   test('the cancel button of the reset dialog keeps progress', async ({ page }) => {
-    await seedProfile(page, 'windows', { modules: { 2: { stepsDone: { windows: ['w-select'], mac: [] }, explanationRead: true, freePracticeDone: false, completed: false, realWorldChecked: [] } } })
+    await seedProfile(page, 'windows', { modules: { 2: { stepsDone: { windows: ['select'], mac: [] }, explanationRead: true, freePracticeDone: false, completed: false, realWorldChecked: [] } } })
     await page.goto('/#/settings')
     await page.getByRole('button', { name: /অগ্রগতি মুছে নতুন করে শুরু/ }).click()
     await page.getByRole('button', { name: /না, থাক/ }).click()
@@ -104,7 +119,7 @@ test.describe('backup: export, reset, import', () => {
   })
 
   test('an invalid import shows a gentle message and changes nothing', async ({ page }) => {
-    await seedProfile(page, 'windows', { modules: { 2: { stepsDone: { windows: ['w-select'], mac: [] }, explanationRead: true, freePracticeDone: false, completed: false, realWorldChecked: [] } } })
+    await seedProfile(page, 'windows', { modules: { 2: { stepsDone: { windows: ['select'], mac: [] }, explanationRead: true, freePracticeDone: false, completed: false, realWorldChecked: [] } } })
     await page.goto('/#/settings')
     const input = page.locator('input[type="file"]')
     for (const [name, text] of [
@@ -118,7 +133,7 @@ test.describe('backup: export, reset, import', () => {
     }
     const d = await stored(page)
     expect(d.profile.name).toBe('রুমা')
-    expect(d.modules['2'].stepsDone.windows).toEqual(['w-select'])
+    expect(d.modules['2'].stepsDone.windows).toEqual(['select'])
   })
 })
 
@@ -142,7 +157,7 @@ test.describe('localStorage unavailable', () => {
     await expect(page.getByRole('heading', { name: /স্বাগতম, রুমা/ })).toBeVisible()
 
     // a lesson opens and a step can be done without crashing
-    await page.getByRole('link', { name: /আজকের পাঠ/ }).click()
+    await page.getByRole('link', { name: /চালিয়ে যান|শুরু করি/ }).click()
     await expect(page.getByRole('heading', { level: 1 })).toBeVisible()
     await page.goto('/#/settings')
     await expect(page.getByText(/সেভ করা যাচ্ছে না/)).toBeVisible()
@@ -205,14 +220,14 @@ test.describe('certificates', () => {
 
 test.describe('teacher dashboard', () => {
   test('shows progress, weak topics and exports a report and a backup', async ({ page }) => {
-    const q = m02.quiz
+    const q = quizOfM02
     await seedProfile(page, 'windows', {
       modules: {
         1: { stepsDone: { windows: [], mac: [] }, explanationRead: true, freePracticeDone: true, completed: true, completedAt: '2026-03-10T06:00:00.000Z', lastVisitedAt: '2026-03-10T06:00:00.000Z', realWorldChecked: [0] },
         2: {
-          stepsDone: { windows: ['w-select'], mac: [] }, explanationRead: true, freePracticeDone: false, completed: false, realWorldChecked: [],
+          stepsDone: { windows: ['select'], mac: [] }, explanationRead: true, freePracticeDone: false, completed: false, realWorldChecked: [],
           lastVisitedAt: new Date().toISOString(),
-          quiz: { score: 1, total: q.length, wrongByQuestion: { [q[0].id]: 2 }, at: new Date().toISOString() }, bestQuizScore: 1,
+          unitsDone: ['desktop-click'], unitQuiz: { 'desktop-click': { score: 1, total: 3, wrongByQuestion: { [q[0].id]: 2 }, at: new Date().toISOString() } },
         },
       },
     })
@@ -231,7 +246,7 @@ test.describe('teacher dashboard', () => {
 
     const [backup] = await Promise.all([page.waitForEvent('download'), page.getByRole('button', { name: /ব্যাকআপ নামান/ }).click()])
     expect(backup.suggestedFilename()).toMatch(/\.json$/)
-    expect(JSON.parse(fs.readFileSync((await backup.path())!, 'utf8')).modules['2'].quiz.score).toBe(1)
+    expect(JSON.parse(fs.readFileSync((await backup.path())!, 'utf8')).modules['2'].unitQuiz['desktop-click'].score).toBe(1)
   })
 })
 
@@ -275,7 +290,7 @@ for (const osName of ['windows', 'mac'] as const) {
     await expect(hw(page, 'code-editor')).toBeVisible()
     await hw(page, 'code-explorer-index.html').click()
     await expect(hw(page, 'code-preview')).toBeVisible()
-    await page.getByRole('button', { name: /বুঝেছি, পরের ধাপ/ }).click()
+    await page.getByRole('button', { name: /বুঝেছি/ }).click()
     // type the first heading at the end of line 8, like the full walkthrough
     await page.locator(`${SIM} .cm-content`).click()
     await page.keyboard.press('ControlOrMeta+Home')

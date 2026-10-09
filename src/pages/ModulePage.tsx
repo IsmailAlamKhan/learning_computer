@@ -1,16 +1,17 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { getModule } from '../content/modules'
-import { hasLesson, loadLesson } from '../content/lessons'
+import { hasLesson, loadLesson, type AnyLesson } from '../content/lessons'
 import { moduleState } from '../engine/roadmap'
 import { stepsFor } from '../engine/runner'
 import { lessonSteps } from '../engine/lessonSteps'
-import type { LegacyLesson as Lesson, OsFlavor } from '../engine/types'
+import { isCardsLesson, type LegacyLesson as Lesson, type OsFlavor } from '../engine/types'
 import { store, useProgress } from '../state/store'
 import { QuizRunner } from '../ui/quiz/QuizRunner'
 import { useFmt } from '../ui/useFmt'
 import { ExplanationSection, RealWorldSection, SummarySection, TeacherTip, osQuiz } from './lesson/Sections'
 import { FreePracticeSection, GuidedPractice } from './lesson/Practice'
+import DeckPage from './DeckPage'
 
 type SectionId = 'learn' | 'guided' | 'free' | 'quiz' | 'summary' | 'real' | 'finish'
 const SECTIONS: { id: SectionId; label: string }[] = [
@@ -50,7 +51,7 @@ export default function ModulePage() {
   const n = Number(id)
   const m = getModule(n)
   const data = useProgress()
-  const [lesson, setLesson] = useState<Lesson | null | undefined>(undefined)
+  const [lesson, setLesson] = useState<AnyLesson | null | undefined>(undefined)
 
   useEffect(() => {
     setLesson(undefined)
@@ -79,6 +80,8 @@ export default function ModulePage() {
   const state = moduleState(m, data)
   if (lesson === undefined) return <p>পাঠ লোড হচ্ছে…</p>
   if (lesson === null || state === 'locked' || state === 'soon') return <Soon n={n} />
+  // new cards format → the one-card-at-a-time deck; legacy lessons keep the old sectioned page until their module is migrated
+  if (isCardsLesson(lesson)) return <DeckPage key={n} lesson={lesson} />
   return <LessonView key={n} lesson={lesson} />
 }
 

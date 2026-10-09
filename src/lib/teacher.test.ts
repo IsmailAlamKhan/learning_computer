@@ -7,6 +7,7 @@ import {
   buildReportHtml,
   daysBetween,
   lessonMetaOf,
+  quizSummary,
   relativeDayBn,
   reportFilename,
   summarize,
@@ -16,10 +17,8 @@ import {
   type Fmt,
   type LessonMeta,
 } from './teacher'
-import type { LegacyLesson as Lesson } from '../engine/types'
-import m02 from '../content/lessons/m02'
-import m17 from '../content/lessons/m17'
-import m20 from '../content/lessons/m20'
+import type { LegacyLesson, Lesson, Step } from '../engine/types'
+import { isCardsLesson } from '../engine/types'
 
 const NOW = new Date('2026-10-20T10:00:00.000Z')
 const daysAgo = (d: number) => new Date(NOW.getTime() - d * 86400000).toISOString()
@@ -33,34 +32,122 @@ const meta = (module: number, w = 10, m = 8, quizIds = ['q1', 'q2', 'q3']): Less
     mac: Array.from({ length: m }, (_, i) => `m${i + 1}`),
   },
   quiz: quizIds.map((id) => ({ id, questionBn: `প্রশ্ন ${id}`, hintBn: `ইঙ্গিত ${id}` })),
+  unitIds: [],
   realWorld: { windows: 3, mac: 3 },
 })
 
 const mp = (over: Partial<ModuleProgress> = {}): ModuleProgress => ({ ...emptyModuleProgress(), ...over })
 const mod = (n: number) => MODULES.find((x) => x.module === n)!
 
+const st = (id: string, over: Partial<Step> = {}): Step => ({ id, titleBn: id, explanationBn: id, hintBn: id, expectedAction: { type: 'continue' }, osVariant: 'both', ...over })
+const qq = (id: string) => ({ id, type: 'multipleChoice' as const, questionBn: `প্রশ্ন ${id}`, hintBn: `ইঙ্গিত ${id}`, explanationBn: 'e', options: [{ id: 'a', textBn: 'a' }], correct: ['a'] })
+const card = { id: 'c', type: 'visual' as const, textBn: 't', visual: { kind: 'big' as const, emoji: '🙂' } }
+const unit = (id: string, steps: Step[], quizIds: string[]) => ({ id, titleBn: id, hook: { ...card, type: 'hook' as const }, cards: [card, card, card], steps, quiz: quizIds.map(qq), recapBn: ['x'] })
+const cardsLesson: Lesson = {
+  module: 2,
+  part: 1,
+  id: 'm02',
+  titleBn: 't',
+  oneLineBn: 'o',
+  minutes: 5,
+  glossaryIds: [],
+  realWorld: { titleBn: 'r', tasksBn: ['a', 'b'], macTasksBn: ['c'] },
+  units: [
+    unit('u1', [st('w1', { osVariant: 'windows' }), st('m1', { osVariant: 'mac' }), st('both1'), st('mouse1', { inputVariant: 'mouse' }), st('pad1', { inputVariant: 'touchpad' })], ['q1', 'q2', 'q3']),
+    unit('u2', [st('w2', { osVariant: 'windows' }), st('m2', { osVariant: 'mac' })], ['q4', 'q5', 'q6']),
+  ],
+}
+const legacyLesson = {
+  module: 3,
+  part: 1,
+  id: 'm03',
+  titleBn: 't',
+  oneLineBn: 'o',
+  minutes: 5,
+  explanation: [],
+  steps: [st('lw', { osVariant: 'windows' }), st('lm', { osVariant: 'mac' }), st('lb')],
+  quiz: ['a', 'b'].map(qq),
+  summaryCard: { titleBn: 's', pointsBn: ['p'] },
+  realWorld: { titleBn: 'r', tasksBn: ['a', 'b'] },
+  glossaryIds: [],
+} as LegacyLesson
+const chaptered = { ...legacyLesson, module: 20, steps: [], chapters: [{ id: 'c1', titleBn: 'c', steps: [st('x1', { osVariant: 'windows' }), st('x2')] }, { id: 'c2', titleBn: 'c', steps: [st('x3')] }] } as LegacyLesson
+
 describe('lessonMetaOf', () => {
-  it('counts steps per OS (both counts for each) and keeps ids', () => {
-    const lm = lessonMetaOf(m02 as Lesson)
-    expect(lm.module).toBe(2)
-    expect(lm.steps.windows).toBe(m02.steps.filter((s) => s.osVariant !== 'mac').length)
-    expect(lm.steps.mac).toBe(m02.steps.filter((s) => s.osVariant !== 'windows').length)
-    expect(lm.stepIds.windows).toHaveLength(lm.steps.windows)
-    expect(lm.quiz.length).toBe(m02.quiz.length)
-    expect(lm.quiz[0]).toEqual({ id: m02.quiz[0].id, questionBn: m02.quiz[0].questionBn, hintBn: m02.quiz[0].hintBn })
-    expect(lm.realWorld.windows).toBeGreaterThanOrEqual(m02.realWorld.tasksBn.length)
+  it('legacy: counts steps per OS (both counts for each) and keeps ids', () => {
+    const lm = lessonMetaOf(legacyLesson)
+    expect(lm.steps).toEqual({ windows: 2, mac: 2 })
+    expect(lm.stepIds.windows).toEqual(['lw', 'lb'])
+    expect(lm.quiz).toEqual([{ id: 'a', questionBn: 'প্রশ্ন a', hintBn: 'ইঙ্গিত a' }, { id: 'b', questionBn: 'প্রশ্ন b', hintBn: 'ইঙ্গিত b' }])
+    expect(lm.unitIds).toEqual([])
+    expect(lm.realWorld.windows).toBe(2)
   })
-  it('uses chapter steps for chaptered lessons (module 20)', () => {
-    const lm = lessonMetaOf(m20 as Lesson)
-    const total = m20.chapters!.flatMap((c) => c.steps).filter((s) => s.osVariant !== 'mac').length
-    expect(lm.steps.windows).toBe(total)
-    expect(total).toBeGreaterThan(0)
+  it('legacy chapters are flattened', () => {
+    expect(lessonMetaOf(chaptered).steps.windows).toBe(3)
   })
-  it('works for a terminal lesson', () => {
-    const lm = lessonMetaOf(m17 as Lesson)
-    expect(lm.steps.windows).toBeGreaterThan(5)
-    expect(new Set(lm.stepIds.windows).size).toBe(lm.stepIds.windows.length)
+  it('cards format: steps of all units per OS, questions of all units merged, real-world per OS', () => {
+    const lm = lessonMetaOf(cardsLesson)
+    expect(lm.unitIds).toEqual(['u1', 'u2'])
+    expect(lm.stepIds.windows).toEqual(['w1', 'both1', 'mouse1', 'pad1', 'w2'])
+    expect(lm.stepIds.mac).toEqual(['m1', 'both1', 'mouse1', 'pad1', 'm2'])
+    expect(lm.quiz.map((q) => q.id)).toEqual(['q1', 'q2', 'q3', 'q4', 'q5', 'q6'])
+    expect(lm.realWorld).toEqual({ windows: 2, mac: 3 })
   })
+  it('cards format: steps for the other pointing device are not counted', () => {
+    expect(lessonMetaOf(cardsLesson, 'mouse').stepIds.windows).toEqual(['w1', 'both1', 'mouse1', 'w2'])
+    expect(lessonMetaOf(cardsLesson, 'touchpad').stepIds.mac).toEqual(['m1', 'both1', 'pad1', 'm2'])
+  })
+})
+
+const attempt = (score: number, total: number, wrong: Record<string, number> = {}, at = '2026-10-20T08:00:00.000Z') => ({ score, total, wrongByQuestion: wrong, at })
+
+describe('cards-format progress (units)', () => {
+  const lm = lessonMetaOf(cardsLesson)
+  const p = mp({
+    unitsDone: ['u1'],
+    unitQuiz: { u1: attempt(2, 3, { q2: 1 }), u2: attempt(1, 3, { q4: 2, q5: 1 }, '2026-10-21T08:00:00.000Z') },
+    stepsDone: { windows: ['w1', 'both1', 'gone'], mac: [] },
+  })
+  it('quizSummary merges the units: scores and totals add up, retries = all wrong attempts', () => {
+    const q = quizSummary(p, lm)!
+    expect(q).toMatchObject({ last: 3, best: 3, total: 6, retries: 4, lastAt: '2026-10-21T08:00:00.000Z' })
+    expect(q.ratio).toBeCloseTo(0.5)
+  })
+  it('quizSummary falls back to the single legacy attempt', () => {
+    expect(quizSummary(mp({ quiz: attempt(4, 5, { a: 1 }), bestQuizScore: 5 }), undefined)).toMatchObject({ last: 4, best: 5, total: 5, retries: 1 })
+    expect(quizSummary(mp(), undefined)).toBeUndefined()
+  })
+  it('summarizeModule: unit counts, merged quiz, low score, in-progress, unknown step ids ignored', () => {
+    const s = summarizeModule(mod(2), p, lm, NOW)
+    expect(s.units).toEqual({ done: 1, total: 2 })
+    expect(s.quiz?.total).toBe(6)
+    expect(s.lowScore).toBe(true)
+    expect(s.status).toBe('inProgress')
+    expect(s.steps.windows).toEqual({ done: 2, total: 5 })
+  })
+  it('a unit finished with no other activity still counts as in progress', () => {
+    expect(summarizeModule(mod(2), mp({ unitsDone: ['u1'] }), lm, NOW).status).toBe('inProgress')
+  })
+  it('weakQuestions come from every unit, sum misses per question and carry the question text', () => {
+    const data: ProgressData = { ...defaultData(), modules: { 2: p } }
+    const w = weakQuestions(data, { 2: lm })
+    expect(w.map((x) => [x.questionId, x.misses])).toEqual([['q4', 2], ['q2', 1], ['q5', 1]])
+    expect(w[0].questionBn).toBe('প্রশ্ন q4')
+  })
+})
+
+describe('every real lesson (either format) reduces to metadata', () => {
+  const files = import.meta.glob<{ default: Lesson | LegacyLesson }>('../content/lessons/m*.ts', { eager: true })
+  for (const [path, f] of Object.entries(files)) {
+    it(`${path}`, () => {
+      const l = f.default
+      const lm = lessonMetaOf(l)
+      expect(lm.module).toBe(l.module)
+      expect(lm.steps.windows).toBeGreaterThan(0)
+      expect(new Set(lm.stepIds.windows).size).toBe(lm.stepIds.windows.length)
+      expect(lm.unitIds.length > 0).toBe(isCardsLesson(l))
+    })
+  }
 })
 
 describe('daysBetween / relativeDayBn', () => {

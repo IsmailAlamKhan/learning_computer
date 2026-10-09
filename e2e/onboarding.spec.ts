@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test'
+import { mockPlatform } from './platform'
 
 const KEY = 'computer-shikhi:v1'
 const stored = (page: Page) => page.evaluate((k) => JSON.parse(localStorage.getItem(k) ?? 'null'), KEY)
@@ -6,6 +7,7 @@ const rootFont = (page: Page) => page.evaluate(() => getComputedStyle(document.d
 
 test.describe('onboarding (fresh profile)', () => {
   test('welcome -> name -> OS -> text size -> motivation -> Home greeting; reload keeps state', async ({ page }) => {
+    await mockPlatform(page, 'Linux') // unknown OS: the app asks (a detected OS is only confirmed)
     const errors: string[] = []
     page.on('pageerror', (e) => errors.push(String(e)))
 
@@ -24,7 +26,7 @@ test.describe('onboarding (fresh profile)', () => {
 
     // step 2: OS choice
     await expect(page.getByText(/ধাপ ২ \/ ৪/)).toBeVisible()
-    await page.getByRole('radio', { name: /^Mac/ }).check()
+    await page.getByRole('radio', { name: 'Mac' }).check()
     await next.click()
 
     // step 3: text size changes the page immediately
@@ -94,6 +96,6 @@ test.describe('onboarding (fresh profile)', () => {
 
     await page.goto('/#/')
     await expect(page.getByRole('heading', { name: /স্বাগতম, রুমা আক্তার/ })).toBeVisible()
-    await expect(page.getByText(/0 \/ 20 পাঠ সম্পন্ন/)).toBeVisible()
+    await expect(page.getByTestId('home-progress')).toHaveText(/0 \/ 20 পাঠ/)
   })
 })

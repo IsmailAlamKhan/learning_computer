@@ -23,7 +23,7 @@ export function PwaStatus() {
         </footer>
       )}
       {s.needRefresh && !dismissed && (
-        <div role="status" className="card no-print fixed bottom-4 left-4 z-50 max-w-sm space-y-2 shadow-lg">
+        <div role="status" className="card no-print fixed bottom-4 max-sm:bottom-20 left-4 z-50 max-w-sm space-y-2 shadow-lg">
           <p>নতুন সংস্করণ এসেছে — পাতাটি নতুন করে খুলুন</p>
           <div className="flex flex-wrap gap-2">
             <button type="button" className="btn" onClick={updateNow}>

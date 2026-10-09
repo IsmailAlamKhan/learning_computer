@@ -4,7 +4,8 @@
  */
 import { lessonSteps } from '../engine/lessonSteps'
 import { MODULES } from '../content/modules'
-import type { LegacyLesson as Lesson, ModuleMeta, OsFlavor } from '../engine/types'
+import { isCardsLesson, type InputKind, type LegacyLesson, type Lesson, type ModuleMeta, type OsFlavor, type QuizQuestion } from '../engine/types'
+import { matchesInput } from '../engine/filter'
 import type { ModuleProgress, ProgressData } from '../state/progress'
 
 /** Quiz score below this share counts as "needs another look". */
@@ -28,17 +29,24 @@ export interface LessonMeta {
   steps: Record<OsFlavor, number>
   /** ids of the guided steps per OS (so ids of steps deleted from an edited lesson are not counted) */
   stepIds: Record<OsFlavor, string[]>
+  /** every question of the module (cards format: all units merged) */
   quiz: QuestionMeta[]
+  /** cards format: ids of the units (mini-lessons); empty for legacy lessons */
+  unitIds: string[]
   /** number of real-world tasks (common + per OS) */
   realWorld: Record<OsFlavor, number>
 }
 
 const forOs = (v: { osVariant?: string }, os: OsFlavor) => !v.osVariant || v.osVariant === 'both' || v.osVariant === os
 
-/** Reduce a full lesson to the small numbers/texts the dashboard needs (so lessons need not stay in memory). */
-export function lessonMetaOf(lesson: Lesson): LessonMeta {
-  const steps = lessonSteps(lesson)
+/**
+ * Reduce a full lesson (cards format or legacy) to the small numbers/texts the dashboard needs (so lessons need not stay in memory).
+ * `input`: the learner's pointing device; steps meant for the other device are not counted (they can never be done by her).
+ */
+export function lessonMetaOf(lesson: Lesson | LegacyLesson, input?: InputKind): LessonMeta {
+  const steps = lessonSteps(lesson).filter((s) => matchesInput(s.inputVariant, input))
   const r = lesson.realWorld
+  const questions: QuizQuestion[] = isCardsLesson(lesson) ? lesson.units.flatMap((u) => u.quiz) : lesson.quiz
   return {
     module: lesson.module,
     steps: {
@@ -49,7 +57,8 @@ export function lessonMetaOf(lesson: Lesson): LessonMeta {
       windows: steps.filter((s) => forOs(s, 'windows')).map((s) => s.id),
       mac: steps.filter((s) => forOs(s, 'mac')).map((s) => s.id),
     },
-    quiz: lesson.quiz.map((q) => ({ id: q.id, questionBn: q.questionBn, hintBn: q.hintBn })),
+    quiz: questions.map((q) => ({ id: q.id, questionBn: q.questionBn, hintBn: q.hintBn })),
+    unitIds: isCardsLesson(lesson) ? lesson.units.map((u) => u.id) : [],
     realWorld: {
       windows: r.tasksBn.length + (r.windowsTasksBn?.length ?? 0),
       mac: r.tasksBn.length + (r.macTasksBn?.length ?? 0),
@@ -60,6 +69,43 @@ export function lessonMetaOf(lesson: Lesson): LessonMeta {
 // ---------- per-module summary ----------
 
 export type ModuleStatusKind = 'notStarted' | 'inProgress' | 'completed'
+
+/** A quiz result in the shape the dashboard needs, whichever format produced it. */
+export interface QuizSummary {
+  last: number
+  best: number
+  total: number
+  lastAt: string
+  retries: number
+  ratio: number
+}
+
+/**
+ * Quiz stats of a module. Cards format: one attempt per unit (`unitQuiz`), merged across units (scores and totals added up,
+ * retries = sum of all wrong attempts). Legacy lessons: the single `quiz` attempt.
+ */
+export function quizSummary(p: ModuleProgress | undefined, lm: LessonMeta | undefined): QuizSummary | undefined {
+  if (!p) return undefined
+  const attempts = Object.values(p.unitQuiz ?? {})
+  if (attempts.length > 0) {
+    const score = attempts.reduce((a, q) => a + q.score, 0)
+    const total = attempts.reduce((a, q) => a + q.total, 0)
+    const retries = attempts.reduce((a, q) => a + Object.values(q.wrongByQuestion).reduce((x, y) => x + y, 0), 0)
+    const lastAt = attempts.map((q) => q.at).sort().at(-1) ?? ''
+    return { last: score, best: score, total, lastAt, retries, ratio: total > 0 ? score / total : 1 }
+  }
+  if (!p.quiz) return undefined
+  const total = p.quiz.total || lm?.quiz.length || 0
+  const best = Math.max(p.bestQuizScore ?? 0, p.quiz.score)
+  return {
+    last: p.quiz.score,
+    best,
+    total,
+    lastAt: p.quiz.at,
+    retries: Object.values(p.quiz.wrongByQuestion).reduce((a, b) => a + b, 0),
+    ratio: total > 0 ? p.quiz.score / total : 1,
+  }
+}
 
 export interface StepCount {
   done: number
@@ -78,7 +124,9 @@ export interface ModuleSummary {
   completedAt?: string
   lastVisitedAt?: string
   steps: Record<OsFlavor, StepCount>
-  quiz?: { last: number; best: number; total: number; lastAt: string; retries: number; ratio: number }
+  quiz?: QuizSummary
+  /** cards format only: finished units / all units */
+  units?: { done: number; total: number }
   freePracticeDone: boolean
   realWorld: { ticked: number; total: number }
   lowScore: boolean
@@ -90,6 +138,8 @@ const hasAnyActivity = (p: ModuleProgress): boolean =>
   p.explanationRead ||
   p.freePracticeDone ||
   !!p.quiz ||
+  (p.unitsDone?.length ?? 0) > 0 ||
+  Object.keys(p.unitQuiz ?? {}).length > 0 ||
   p.stepsDone.windows.length > 0 ||
   p.stepsDone.mac.length > 0 ||
   p.realWorldChecked.length > 0
@@ -122,19 +172,7 @@ export function summarizeModule(
     mac: stepCount(p, 'mac', mTotal, lm ? new Set(lm.stepIds.mac) : undefined),
   }
 
-  let quiz: ModuleSummary['quiz']
-  if (p?.quiz) {
-    const total = p.quiz.total || lm?.quiz.length || 0
-    const best = Math.max(p.bestQuizScore ?? 0, p.quiz.score)
-    quiz = {
-      last: p.quiz.score,
-      best,
-      total,
-      lastAt: p.quiz.at,
-      retries: Object.values(p.quiz.wrongByQuestion).reduce((a, b) => a + b, 0),
-      ratio: total > 0 ? p.quiz.score / total : 1,
-    }
-  }
+  const quiz = quizSummary(p, lm)
   // "low score" is judged on the best result: she has already recovered if a retake went well.
   const lowScore = !!quiz && quiz.total > 0 && quiz.best / quiz.total < LOW_SCORE_RATIO
 
@@ -158,6 +196,7 @@ export function summarizeModule(
     lastVisitedAt: p?.lastVisitedAt,
     steps,
     quiz,
+    units: lm && lm.unitIds.length > 0 ? { done: lm.unitIds.filter((id) => p?.unitsDone.includes(id)).length, total: lm.unitIds.length } : undefined,
     freePracticeDone: !!p?.freePracticeDone,
     realWorld: {
       ticked: p?.realWorldChecked.length ?? 0,
@@ -197,9 +236,13 @@ export function weakQuestions(
 ): WeakQuestion[] {
   const out: WeakQuestion[] = []
   for (const m of modules) {
-    const q = data.modules[m.module]?.quiz
-    if (!q) continue
-    for (const [id, n] of Object.entries(q.wrongByQuestion)) {
+    const p = data.modules[m.module]
+    if (!p) continue
+    // cards format: every unit's last attempt; legacy: the single quiz attempt
+    const attempts = Object.keys(p.unitQuiz ?? {}).length > 0 ? Object.values(p.unitQuiz) : p.quiz ? [p.quiz] : []
+    const misses: Record<string, number> = {}
+    for (const a of attempts) for (const [id, n] of Object.entries(a.wrongByQuestion)) misses[id] = (misses[id] ?? 0) + n
+    for (const [id, n] of Object.entries(misses)) {
       if (!(n > 0)) continue
       const qm = metas[m.module]?.quiz.find((x) => x.id === id)
       out.push({

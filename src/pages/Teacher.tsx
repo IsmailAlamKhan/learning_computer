@@ -22,6 +22,7 @@ import { useFmt } from '../ui/useFmt'
 
 /** Loads the small metadata (step counts, quiz question texts) of every lesson, lazily and once. */
 function useLessonMetas() {
+  const inputKind = useProgress().profile.input
   const [metas, setMetas] = useState<Record<number, LessonMeta | undefined>>({})
   const [loading, setLoading] = useState(true)
   useEffect(() => {
@@ -30,7 +31,7 @@ function useLessonMetas() {
       MODULES.filter((m) => hasLesson(m.module)).map(async (m) => {
         try {
           const l = await loadLesson(m.module)
-          return l ? lessonMetaOf(l) : undefined
+          return l ? lessonMetaOf(l, inputKind) : undefined
         } catch {
           return undefined
         }
@@ -45,7 +46,7 @@ function useLessonMetas() {
     return () => {
       alive = false
     }
-  }, [])
+  }, [inputKind])
   return { metas, loading }
 }
 
