@@ -322,3 +322,5 @@ Scope: `content/lessons/m01–m10.ts`, `content/glossary/m01–m10.ts`, and the 
 | `glossary/m09.ts` | "দুই ধাপের যাচাই" vs lessons "২-ধাপ যাচাই" | Two spellings of one term (kept because of the layout overflow noted above). |
 | `state/gamification.ts` | "কুইজ ওস্তাদ", "কম্পিউটারে দক্ষ", "প্রথম পদক্ষেপ" | New or changed badge names; confirm tone. |
 | `pages/Home.tsx` | "এখনও বন্ধ" (locked module) | Replaces "তালা দেওয়া"; reads as a state label next to "এখন করুন". |
+
+Note (modules 1–10 pass): `e2e/a11y.spec.ts` "keyboard only … quiz" fails on `expect(deck-primary).toBeFocused()` after a right answer (focus management in the deck, not a text issue; it does not depend on any string changed here). The xxlarge axe test on decks failed once and passed on re-run (flaky).
