@@ -1,7 +1,7 @@
 import type { GlossaryEntry } from '../../engine/types'
 
 const entries: GlossaryEntry[] = [
-  { id: 'set-settings', module: 10, termBn: 'সেটিংস', termEn: 'Settings', icon: '⚙️', art: 'gear', meaningBn: 'কম্পিউটারের “নিয়ন্ত্রণ ঘর” — আওয়াজ, আলো, ওয়াই-ফাই, ছবি সব এখানে বদলায়।' },
+  { id: 'set-settings', module: 10, termBn: 'সেটিংস', termEn: 'Settings', icon: '⚙️', art: 'gear', meaningBn: 'কম্পিউটারের “কন্ট্রোল রুম” — আওয়াজ, আলো, ওয়াই-ফাই, ছবি সব এখানে বদলায়।' },
   { id: 'set-wallpaper', module: 10, termBn: 'ওয়ালপেপার', termEn: 'Wallpaper / Background', icon: '🖼️', art: 'image', meaningBn: 'ডেস্কটপের পেছনের ছবি। বদলালে শুধু ছবি বদলায়, ফাইল নয়।' },
   { id: 'set-brightness', module: 10, termBn: 'উজ্জ্বলতা', termEn: 'Brightness', icon: '🔆', art: 'sun', meaningBn: 'পর্দার আলো কতটা জোরালো হবে। অন্ধকার ঘরে কমালে চোখে আরাম।' },
   { id: 'set-volume', module: 10, termBn: 'আওয়াজ', termEn: 'Volume', icon: '🔊', art: 'volume', meaningBn: 'স্পিকার বা হেডফোনের শব্দ কতটা জোরে হবে। স্লাইডার ডানে টানলে বাড়ে।' },

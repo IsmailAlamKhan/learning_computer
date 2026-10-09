@@ -236,72 +236,6 @@ export interface Lesson {
 }
 
 
-// ---------- LEGACY (pre-overhaul) lesson format: removed when the migration is complete ----------
-export interface FreePractice {
-  titleBn: string
-  instructionBn: string
-  /** Optional small checklist of things she can try (self-ticked). */
-  checklistBn?: string[]
-}
-
-export interface SummaryCard {
-  titleBn: string
-  pointsBn: string[]
-  extraBn?: string
-}
-
-/** Blocks used by the "explanation" section. */
-export type ExplanationBlock =
-  | { kind: 'p'; textBn: string }
-  | { kind: 'analogy'; textBn: string }
-  | { kind: 'list'; itemsBn: string[] }
-  | { kind: 'note'; textBn: string }
-  | { kind: 'widget'; widget: string; props?: Record<string, unknown> }
-  | { kind: 'code'; code: string; language?: string }
-
-/** An independent micro-lesson inside a module (own steps, own starting state). Progress is saved per step id as usual. */
-export interface Chapter {
-  id: string
-  titleBn: string
-  /** one or two sentences shown on the chapter card */
-  introBn?: string
-  steps: Step[]
-  setup?: SimSetup
-  checklist?: { id: string; textBn: string; stepIds: string[] }[]
-}
-
-/** @deprecated old lesson format (explanation paragraphs). Removed once every module is migrated to `Lesson` (cards). */
-export interface LegacyLesson {
-  /** Module number 1..20. */
-  module: number
-  part: 1 | 2
-  id: string
-  titleBn: string
-  oneLineBn: string
-  minutes: number
-  explanation: ExplanationBlock[]
-  /** Steps run in the simulator; osVariant filters which are shown. */
-  steps: Step[]
-  freePractice?: FreePractice
-  quiz: QuizQuestion[]
-  summaryCard: SummaryCard
-  realWorld: RealWorldTasks
-  teacherTipBn?: string
-  /** Glossary term ids introduced here (see src/content/glossary.ts). */
-  glossaryIds: string[]
-  /** Which simulation hosts the steps. Default 'desktop'. */
-  simulation?: 'desktop' | 'terminal' | 'editor' | 'none' | 'custom'
-  /** starting state of the simulated desktop (open windows, extra files, settings) */
-  setup?: SimSetup
-  /** Micro-lessons: if present, the guided section lists these chapters (each runs on a fresh simulated computer) instead of `steps`. `steps` may then be empty. */
-  chapters?: Chapter[]
-  /** Optional progress checklist shown above the guided practice; an item ticks when all its steps are done. */
-  checklist?: { id: string; textBn: string; stepIds: string[] }[]
-  /** If set, completing this lesson issues the certificate (সনদপত্র) of that part. */
-  certificatePart?: 1 | 2
-}
-
-
 export type ModuleStatus = 'playable' | 'soon'
 
 export interface ModuleMeta {
@@ -326,6 +260,3 @@ export interface GlossaryEntry {
   /** Introduced in module N. */
   module: number
 }
-
-/** Type guard: new cards-format lesson vs legacy. */
-export const isCardsLesson = (l: Lesson | LegacyLesson): l is Lesson => 'units' in l

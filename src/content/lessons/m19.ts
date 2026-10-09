@@ -198,7 +198,7 @@ const lesson: Lesson = {
         {
           id: 'c-buttons',
           type: 'visual',
-          textBn: 'বোতামের ইংরেজিও চেনা: **Submit** জমা দেয়, **Cancel** ফিরিয়ে আনে।',
+          textBn: 'বোতামের ইংরেজিও চেনা: **Submit** জমা দেয়, **Cancel** বাতিল করে।',
           visual: {
             kind: 'flow',
             items: [
@@ -297,7 +297,7 @@ const lesson: Lesson = {
           textBn: 'এরর আপনার ব্যর্থতা নয় — কম্পিউটারের দেওয়া একটা **সূত্র**। শান্তভাবে পড়ুন।',
           visual: { kind: 'art', name: 'chat-bubble', captionBn: 'এরর = সূত্র' },
           chipsBn: ['এরর = সূত্র', 'শান্তভাবে পড়ুন'],
-          learnMoreBn: 'প্রোগ্রামাররাও রোজ এরর পান — কেউ বাদ যান না। পার্থক্য শুধু এইটুকু: তাঁরা এরর পড়তে শিখে নিয়েছেন।',
+          learnMoreBn: 'প্রোগ্রামাররাও রোজ এরর পান — কেউ বাদ যান না। পার্থক্য শুধু এটুকু: তাঁরা এরর পড়তে শিখে নিয়েছেন।',
         },
         {
           id: 'c-three-q',
@@ -417,7 +417,7 @@ const lesson: Lesson = {
         {
           id: 'c-trust',
           type: 'compare',
-          textBn: 'অফিসিয়াল ডকুমেন্টেশন আর সবুজ টিকের **Accepted answer** ভরসাযোগ্য। অচেনা সাইট নয়।',
+          textBn: 'অফিসিয়াল ডকুমেন্টেশন আর সবুজ টিকের **Accepted answer** সাধারণত ভরসাযোগ্য। অচেনা সাইট নয়।',
           visual: {
             kind: 'compare',
             left: { visual: { kind: 'art', name: 'check' }, labelBn: 'ভরসাযোগ্য', captionBn: 'Docs, Accepted' },

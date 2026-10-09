@@ -90,7 +90,7 @@ const lesson: Lesson = {
       ],
       steps: [
         {
-          id: 'w-album-click', osVariant: 'windows', titleBn: 'আটকানো প্রোগ্রাম চালান', target: 'stuckapp-album', expectedAction: { type: 'click', target: 'stuckapp-album' },
+          id: 'w-album-click', osVariant: 'windows', titleBn: 'আটকে যাওয়া প্রোগ্রাম চালান', target: 'stuckapp-album', expectedAction: { type: 'click', target: 'stuckapp-album' },
           explanationBn: 'Photo Album-এর বেগুনি বোতামে ক্লিক করুন।',
           hintBn: 'উইন্ডোর ভেতরের বেগুনি বোতাম।',
         },
@@ -108,7 +108,7 @@ const lesson: Lesson = {
           teacherTipBn: 'আসল কম্পিউটারে এটি সবচেয়ে ভরসার শর্টকাট, কারণ প্রোগ্রাম আটকালেও Task Manager খোলা যায়। কয়েকবার অভ্যাস করান।',
         },
         {
-          id: 'w-tm-select', osVariant: 'windows', titleBn: 'আটকানো প্রোগ্রাম বাছুন', target: 'taskmgr-row-stuckapp', expectedAction: { type: 'click', target: 'taskmgr-row-stuckapp' },
+          id: 'w-tm-select', osVariant: 'windows', titleBn: 'আটকে যাওয়া প্রোগ্রাম বাছুন', target: 'taskmgr-row-stuckapp', expectedAction: { type: 'click', target: 'taskmgr-row-stuckapp' },
           explanationBn: 'লাল “Not responding” লেখা Photo Album লাইনে ক্লিক করুন।',
           hintBn: 'Apps অংশের নিচে “Photo Album” লাইন।',
         },
@@ -124,7 +124,7 @@ const lesson: Lesson = {
           hintBn: 'Task Manager উইন্ডোর ডান ওপরের ✕।',
         },
         {
-          id: 'm-album-click', osVariant: 'mac', titleBn: 'আটকানো প্রোগ্রাম চালান', target: 'stuckapp-album', expectedAction: { type: 'click', target: 'stuckapp-album' },
+          id: 'm-album-click', osVariant: 'mac', titleBn: 'আটকে যাওয়া প্রোগ্রাম চালান', target: 'stuckapp-album', expectedAction: { type: 'click', target: 'stuckapp-album' },
           explanationBn: 'Photo Album-এর বেগুনি বোতামে ক্লিক করুন।',
           hintBn: 'উইন্ডোর ভেতরের বেগুনি বোতাম।',
         },
@@ -142,7 +142,7 @@ const lesson: Lesson = {
           teacherTipBn: 'সিমুলেশনের সিস্টেম মেনুতেও (বাঁ ওপরের গোল চিহ্ন) “Force Quit…” আছে — সেটিও একবার দেখিয়ে দিতে পারেন।',
         },
         {
-          id: 'm-fq-select', osVariant: 'mac', titleBn: 'আটকানো প্রোগ্রাম বাছুন', target: 'forcequit-row-stuckapp', expectedAction: { type: 'click', target: 'forcequit-row-stuckapp' },
+          id: 'm-fq-select', osVariant: 'mac', titleBn: 'আটকে যাওয়া প্রোগ্রাম বাছুন', target: 'forcequit-row-stuckapp', expectedAction: { type: 'click', target: 'forcequit-row-stuckapp' },
           explanationBn: 'লাল “not responding” লেখা Photo Album লাইনে ক্লিক করুন।',
           hintBn: 'তালিকার “Photo Album” লাইন।',
         },
@@ -187,7 +187,7 @@ const lesson: Lesson = {
           explanationBn: 'অপেক্ষাই সবচেয়ে নিরাপদ প্রথম ধাপ।',
         },
         {
-          id: 'q-risk', type: 'multipleChoice', questionBn: 'জোর করে বন্ধ করলে কোন ঝুঁকি আছে?',
+          id: 'q-risk', type: 'multipleChoice', questionBn: 'জোর করে বন্ধ করলে কী ঝুঁকি আছে?',
           options: [
             { id: 'a', textBn: 'সেভ না করা কাজ হারাতে পারে' },
             { id: 'b', textBn: 'কম্পিউটার নষ্ট হয়ে যায়' },
@@ -425,7 +425,7 @@ const lesson: Lesson = {
         },
         {
           id: 'w-reload', osVariant: 'windows', titleBn: 'পাতাটি আবার লোড করুন', target: 'browser-reload', expectedAction: { type: 'click', target: 'browser-reload' },
-          explanationBn: 'ব্রাউজারের ঘূর্ণি-তীর (Reload) বোতামে ক্লিক করুন।',
+          explanationBn: 'ব্রাউজারের গোল তীর (Reload) বোতামে ক্লিক করুন।',
           hintBn: 'ঠিকানার ঘরের বাঁ পাশে গোল তীর।',
           successMessageBn: 'ইন্টারনেট ফিরেছে!',
         },
@@ -469,7 +469,7 @@ const lesson: Lesson = {
         },
         {
           id: 'm-reload', osVariant: 'mac', titleBn: 'পাতাটি আবার লোড করুন', target: 'browser-reload', expectedAction: { type: 'click', target: 'browser-reload' },
-          explanationBn: 'ব্রাউজারের ঘূর্ণি-তীর (Reload) বোতামে ক্লিক করুন।',
+          explanationBn: 'ব্রাউজারের গোল তীর (Reload) বোতামে ক্লিক করুন।',
           hintBn: 'ঠিকানার ঘরের বাঁ পাশে গোল তীর।',
           successMessageBn: 'ইন্টারনেট ফিরেছে!',
         },
@@ -562,7 +562,7 @@ const lesson: Lesson = {
             right: { visual: { kind: 'art', name: 'warning' }, labelBn: 'সাবধান', captionBn: 'পুরোনো, অচেনা কমান্ড' },
             vs: 'বনাম',
           },
-          learnMoreBn: 'ফোরামের “Accepted answer” আর বেশি ভোট পাওয়া উত্তর ভালো। যে উত্তর অচেনা কমান্ড চালাতে বা অজানা কিছু নামাতে বলে, যার মানে আপনি বোঝেন না — সেটি কখনো চালাবেন না। বিশ্বাসী কাউকে জিজ্ঞেস করুন।',
+          learnMoreBn: 'ফোরামের “Accepted answer” আর বেশি ভোট পাওয়া উত্তর ভালো। যে উত্তর অচেনা কমান্ড চালাতে বা অজানা কিছু ডাউনলোড করতে বলে, যার মানে আপনি বোঝেন না — সেটি কখনো চালাবেন না। বিশ্বাসী কাউকে জিজ্ঞেস করুন।',
         },
         {
           id: 'c-help',
@@ -621,7 +621,7 @@ const lesson: Lesson = {
           items: [
             { id: 'old', labelBn: '১৩ বছর আগের ব্লগ: “এই কমান্ড চালালেই সব ঠিক”', icon: '📜' },
             { id: 'official', labelBn: 'প্রোগ্রামটির নিজস্ব সাহায্যের পাতা, ৩ সপ্তাহ আগে আপডেট', icon: '✅' },
-            { id: 'popup', labelBn: 'পপ-আপ: “এখনই ফিক্স-টুল নামান!”', icon: '⚠️' },
+            { id: 'popup', labelBn: 'পপ-আপ: “এখনই ফিক্স-টুল ডাউনলোড করুন!”', icon: '⚠️' },
             { id: 'chain', labelBn: 'অচেনা কারও পাঠানো লিংক', icon: '🔗' },
           ],
           correct: 'official',

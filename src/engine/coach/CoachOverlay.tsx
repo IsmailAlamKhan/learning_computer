@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useMemo, useRef, useState, type RefObject } from 'react'
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, type MouseEvent as RMouseEvent, type RefObject } from 'react'
 import type { OsFlavor } from '../types'
 import { coachTarget } from '../actions'
 import { demoPlan, type DemoPlan } from '../runner'
@@ -35,7 +35,7 @@ const union = (a: Rect, b: Rect): Rect => {
  * Order: below, above, right, left, then the corners; a huge target (> 45 % of the wrapper) docks to the emptiest corner;
  * a narrow wrapper (< 520 px) docks a slim bar to the bottom (or the top when the target is down there).
  */
-export function placeBubble(target: Rect | null, W: number, H: number, bw: number, bh: number): Placement {
+export function placeBubble(target: Rect | null, W: number, H: number, bw: number, bh: number, inset: { top: number; bottom: number } = { top: 0, bottom: 0 }): Placement {
   const M = 8
   const clampX = (x: number) => Math.max(M, Math.min(x, W - bw - M))
   const clampY = (y: number) => Math.max(M, Math.min(y, H - bh - M))
@@ -45,9 +45,10 @@ export function placeBubble(target: Rect | null, W: number, H: number, bw: numbe
   const hits = (l: number, tp: number) => overlap({ x: l, y: tp, w: bw, h: bh }, t) > 0
   if (W < 520) {
     const barW = W - 2 * M
-    const cand = [H - bh - M, M]
+    // the bar floats over the desktop, never over the taskbar / Dock / menu bar (inset)
+    const cand = [H - bh - M - inset.bottom, M + inset.top]
     const best = cand.map((y) => ({ y, o: overlap({ x: M, y, w: barW, h: bh }, t) })).sort((a, b) => a.o - b.o)[0]
-    return { left: M, top: Math.max(M, best.y), bar: true }
+    return { left: M, top: Math.max(M + inset.top, best.y), bar: true }
   }
   const corners: [number, number][] = [
     [W - bw - M, H - bh - M],
@@ -72,6 +73,18 @@ export function placeBubble(target: Rect | null, W: number, H: number, bw: numbe
   // nothing fits cleanly: least overlap
   const best = [...candidates, ...corners].map(([l, tp]) => ({ l: clampX(l), tp: clampY(tp) })).map((c) => ({ ...c, o: overlap({ x: c.l, y: c.tp, w: bw, h: bh }, target) })).sort((a, b) => a.o - b.o)[0]
   return { left: best.l, top: best.tp }
+}
+
+/** Heights taken by the simulated shell's bars (menu bar on top, taskbar / Dock at the bottom) inside the wrapper. */
+function shellInsets(w: HTMLElement): { top: number; bottom: number } {
+  const wr = w.getBoundingClientRect()
+  const sim = w.querySelector<HTMLElement>('[data-sim-root]')?.getBoundingClientRect()
+  const menu = w.querySelector<HTMLElement>('[data-coach="menubar"]')?.getBoundingClientRect()
+  const bar = w.querySelector<HTMLElement>('[data-coach="taskbar"],[data-coach="dock"]')?.getBoundingClientRect()
+  // the wrapper also holds the simulator's toolbar above the frame: the bar must stay inside the frame, below the menu bar and above the taskbar / Dock
+  const top = Math.max(sim ? sim.top : wr.top, menu ? menu.bottom : wr.top) - wr.top
+  const bottom = wr.bottom - Math.min(sim ? sim.bottom : wr.bottom, bar ? bar.top : wr.bottom)
+  return { top: Math.max(0, Math.round(top)), bottom: Math.max(0, Math.round(bottom)) }
 }
 
 /** **bold** markup → <strong>. */
@@ -113,6 +126,21 @@ function useTargetRect(wrapperRef: RefObject<HTMLElement | null>, id: string | u
     return () => cancelAnimationFrame(raf)
   }, [wrapperRef, id, active])
   return rect
+}
+
+/**
+ * Coach buttons must not steal keyboard focus from the simulated computer (shortcuts like Ctrl+L keep working after a click):
+ * mouse presses don't move focus, and after a pointer click the focus is handed back to the sim. Keyboard use is unchanged.
+ */
+function keepSimFocus(action: () => void) {
+  return {
+    onMouseDown: (e: RMouseEvent) => e.preventDefault(),
+    onClick: (e: RMouseEvent) => {
+      const sim = (e.currentTarget as HTMLElement).closest('.deck-sim')?.querySelector<HTMLElement>('[data-sim-root]')
+      action()
+      if (e.detail > 0 && sim) window.setTimeout(() => sim.focus({ preventScroll: true }), 0)
+    },
+  }
 }
 
 function PredictBox({ run, step }: { run: GuidedRun; step: NonNullable<GuidedRun['step']> }) {
@@ -220,7 +248,7 @@ export function CoachOverlay({ run, os, wrapperRef }: Props) {
     const H = w.clientHeight
     const bar = W < 520
     const bw = bar ? W - 16 : Math.min(300, W - 16)
-    const next = placeBubble(avoid, W, H, bw, b.offsetHeight)
+    const next = placeBubble(avoid, W, H, bw, b.offsetHeight, bar ? shellInsets(w) : undefined)
     setPos((p) => (p.left === next.left && p.top === next.top && p.bar === next.bar ? p : next))
   }, [avoid, wrapperRef, step?.id, run.level, run.simplerOpen, run.phase, hintOpen, sizeTick, demoText])
 
@@ -344,15 +372,15 @@ export function CoachOverlay({ run, os, wrapperRef }: Props) {
             )}
             <div className="mt-2 flex flex-wrap items-center gap-2">
               {isContinue && (
-                <button className="coach-btn" data-primary="true" onClick={run.complete}>
+                <button className="coach-btn" data-primary="true" {...keepSimFocus(run.complete)}>
                   বুঝেছি →
                 </button>
               )}
-              <button className="coach-btn" onClick={() => setHintOpen(true)} aria-pressed={showHint}>
+              <button className="coach-btn" {...keepSimFocus(() => setHintOpen(true))} aria-pressed={showHint}>
                 <span aria-hidden="true">💡</span> হিন্ট
               </button>
               {!isContinue && (
-                <button className={`coach-btn ${run.level >= 2 ? 'coach-nudge' : ''}`} onClick={run.showDemo}>
+                <button className={`coach-btn ${run.level >= 2 ? 'coach-nudge' : ''}`} {...keepSimFocus(run.showDemo)}>
                   <span aria-hidden="true">👀</span> দেখিয়ে দিন
                 </button>
               )}

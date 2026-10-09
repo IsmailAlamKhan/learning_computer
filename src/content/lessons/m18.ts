@@ -47,7 +47,7 @@ const dlSteps: Step[] = [
   {
     id: 'm18-m-browser', osVariant: 'mac', titleBn: 'ব্রাউজার খুলুন', target: 'dock-browser', expectedAction: { type: 'openApp', app: 'browser' },
     explanationBn: 'ডকের ব্রাউজার আইকনে ক্লিক করুন।',
-    hintBn: 'ডকের গোল দিকচিহ্নের আইকন।',
+    hintBn: 'ডকে কম্পাসের মতো গোল আইকন।',
   },
   {
     id: 'm18-search', osVariant: 'both', titleBn: 'কোড এডিটর খুঁজুন', target: 'browser-address', expectedAction: { type: 'custom', event: 'browser-search:code editor download' },
@@ -75,10 +75,10 @@ const dlSteps: Step[] = [
     id: 'm18-dl-editor', osVariant: 'both', titleBn: 'আসল Download বোতাম', target: 'm18-download-editor', expectedAction: { type: 'click', target: 'm18-download-editor' },
     explanationBn: 'ওপরের নীল Download বোতামে ক্লিক করুন।',
     hintBn: 'পাতার ওপরের বড় নীল বোতাম, যাতে আপনার কম্পিউটারের ধরন লেখা।',
-    successMessageBn: 'নামা শুরু!',
+    successMessageBn: 'ডাউনলোড শুরু!',
   },
   {
-    id: 'm18-dl-editor-done', osVariant: 'both', titleBn: 'নামা শেষ হওয়া পর্যন্ত অপেক্ষা', target: 'browser-downloads-panel', expectedAction: { type: 'custom', event: 'browser-download-done' },
+    id: 'm18-dl-editor-done', osVariant: 'both', titleBn: 'ডাউনলোড শেষ হওয়া পর্যন্ত অপেক্ষা', target: 'browser-downloads-panel', expectedAction: { type: 'custom', event: 'browser-download-done' },
     explanationBn: 'ফাইলের নাম দেখুন। শেষ হলে নিজে এগোবে।',
     hintBn: 'কয়েক সেকেন্ড অপেক্ষা করুন।',
   },
@@ -89,12 +89,12 @@ const dlSteps: Step[] = [
     simplerBn: 'ঠিকানার ঘরে ক্লিক করুন, সব লেখা মুছুন। হুবহু লিখুন: python-official.example/downloads, তারপর Enter।',
   },
   {
-    id: 'm18-dl-python', osVariant: 'both', titleBn: 'Python নামান', target: 'm18-download-python', expectedAction: { type: 'click', target: 'm18-download-python' },
+    id: 'm18-dl-python', osVariant: 'both', titleBn: 'Python ডাউনলোড করুন', target: 'm18-download-python', expectedAction: { type: 'click', target: 'm18-download-python' },
     explanationBn: 'হলুদ “Download Python” বোতামে ক্লিক করুন।',
     hintBn: 'পাতার মাঝের হলুদ বোতাম। সংস্করণ-সংখ্যা আসল সাইটে নতুন হতে পারে।',
   },
   {
-    id: 'm18-dl-python-done', osVariant: 'both', titleBn: 'নামা শেষ হোক', target: 'browser-downloads-panel', expectedAction: { type: 'custom', event: 'browser-download-done' },
+    id: 'm18-dl-python-done', osVariant: 'both', titleBn: 'ডাউনলোড শেষ হোক', target: 'browser-downloads-panel', expectedAction: { type: 'custom', event: 'browser-download-done' },
     explanationBn: 'ফাইল Downloads ফোল্ডারে জমছে। অপেক্ষা করুন।',
     hintBn: 'কয়েক সেকেন্ড অপেক্ষা করুন।',
   },
@@ -106,15 +106,15 @@ const dlSteps: Step[] = [
   {
     id: 'm18-node-current', osVariant: 'both', titleBn: 'Current বোতাম চিনে নিন', target: 'm18-download-node-current', expectedAction: { type: 'click', target: 'm18-download-node-current' },
     explanationBn: 'ডান পাশের ধূসর Current বোতামে ক্লিক করুন।',
-    hintBn: 'এটি কিছু নামাবে না, শুধু একটি নোট দেখাবে।',
+    hintBn: 'এটি কিছু ডাউনলোড করবে না, শুধু একটি নোট দেখাবে।',
   },
   {
-    id: 'm18-dl-node', osVariant: 'both', titleBn: 'LTS নামান', target: 'm18-download-node-lts', expectedAction: { type: 'click', target: 'm18-download-node-lts' },
+    id: 'm18-dl-node', osVariant: 'both', titleBn: 'LTS ডাউনলোড করুন', target: 'm18-download-node-lts', expectedAction: { type: 'click', target: 'm18-download-node-lts' },
     explanationBn: 'বাঁ পাশের সবুজ LTS বোতামে ক্লিক করুন।',
     hintBn: '“LTS · RECOMMENDED” লেখা সবুজ বোতাম।',
   },
   {
-    id: 'm18-dl-node-done', osVariant: 'both', titleBn: 'নামা শেষ হোক', target: 'browser-downloads-panel', expectedAction: { type: 'custom', event: 'browser-download-done' },
+    id: 'm18-dl-node-done', osVariant: 'both', titleBn: 'ডাউনলোড শেষ হোক', target: 'browser-downloads-panel', expectedAction: { type: 'custom', event: 'browser-download-done' },
     explanationBn: 'তিনটি ইনস্টলারই এখন Downloads ফোল্ডারে।',
     hintBn: 'কয়েক সেকেন্ড অপেক্ষা করুন।',
   },
@@ -139,7 +139,7 @@ const pyWin: Step[] = [
     explanationBn: '“Add python.exe to PATH” ঘরে টিক দিন।',
     hintBn: 'নিচের দিকের ছোট চৌকো ঘর। না দিলে python কমান্ড চলবে না।',
     simplerBn: '“Add python.exe to PATH” লেখার বাঁ পাশের চৌকো ঘরে একবার ক্লিক করুন, যেন টিক-চিহ্ন আসে।',
-    successMessageBn: 'সবচেয়ে জরুরি ধাপ হলো!',
+    successMessageBn: 'সবচেয়ে জরুরি ধাপ শেষ!',
   },
   {
     id: 'm18-w-py-install', osVariant: 'windows', titleBn: 'Install Now চাপুন', target: 'setup-install', expectedAction: { type: 'click', target: 'setup-install' },
@@ -202,7 +202,7 @@ const pyMac: Step[] = [
   {
     id: 'm18-m-py-close', osVariant: 'mac', titleBn: 'Close চাপুন', target: 'setup-finish', expectedAction: { type: 'click', target: 'setup-finish' },
     explanationBn: '“Close” চাপুন।',
-    hintBn: 'বার পূর্ণ হলে Close আসবে। Trash-এর প্রশ্ন এলে আপনার ইচ্ছা।',
+    hintBn: 'বার পূর্ণ হলে Close আসবে। Trash-এ পাঠানোর প্রশ্ন এলে যা ইচ্ছা বেছে নিন।',
     successMessageBn: 'Python বসে গেছে!',
   },
 ]
@@ -342,11 +342,11 @@ const checkSteps: Step[] = [
   },
   {
     id: 'm18-git-version', osVariant: 'both', titleBn: 'Git চেষ্টা করে দেখুন', target: 'terminal-input', expectedAction: { type: 'typeCommand', command: ['git --version', 'git -v'] },
-    explanationBn: 'লিখুন: git --version। ভুল-বার্তা এলে ঘাবড়াবেন না।',
+    explanationBn: 'লিখুন: git --version। ভুলের বার্তা এলে ঘাবড়াবেন না।',
     hintBn: 'Git এখনও বসাইনি, তাই বার্তা আসবে: “এখনও বসানো নেই”।',
   },
   {
-    id: 'm18-read-error', osVariant: 'both', titleBn: 'ভুল-বার্তাটি পড়ুন', target: 'terminal-output', expectedAction: { type: 'continue' },
+    id: 'm18-read-error', osVariant: 'both', titleBn: 'ভুলের বার্তাটি পড়ুন', target: 'terminal-output', expectedAction: { type: 'continue' },
     explanationBn: 'বার্তাটি পড়ুন: কমান্ডটি খুঁজে পায়নি।',
     hintBn: 'পড়া শেষ হলে “বুঝেছি” চাপুন।',
   },
@@ -405,7 +405,7 @@ const folderSteps: Step[] = [
   {
     id: 'm18-w-ext-start', osVariant: 'windows', titleBn: 'স্টার্ট মেনু খুলুন', target: 'start-button', expectedAction: { type: 'click', target: 'start-button' },
     explanationBn: 'স্টার্ট বোতামে ক্লিক করুন।',
-    hintBn: 'আসল VS Code-এ শর্টকাট Ctrl + Shift + X। এখানে আলাদা জানালায় দেখাচ্ছি।',
+    hintBn: 'আসল VS Code-এ শর্টকাট Ctrl + Shift + X। এখানে আলাদা উইন্ডোতে দেখাচ্ছি।',
   },
   {
     id: 'm18-w-ext-search', osVariant: 'windows', titleBn: 'সার্চে লিখুন', target: 'start-search', expectedAction: { type: 'type', target: 'start-search', text: 'extensions', ignoreCase: true },
@@ -420,7 +420,7 @@ const folderSteps: Step[] = [
   {
     id: 'm18-m-ext-launchpad', osVariant: 'mac', titleBn: 'লঞ্চপ্যাড খুলুন', target: 'dock-launchpad', expectedAction: { type: 'click', target: 'dock-launchpad' },
     explanationBn: 'ডকের লঞ্চপ্যাডে ক্লিক করুন।',
-    hintBn: 'আসল VS Code-এ শর্টকাট Cmd + Shift + X। এখানে আলাদা জানালায় দেখাচ্ছি।',
+    hintBn: 'আসল VS Code-এ শর্টকাট Cmd + Shift + X। এখানে আলাদা উইন্ডোতে দেখাচ্ছি।',
   },
   {
     id: 'm18-m-ext-open', osVariant: 'mac', titleBn: 'Extensions Marketplace খুলুন', target: 'launchpad-app-extensions', expectedAction: { type: 'openApp', app: 'extensions' },
@@ -447,7 +447,7 @@ const lesson: Lesson = {
   part: 2,
   id: 'm18',
   titleBn: 'প্রোগ্রামিং টুলস সেটআপ',
-  oneLineBn: 'কোড এডিটর, Python আর Node.js নিরাপদে নামিয়ে ইনস্টল করি, টার্মিনালে যাচাই করি আর কোডিংয়ের ফোল্ডার সাজাই।',
+  oneLineBn: 'কোড এডিটর, Python আর Node.js নিরাপদে ডাউনলোড করে ইনস্টল করি, টার্মিনালে যাচাই করি আর কোডিংয়ের ফোল্ডার সাজাই।',
   minutes: 12,
   glossaryIds: ['tool-code-editor', 'tool-vscode', 'tool-installer', 'tool-official-website', 'tool-download', 'tool-path', 'tool-version', 'tool-python', 'tool-nodejs', 'tool-lts', 'tool-extension', 'tool-git', 'tool-github', 'tool-repository', 'tool-admin-password', 'tool-coding-folder'],
 
@@ -466,7 +466,7 @@ const lesson: Lesson = {
         {
           id: 'c-editor',
           type: 'compare',
-          textBn: '**কোড এডিটর** হলো রং-করা, দাগ-টানা খাতা। নোটপ্যাডের সাদা কাগজে ভুল চোখে পড়ে না।',
+          textBn: '**কোড এডিটর** হলো কোড লেখার রঙিন খাতা। নোটপ্যাডের সাদা কাগজে ভুল চোখে পড়ে না।',
           visual: {
             kind: 'compare',
             left: { visual: { kind: 'art', name: 'notebook' }, labelBn: 'নোটপ্যাড', captionBn: 'সাদা কাগজ' },
@@ -485,7 +485,7 @@ const lesson: Lesson = {
         {
           id: 'c-official',
           type: 'visual',
-          textBn: 'শুধু **অফিসিয়াল সাইট** থেকে নামাবেন। ঠিকানা অক্ষর ধরে মেলান।',
+          textBn: 'শুধু **অফিসিয়াল সাইট** থেকে ডাউনলোড করবেন। ঠিকানা অক্ষর ধরে মেলান।',
           visual: { kind: 'mock', name: 'browser', highlight: 'address-bar', captionBn: 'আগে ঠিকানার ঘরটি দেখুন' },
           chipsBn: ['code.visualstudio.com', 'www.python.org', 'nodejs.org'],
           learnMoreBn: 'নকল সাইটের ঠিকানা প্রায় একই দেখায়, যেমন o-এর জায়গায় 0। সার্চে সবার ওপরের “Ad” প্রায়ই টাকা দিয়ে বসানো, তাই ঠিকানা নিজে টাইপ করুন বা বুকমার্ক থেকে যান। অনুশীলনের সাইটের ঠিকানা .example দিয়ে শেষ, কারণ ওগুলো নকল; আসল ঠিকানা পাতার হলুদ লেখায় দেওয়া আছে।',
@@ -511,7 +511,7 @@ const lesson: Lesson = {
         {
           id: 'c-file',
           type: 'visual',
-          textBn: 'নামার পর **ফাইলের নাম** আর শেষ অংশ দেখুন। অদ্ভুত কিছু দেখলে থামুন।',
+          textBn: 'ডাউনলোডের পর **ফাইলের নাম** আর শেষ অংশ দেখুন। অদ্ভুত কিছু দেখলে থামুন।',
           visual: { kind: 'art', name: 'download', captionBn: 'যেমন exe, msi, pkg' },
           chipsBn: ['Windows: exe, msi', 'Mac: pkg', 'VS Code Mac: zip'],
           learnMoreBn: 'অদ্ভুত শেষ-অংশ (যেমন .zip.exe) দেখলে থামুন। Mac-এ VS Code-এর ফাইলটি সাধারণত .zip (কখনো .dmg); খুলে অ্যাপটি Applications ফোল্ডারে টেনে আনতে হয়। ইনস্টলার কোনো টুলবার, এক্সটেনশন বা “অফার” ইনস্টল করতে চাইলে “না” বলুন। এই তিনটি আসল প্রোগ্রামে সাধারণত এসব থাকে না; থাকলে থেমে কাউকে জিজ্ঞেস করুন। ' + DIFF + '।',
@@ -669,7 +669,7 @@ const lesson: Lesson = {
       hook: {
         id: 'h-node',
         type: 'hook',
-        textBn: 'এবার দ্বিতীয় টুল: **Node js**। এটি জাভাস্ক্রিপ্টকে ব্রাউজারের বাইরেও চালায়।',
+        textBn: 'এবার দ্বিতীয় টুল **Node.js** — এটি জাভাস্ক্রিপ্টকে ব্রাউজারের বাইরেও চালায়।',
         visual: { kind: 'art', name: 'braces', captionBn: 'Node.js' },
       },
       cards: [
@@ -828,7 +828,7 @@ const lesson: Lesson = {
           visual: {
             kind: 'compare',
             left: { visual: { kind: 'art', name: 'check' }, labelBn: 'সংখ্যা এলে', captionBn: 'ইনস্টল ঠিক' },
-            right: { visual: { kind: 'art', name: 'question' }, labelBn: 'ভুল-বার্তা এলে', captionBn: 'বসেনি বা খুঁজে পায়নি' },
+            right: { visual: { kind: 'art', name: 'question' }, labelBn: 'ভুলের বার্তা এলে', captionBn: 'বসেনি বা খুঁজে পায়নি' },
             vs: 'বা',
           },
           learnMoreBn: 'Python-এ এমন হলে Windows-এ আগে ভাবুন PATH-এ টিক ছিল কি না। ইনস্টল ঠিক থাকলে টার্মিনাল বন্ধ করে নতুন করে খুলে আবার চেষ্টা করুন। Windows-এ আসল কম্পিউটারে python লিখলে কখনো Microsoft Store খুলে যেতে পারে; ' + DIFF + '। Git আমরা এখনও বসাইনি, তাই git লিখলে এই বার্তাই আসবে।',
@@ -865,14 +865,14 @@ const lesson: Lesson = {
           options: [
             { id: 'a', textBn: 'টার্মিনাল বন্ধ করে নতুন করে খুলব' },
             { id: 'b', textBn: 'কম্পিউটার বদলাব' },
-            { id: 'c', textBn: 'অচেনা সাইট থেকে আবার নামাব' },
+            { id: 'c', textBn: 'অচেনা সাইট থেকে আবার ডাউনলোড করব' },
           ],
           correct: ['a'],
           hintBn: 'নতুন টার্মিনাল ইনস্টলের খবর পায়।',
           explanationBn: 'ঠিক। না হলে ইনস্টল ঠিক ছিল কি না দেখুন।',
         },
       ],
-      recapBn: ['--version দিয়ে যাচাই', 'Mac-এ python3, Windows-এ python', 'ভুল-বার্তা মানে “খুঁজে পাইনি”'],
+      recapBn: ['--version দিয়ে যাচাই', 'Mac-এ python3, Windows-এ python', 'ভুলের বার্তা মানে “খুঁজে পাইনি”'],
     },
 
     // =====================================================================================================
@@ -934,7 +934,7 @@ const lesson: Lesson = {
             right: { visual: { kind: 'art', name: 'cloud' }, labelBn: 'GitHub', captionBn: 'অনলাইনে কপি' },
             vs: 'আর',
           },
-          learnMoreBn: 'Git ভুল হলে আগের কোনো অবস্থায় ফেরার সুযোগ দেয়। GitHub-এ বিনামূল্যের অ্যাকাউন্টের জন্য ইমেইল লাগে (মডিউল ৮-এর মতো)। একটি প্রজেক্টের সব ফাইল আর ইতিহাস রাখার ফোল্ডারকে বলে রিপোজিটরি (রেপো)।',
+          learnMoreBn: 'Git ভুল হলে আগের কোনো অবস্থায় ফেরার সুযোগ দেয়। GitHub-এ বিনামূল্যের অ্যাকাউন্টের জন্য ইমেইল লাগে (মডিউল ৮-এর মতো)। একটি প্রকল্পের সব ফাইল আর ইতিহাস রাখার ফোল্ডারকে বলে রিপোজিটরি (রেপো)।',
         },
       ],
       steps: folderSteps,
@@ -982,7 +982,7 @@ const lesson: Lesson = {
   realWorld: {
     titleBn: 'এবার আসল কম্পিউটারে — পরিচিত কারও সাথে বসে, ধীরে ধীরে',
     tasksBn: [
-      'চিট শিটের “সেটআপ চেকলিস্ট” খুলুন। ঠিকানা মিলিয়ে code.visualstudio.com, www.python.org, nodejs.org থেকে নামান।',
+      'চিট শিটের “সেটআপ চেকলিস্ট” খুলুন। ঠিকানা মিলিয়ে code.visualstudio.com, www.python.org, nodejs.org থেকে ডাউনলোড করুন।',
       'ইনস্টল শেষে টার্মিনালে python (Mac-এ python3) আর node দিয়ে --version দেখুন।',
       'Documents/coding বানিয়ে VS Code-এ খুলুন। যাচাই করে Python এক্সটেনশন ইনস্টল করুন।',
     ],

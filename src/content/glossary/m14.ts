@@ -7,7 +7,7 @@ const entries: GlossaryEntry[] = [
   { id: 'hw-cpu', termBn: 'প্রসেসর', termEn: 'CPU (Processor)', icon: '🧠', art: 'chip', meaningBn: 'কম্পিউটারের “মস্তিষ্ক”; হিসাব করে আর নির্দেশ চালায়। রাঁধুনির মতো।', module: 14 },
   { id: 'hw-memory', termBn: 'মেমোরি', termEn: 'Memory (RAM)', icon: '🧮', art: 'ram-stick', meaningBn: 'কাজের সময় তথ্য হাতের কাছে রাখার দ্রুত জায়গা; কারেন্ট গেলে সাফ। কাউন্টারের মতো।', module: 14 },
   { id: 'hw-storage', termBn: 'স্টোরেজ', termEn: 'Storage (SSD/HDD)', icon: '🗄️', art: 'hard-drive', meaningBn: 'ফাইল-ছবি দীর্ঘদিন জমানোর জায়গা; বন্ধ করলেও থাকে। ফ্রিজের মতো (SSD/HDD)।', module: 14 },
-  { id: 'hw-os', termBn: 'অপারেটিং সিস্টেম', termEn: 'Operating System', icon: '🏠', meaningBn: 'সব অংশ আর প্রোগ্রামকে চালায় যে প্রধান সফটওয়্যার, যেমন Windows, macOS। ব্যবস্থাপকের মতো।', module: 14 },
+  { id: 'hw-os', termBn: 'অপারেটিং সিস্টেম', termEn: 'Operating System', icon: '🏠', meaningBn: 'সব অংশ আর প্রোগ্রামকে চালায় যে প্রধান সফটওয়্যার, যেমন Windows, macOS। বাড়ির ম্যানেজারের মতো।', module: 14 },
   { id: 'hw-program', termBn: 'প্রোগ্রাম / অ্যাপ', termEn: 'Program / Application', icon: '📱', meaningBn: 'নির্দিষ্ট কাজের সফটওয়্যার, যেমন ক্যালকুলেটর। মোবাইলে একে অ্যাপ বলে।', module: 14 },
   { id: 'hw-hardware', termBn: 'হার্ডওয়্যার', termEn: 'Hardware', icon: '🔧', meaningBn: 'কম্পিউটারের যা ছোঁয়া যায়: পর্দা, কিবোর্ড, প্রসেসর, স্টোরেজ।', module: 14 },
   { id: 'hw-software', termBn: 'সফটওয়্যার', termEn: 'Software', icon: '💿', meaningBn: 'কম্পিউটারকে কী করতে হবে তার নির্দেশ। ছোঁয়া যায় না, পর্দায় দেখা যায়।', module: 14 },

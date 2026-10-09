@@ -15,6 +15,18 @@ export function HelpButton() {
       >
         <span aria-hidden="true">❓</span> <span className="max-sm:sr-only">সাহায্য</span>
       </button>
+      <HelpDialog open={open} onClose={() => setOpen(false)} />
+    </>
+  )
+}
+
+/** The help dialog content (also opened from the lesson deck's ❓ button). */
+export function HelpDialog({ open, onClose }: { open: boolean; onClose: () => void }) {
+  const setOpen = (v: boolean) => {
+    if (!v) onClose()
+  }
+  return (
+    <>
       <Dialog open={open} onClose={() => setOpen(false)} titleBn="সাহায্য">
         <div className="space-y-4">
           <p>চিন্তা করবেন না — এখানে যা-ই করুন, আসল কম্পিউটারের কিছুই নষ্ট হবে না। ভুল করা শেখারই অংশ।</p>

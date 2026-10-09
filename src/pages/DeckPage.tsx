@@ -26,6 +26,7 @@ import { getModule } from '../content/modules'
 import { XP } from '../state/gamification'
 import { store, useProgress } from '../state/store'
 import { ArtView } from '../ui/illustrations/ArtView'
+import { HelpDialog } from '../ui/HelpButton'
 import { SpeakButton } from '../ui/SpeakButton'
 import { CelebrateSlide, type Outcome } from '../ui/cards/CelebrateSlide'
 import { ExplainSlide, HookSlide } from '../ui/cards/CardSlide'
@@ -125,6 +126,7 @@ function UnitDeck({ lesson, unit, unitIndex, onClose, onNextUnit }: UnitDeckProp
   const finishedRef = useRef(false)
   const [footerEl, setFooterEl] = useState<HTMLDivElement | null>(null)
   const regionRef = useRef<HTMLDivElement>(null)
+  const [helpOpen, setHelpOpen] = useState(false)
 
   const next = useCallback(() => dispatch({ type: 'next' }), [])
   const back = useCallback(() => dispatch({ type: 'back' }), [])
@@ -194,6 +196,7 @@ function UnitDeck({ lesson, unit, unitIndex, onClose, onNextUnit }: UnitDeckProp
     if (phase !== 'play') return
     const onKey = (e: KeyboardEvent) => {
       if (e.defaultPrevented || e.ctrlKey || e.metaKey || e.altKey) return
+      if (document.querySelector('dialog[open]')) return // the help dialog owns the keyboard (Esc closes it, not the lesson)
       const sheetOpen = !!document.querySelector('[data-deck-sheet]')
       const intent = keyIntent(e.key, { focus: focusKindOf(e.target), slide: latest.current.slides[latest.current.state.index].kind, sheetOpen })
       if (!intent) return
@@ -282,6 +285,10 @@ function UnitDeck({ lesson, unit, unitIndex, onClose, onNextUnit }: UnitDeckProp
         <span aria-hidden="true" className="deck-os-short">{os === 'mac' ? 'Mac' : 'Win'}</span>
       </button>
       <SpeakButton text={speakText} />
+      <button type="button" className="deck-iconbtn" aria-label="সাহায্য" aria-haspopup="dialog" data-testid="deck-help" onClick={() => setHelpOpen(true)}>
+        <span aria-hidden="true">❓</span>
+      </button>
+      <HelpDialog open={helpOpen} onClose={() => setHelpOpen(false)} />
     </header>
   )
 

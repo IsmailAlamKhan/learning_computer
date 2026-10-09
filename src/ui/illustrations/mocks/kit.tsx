@@ -50,11 +50,23 @@ const CSS = `.mk-glow{animation:mk-pulse 1.1s ease-in-out infinite}
 @keyframes mk-pulse{0%,100%{opacity:.16}50%{opacity:.62}}
 @media (prefers-reduced-motion:reduce){.mk-glow{animation:none;opacity:.4}}`
 
+/** The ring drawn around a region: region + 4 px padding, pulled back inside the drawing so the thick glow stroke is never clipped at the edge. */
+export const RING_PAD = 4
+export const RING_STROKE = 9
+export function ringBox(b: Box): { x: number; y: number; w: number; h: number; r: number } {
+  const m = RING_STROKE / 2 + 0.5
+  const x0 = Math.max(m, b.x - RING_PAD)
+  const y0 = Math.max(m, b.y - RING_PAD)
+  const x1 = Math.min(W - m, b.x + b.w + RING_PAD)
+  const y1 = Math.min(H - m, b.y + b.h + RING_PAD)
+  return { x: x0, y: y0, w: x1 - x0, h: y1 - y0, r: (b.r ?? 6) + RING_PAD }
+}
+
 export function MockSvg({ def, os, highlight, className }: MockProps & { def: MockDef; os: OsFlavor }) {
   const regs = def.regions(os)
   const hl = highlight ? regs[highlight] : undefined
   const label = hl ? `${def.titleBn}। ${hl.bn} চিহ্নিত` : def.titleBn
-  const pad = 4
+  const ring = hl ? ringBox(hl) : undefined
   return (
     <svg
       viewBox={`0 0 ${W} ${H}`}
@@ -77,11 +89,11 @@ export function MockSvg({ def, os, highlight, className }: MockProps & { def: Mo
         </linearGradient>
       </defs>
       {def.draw(os)}
-      {hl && (
+      {hl && ring && (
         <g pointerEvents="none">
-          <path d={`M0 0H${W}V${H}H0Z${rrPath(hl.x - pad, hl.y - pad, hl.w + pad * 2, hl.h + pad * 2, (hl.r ?? 6) + pad)}`} fillRule="evenodd" fill="#1e1b3a" opacity=".42" />
-          <rect className="mk-glow" x={hl.x - pad} y={hl.y - pad} width={hl.w + pad * 2} height={hl.h + pad * 2} rx={(hl.r ?? 6) + pad} fill="none" stroke="#e8505b" strokeWidth={9} />
-          <rect data-ring={highlight} x={hl.x - pad} y={hl.y - pad} width={hl.w + pad * 2} height={hl.h + pad * 2} rx={(hl.r ?? 6) + pad} fill="none" stroke="#e8505b" strokeWidth={3} />
+          <path d={`M0 0H${W}V${H}H0Z${rrPath(ring.x, ring.y, ring.w, ring.h, ring.r)}`} fillRule="evenodd" fill="#1e1b3a" opacity=".42" />
+          <rect className="mk-glow" x={ring.x} y={ring.y} width={ring.w} height={ring.h} rx={ring.r} fill="none" stroke="#e8505b" strokeWidth={RING_STROKE} />
+          <rect data-ring={highlight} x={ring.x} y={ring.y} width={ring.w} height={ring.h} rx={ring.r} fill="none" stroke="#e8505b" strokeWidth={3} />
         </g>
       )}
     </svg>

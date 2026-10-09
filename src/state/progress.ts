@@ -45,6 +45,7 @@ export interface QuizAttempt {
 export interface ModuleProgress {
   /** step ids completed, per OS flavor, so Windows and Mac progress are tracked separately */
   stepsDone: Record<OsFlavor, string[]>
+  /** legacy (pre-cards) flag: no longer set, kept so old backups import and count as activity */
   explanationRead: boolean
   /** ids of finished units (mini-lessons) of this module */
   unitsDone: string[]
@@ -348,10 +349,6 @@ export class ProgressStore {
     this.patchModule(n, (m) => ({ ...m, lastVisitedAt: new Date().toISOString() }))
   }
 
-  markExplanationRead(n: number) {
-    this.patchModule(n, (m) => (m.explanationRead ? m : { ...m, explanationRead: true }))
-  }
-
   markStepDone(n: number, os: OsFlavor, stepId: string) {
     this.patchModule(n, (m) =>
       m.stepsDone[os].includes(stepId)
@@ -366,15 +363,6 @@ export class ProgressStore {
 
   markFreePracticeDone(n: number) {
     this.patchModule(n, (m) => ({ ...m, freePracticeDone: true }))
-  }
-
-  recordQuiz(n: number, attempt: Omit<QuizAttempt, 'at'>) {
-    const at = new Date().toISOString()
-    this.patchModule(n, (m) => ({
-      ...m,
-      quiz: { ...attempt, at },
-      bestQuizScore: Math.max(m.bestQuizScore ?? 0, attempt.score),
-    }))
   }
 
   setRealWorldChecked(n: number, idx: number, checked: boolean) {

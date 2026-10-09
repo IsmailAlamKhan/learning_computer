@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test'
-import { coach, runDemoCode, seedProfile, startGuided, watchProblems } from './helpers'
+import { coach, openModule, runDemoCode, seedProfile, skipToPractice, startUnit, watchProblems } from './helpers'
 
 /** Every request the app makes (page, workers, service worker) must stay on its own origin (or be data:/blob:). See docs/PRIVACY.md. */
 test('privacy: no request ever leaves the app origin; no CSP violations', async ({ page, context, baseURL }) => {
@@ -21,9 +21,13 @@ test('privacy: no request ever leaves the app origin; no CSP violations', async 
   await expect(page.getByRole('link', { name: /হোম/ }).first()).toBeVisible()
 
   // 3. a lesson with the simulator, then the browser module
-  await startGuided(page, 2)
+  await openModule(page, 2)
+  await startUnit(page, 0)
+  await skipToPractice(page)
   await expect(coach(page, 'desktop')).toBeVisible()
-  await startGuided(page, 7)
+  await openModule(page, 7)
+  await startUnit(page, 0)
+  await skipToPractice(page)
   await coach(page, 'start-button').click()
   await coach(page, 'start-app-browser').click()
   const addr = page.locator('[data-sim-root] [data-coach="browser-address"]').first()

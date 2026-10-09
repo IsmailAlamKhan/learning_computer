@@ -26,7 +26,7 @@ const ROW = 132
 function PathNode({ m, state, offset }: { m: ModuleMeta; state: ModuleState; offset: number }) {
   const { n } = useFmt()
   const clickable = state === 'unlocked' || state === 'completed'
-  const stateLabel = { completed: 'সম্পন্ন', unlocked: 'এখন করুন', locked: 'তালা দেওয়া', soon: 'শীঘ্রই আসছে' }[state]
+  const stateLabel = { completed: 'সম্পন্ন', unlocked: 'এখন করুন', locked: 'এখনও বন্ধ', soon: 'শিগগিরই আসছে' }[state]
   const node = (
     <>
       <span className="node-art"><ArtView name={moduleArt(m.module)} size={62} tile={false} /></span>

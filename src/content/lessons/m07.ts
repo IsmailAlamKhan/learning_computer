@@ -2,7 +2,7 @@ import type { Lesson } from '../../engine/types'
 
 /**
  * Module 7 — ইন্টারনেট ও ব্রাউজার (cards format). Four units:
- * (1) internet, Wi‑Fi vs mobile data, the browser; (2) address bar, URL, search, tabs, back/forward, bookmark;
+ * (1) internet, ওয়াই-ফাই vs mobile data, the browser; (2) address bar, URL, search, tabs, back/forward, bookmark;
  * (3) good vs suspicious sites (calm, protective); (4) safe downloads.
  * Step targets and expectedAction semantics are the same as in the old guided practice; only the words changed.
  * Each unit's simulated computer starts fresh, so units 2-4 start with the browser already open.
@@ -47,7 +47,7 @@ const lesson: Lesson = {
         {
           id: 'c-router',
           type: 'visual',
-          textBn: '“Wi‑Fi যুক্ত” মানেই ইন্টারনেট নয়। রাউটারের নিজের লাইন বন্ধ থাকলে পেজ খোলে না।',
+          textBn: '“ওয়াই-ফাই যুক্ত” মানেই ইন্টারনেট নয়। রাউটারের নিজের লাইন বন্ধ থাকলে পেজ খোলে না।',
           visual: { kind: 'art', name: 'router', captionBn: 'রাউটার চালু, লাইন বন্ধ' },
           learnMoreBn: 'এমন হলে রাউটারটি একবার বন্ধ করে আবার চালান। তাতেও না হলে ফোনের মোবাইল ডেটা চালিয়ে দেখুন।',
         },
@@ -64,7 +64,7 @@ const lesson: Lesson = {
         {
           id: 'w-start', osVariant: 'windows', titleBn: 'স্টার্ট বোতামে ক্লিক করুন', target: 'start-button', expectedAction: { type: 'click', target: 'start-button' },
           explanationBn: 'নিচের টাস্কবারের স্টার্ট বোতামে ক্লিক করুন।',
-          hintBn: 'টাস্কবারের চারকোনা Windows আইকনটি দেখুন।',
+          hintBn: 'টাস্কবারের চার-খোপের Windows আইকনটি দেখুন।',
           simplerBn: 'পর্দার একদম নিচের বারে চারটি ছোট চৌকো ঘরের বোতামটিতে একবার ক্লিক করুন।',
         },
         {
@@ -75,7 +75,7 @@ const lesson: Lesson = {
         },
         {
           id: 'm-open-browser', osVariant: 'mac', titleBn: 'ডক থেকে ব্রাউজার খুলুন', target: 'dock-browser', expectedAction: { type: 'openApp', app: 'browser' },
-          explanationBn: 'ডকের গোলকের মতো আইকন, ব্রাউজারে ক্লিক করুন।',
+          explanationBn: 'ডকে গোলকের মতো আইকনটিতে (ব্রাউজার) ক্লিক করুন।',
           hintBn: 'ডকের বাঁ দিক থেকে তৃতীয় আইকনটি দেখুন।',
           simplerBn: 'পর্দার নিচের আইকনের সারিটির নাম ডক। তাতে “Web Browser” লেখা আইকনে ক্লিক করুন।',
           successMessageBn: 'ব্রাউজার খুলেছে!',
@@ -83,7 +83,7 @@ const lesson: Lesson = {
       ],
       quiz: [
         {
-          id: 'q-wifi', type: 'multipleChoice', questionBn: 'ফোনে “Wi‑Fi যুক্ত” দেখাচ্ছে, কিন্তু সাইট খুলছে না। সম্ভাব্য কারণ কী?',
+          id: 'q-wifi', type: 'multipleChoice', questionBn: 'ফোনে “ওয়াই-ফাই যুক্ত” দেখাচ্ছে, কিন্তু সাইট খুলছে না। সম্ভাব্য কারণ কী?',
           options: [
             { id: 'a', textBn: 'ফোন নষ্ট, ফেলে দিতে হবে' },
             { id: 'b', textBn: 'রাউটারের নিজের ইন্টারনেট লাইন নেই' },
@@ -117,8 +117,8 @@ const lesson: Lesson = {
           explanationBn: 'চারটিই মিলেছে!',
         },
       ],
-      recapBn: ['রাউটার → ইন্টারনেট → ওয়েবসাইট', 'Wi‑Fi যুক্ত ≠ ইন্টারনেট চালু', 'ব্রাউজার = ওয়েবসাইট দেখার প্রোগ্রাম'],
-      freeTryBn: 'নিজের ফোনের Wi‑Fi বন্ধ করে মোবাইল ডেটায় একটি সাইট খুলুন।',
+      recapBn: ['রাউটার → ইন্টারনেট → ওয়েবসাইট', 'ওয়াই-ফাই যুক্ত ≠ ইন্টারনেট চালু', 'ব্রাউজার = ওয়েবসাইট দেখার প্রোগ্রাম'],
+      freeTryBn: 'নিজের ফোনের ওয়াই-ফাই বন্ধ করে মোবাইল ডেটায় একটি সাইট খুলুন।',
     },
 
     // =====================================================================================================
@@ -172,16 +172,16 @@ const lesson: Lesson = {
         {
           id: 'c-tabs',
           type: 'visual',
-          textBn: '**ট্যাব** মানে আলাদা ঘর — এক ব্রাউজারে কয়েকটি পাতা পাশাপাশি খোলা থাকে। পিছনের তীর আগের পাতায় ফেরায়।',
+          textBn: '**ট্যাব** মানে আলাদা ঘর — এক ব্রাউজারে কয়েকটি পাতা পাশাপাশি খোলা থাকে।',
           visual: { kind: 'mock', name: 'browser', highlight: 'tabs' },
-          chipsBn: ['ট্যাব = আলাদা ঘর', '← পিছনে', '★ বুকমার্ক'],
-          learnMoreBn: 'সামনের তীর (→) আবার এগিয়ে নিয়ে যায়, রিফ্রেশ পাতাটি নতুন করে আনে। আর তারা (★) চিহ্নে বুকমার্ক করলে পছন্দের পাতা পরে সহজে খুলে পাওয়া যায়।',
+          chipsBn: ['ট্যাব = আলাদা ঘর', '← পেছনে', '★ বুকমার্ক'],
+          learnMoreBn: 'পেছনের তীর (←) আগের পাতায় ফেরায়, সামনের তীর (→) আবার এগিয়ে নিয়ে যায়, রিফ্রেশ পাতাটি নতুন করে আনে। আর তারা (★) চিহ্নে বুকমার্ক করলে পছন্দের পাতা পরে সহজে খুলে পাওয়া যায়।',
         },
       ],
       steps: [
         {
           id: 'search-words', osVariant: 'both', titleBn: 'অ্যাড্রেস বারে খুঁজুন', target: 'browser-address', expectedAction: { type: 'custom', event: 'browser-search' },
-          explanationBn: 'বক্সে ক্লিক করে dal recipe লিখুন, Enter (Mac-এ Return) চাপুন।',
+          explanationBn: 'বক্সে dal recipe লিখে Enter (Mac-এ Return) চাপুন।',
           hintBn: 'বক্সে ক্লিক করে dal recipe টাইপ করুন, তারপর Enter চাপুন।',
           simplerBn: 'ওপরের লম্বা সাদা বক্সে ক্লিক করুন। d-a-l, ফাঁকা, r-e-c-i-p-e লিখে Enter চাপুন।',
           teacherTipBn: 'পুরো বাক্য নয়, শুধু দরকারি শব্দ লিখলেই সার্চ ভালো কাজ করে — এই কথাটি এখানে বলে নিন।',
@@ -193,15 +193,15 @@ const lesson: Lesson = {
           simplerBn: 'নীল রঙের লেখাটিই লিংক। তার ওপর একবার ক্লিক করুন।',
         },
         {
-          id: 'go-back', osVariant: 'both', titleBn: 'পিছনের তীরে ক্লিক করুন', target: 'browser-back', expectedAction: { type: 'click', target: 'browser-back' },
-          explanationBn: 'পিছনের তীর (←) চেপে সার্চের তালিকায় ফিরুন।',
+          id: 'go-back', osVariant: 'both', titleBn: 'পেছনের তীরে ক্লিক করুন', target: 'browser-back', expectedAction: { type: 'click', target: 'browser-back' },
+          explanationBn: 'পেছনের তীর (←) চেপে সার্চের তালিকায় ফিরুন।',
           hintBn: 'অ্যাড্রেস বারের বাঁ পাশের দুটি তীরের বাঁ দিকেরটি।',
           successMessageBn: 'ফিরে এসেছেন!',
         },
         {
           id: 'go-forward', osVariant: 'both', titleBn: 'সামনের তীরে ক্লিক করুন', target: 'browser-forward', expectedAction: { type: 'click', target: 'browser-forward' },
           explanationBn: 'সামনের তীর (→) চেপে আবার রেসিপিতে যান।',
-          hintBn: 'পিছনের তীরের ঠিক পাশের তীরটি।',
+          hintBn: 'পেছনের তীরের ঠিক পাশের তীরটি।',
         },
         {
           id: 'new-tab', osVariant: 'both', titleBn: 'নতুন ট্যাব খুলুন', target: 'browser-new-tab', expectedAction: { type: 'click', target: 'browser-new-tab' },
@@ -256,11 +256,11 @@ const lesson: Lesson = {
           id: 'q-match', type: 'dragMatch', questionBn: 'ব্রাউজারের জিনিসের সাথে তার কাজ মিলিয়ে দিন।',
           pairs: [
             { id: 'addr', leftBn: 'অ্যাড্রেস বার', rightBn: 'ঠিকানা লেখা বা খোঁজা' },
-            { id: 'back', leftBn: 'পিছনের তীর', rightBn: 'আগের পাতায় ফেরা' },
+            { id: 'back', leftBn: 'পেছনের তীর', rightBn: 'আগের পাতায় ফেরা' },
             { id: 'tab', leftBn: 'ট্যাব', rightBn: 'আলাদা ঘরে পাতা খোলা' },
             { id: 'star', leftBn: 'তারা চিহ্ন', rightBn: 'পাতা বুকমার্ক করা' },
           ],
-          hintBn: '“পিছনে” মানে ফেরা, “ট্যাব” মানে আলাদা ঘর।',
+          hintBn: '“পেছনে” মানে ফেরা, “ট্যাব” মানে আলাদা ঘর।',
           explanationBn: 'এই চারটি দিয়েই ব্রাউজারের বেশিরভাগ কাজ হয়।',
         },
       ],
@@ -303,7 +303,7 @@ const lesson: Lesson = {
         {
           id: 'c-signs',
           type: 'visual',
-          textBn: 'তাড়া, লোভ বা ভয় দেখালে একটু **থামুন**। আসল সাইট কখনো এমন ভাবনার সময় কেড়ে নেয় না।',
+          textBn: 'তাড়া, লোভ বা ভয় দেখালে একটু **থামুন**। ঠকবাজেরা ভাবার সময় দিতে চায় না।',
           visual: { kind: 'art', name: 'didi-think', captionBn: 'তাড়া · লোভ · ভয়' },
           chipsBn: ['“১০ মিনিটে বন্ধ”', 'ফ্রি পুরস্কার', 'একের পর এক পপ-আপ'],
           learnMoreBn: 'আরও কিছু লক্ষণ: বানান ভুল, এলোমেলো সাজানো পাতা, বিনা কারণে ফ্রি ফোন বা টাকা জেতার খবর।',
@@ -311,7 +311,7 @@ const lesson: Lesson = {
         {
           id: 'c-otp',
           type: 'visual',
-          textBn: '**OTP**, PIN বা পাসওয়ার্ড কোনো পাতায় লিখবেন না, কাউকে বলবেনও না। আসল প্রতিষ্ঠান এভাবে চায় না।',
+          textBn: '**OTP** আর PIN কাউকে বলবেন না, সন্দেহের পাতায় লিখবেনও না। আসল প্রতিষ্ঠান ফোনে বা মেসেজে এসব চায় না।',
           visual: { kind: 'art', name: 'otp-code', captionBn: 'এটা শুধু আপনার' },
         },
         {
@@ -319,7 +319,7 @@ const lesson: Lesson = {
           type: 'visual',
           textBn: 'সন্দেহ হলে কিছু না লিখে পাতাটি **বন্ধ** করে দিন। সরে আসাটাই সবচেয়ে নিরাপদ।',
           visual: { kind: 'art', name: 'shield', captionBn: 'সরে এলেই নিরাপদ' },
-          chipsBn: ['পিছনে যান', 'পাতা বন্ধ করুন'],
+          chipsBn: ['পেছনে যান', 'পাতা বন্ধ করুন'],
         },
       ],
       steps: [
@@ -346,12 +346,12 @@ const lesson: Lesson = {
           explanationBn: 'OTP চাওয়া ঘরটিতে ক্লিক করুন, কিন্তু কিছু লিখবেন না।',
           hintBn: 'বক্সের ভেতর “OTP / PIN” লেখা ঘরটি।',
           successMessageBn: 'চমৎকার সতর্কতা!',
-          teacherTipBn: 'এখানে জোর দিয়ে বলুন: আসল জীবনে OTP/PIN কাউকে বলা বা কোনো পাতায় লেখা চলবে না, এমনকি পরিচিত নাম শুনলেও না।',
+          teacherTipBn: 'এখানে জোর দিয়ে বলুন: আসল জীবনে OTP/PIN কাউকে বলা বা সন্দেহজনক পাতায় লেখা চলবে না, এমনকি পরিচিত নাম শুনলেও না।',
         },
         {
-          id: 'leave-scam', osVariant: 'both', titleBn: 'পিছনে ফিরে যান', target: 'browser-back', expectedAction: { type: 'click', target: 'browser-back' },
-          explanationBn: 'পিছনের তীরে ক্লিক করে সরে আসুন।',
-          hintBn: 'বাঁ দিকের পিছনের তীরটি (←)।',
+          id: 'leave-scam', osVariant: 'both', titleBn: 'পেছনে ফিরে যান', target: 'browser-back', expectedAction: { type: 'click', target: 'browser-back' },
+          explanationBn: 'পেছনের তীরে ক্লিক করে সরে আসুন।',
+          hintBn: 'বাঁ দিকের পেছনের তীরটি (←)।',
           successMessageBn: 'নিরাপদে সরে এলেন!',
         },
       ],
@@ -391,7 +391,7 @@ const lesson: Lesson = {
           explanationBn: 'OTP কাউকে দেবেন না, পাতা বন্ধ করুন।',
         },
       ],
-      recapBn: ['তালা মানেই ভালো সাইট নয়', 'তাড়া বা লোভ দেখলে থামুন', 'OTP/PIN কখনো লিখবেন না'],
+      recapBn: ['তালা মানেই ভালো সাইট নয়', 'তাড়া বা লোভ দেখলে থামুন', 'OTP/PIN কাউকে বলবেন না'],
       freeTryBn: 'কোনো সাইটের ঠিকানার বানান ধীরে পড়ে দেখুন।',
     },
 
@@ -501,7 +501,7 @@ const lesson: Lesson = {
           items: [
             { id: '1', textBn: 'প্রোগ্রামটির আসল সাইটে যাই' },
             { id: '2', textBn: '“Ad” নয়, আসল ডাউনলোড বোতামে ক্লিক করি' },
-            { id: '3', textBn: 'নামার লাইন ভরা পর্যন্ত অপেক্ষা করি' },
+            { id: '3', textBn: 'ডাউনলোডের বার ভরা পর্যন্ত অপেক্ষা করি' },
             { id: '4', textBn: 'Downloads ফোল্ডারে ফাইলটি খুঁজি' },
           ],
           hintBn: 'আগে ঠিক জায়গায় যান, ফাইল খোঁজা সবার শেষে।',
@@ -512,7 +512,7 @@ const lesson: Lesson = {
           options: [
             { id: 'a', textBn: 'দ্রুত ক্লিক করে ফেলব' },
             { id: 'b', textBn: 'ওটা ছেড়ে সাইটের আসল বোতাম খুঁজব' },
-            { id: 'c', textBn: 'নামানো ফাইল সঙ্গে সঙ্গে খুলে ফেলব' },
+            { id: 'c', textBn: 'নামানো ফাইল সাথে সাথে খুলে ফেলব' },
           ],
           correct: ['b'],
           hintBn: 'বিজ্ঞাপনের বোতাম প্রায়ই ফাঁদ।',

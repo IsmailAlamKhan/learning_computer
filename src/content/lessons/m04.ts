@@ -192,7 +192,7 @@ const lesson: Lesson = {
         {
           id: 'm-select-notes', osVariant: 'mac', titleBn: 'নাম বদলের ফাইল বাছুন', target: 'fm-item-notes.txt', expectedAction: { type: 'click', target: 'fm-item-notes.txt' },
           explanationBn: 'notes.txt ফাইলটিতে একবার ক্লিক করুন।',
-          hintBn: 'ফাইলের তালিকায় notes.txt খুঁজুন। (আসল Mac-এ লেখার ফাইল সাধারণত TextEdit থেকে বানাতে হয় — সেটি পরের পাঠে।)',
+          hintBn: 'ফাইলের তালিকায় notes.txt খুঁজুন। (আসল Mac-এ এমন ফাইল TextEdit থেকে বানাতে হয়।)',
         },
         {
           id: 'm-return', osVariant: 'mac', titleBn: 'নাম বদলানো: Return', target: 'fm-item-notes.txt', expectedAction: { type: 'keyCombo', keys: 'enter' },
@@ -641,7 +641,7 @@ const lesson: Lesson = {
         {
           id: 'c-path-addr',
           type: 'visual',
-          textBn: '**পথ** হলো ফাইলের ঠিকানা — বড় ফোল্ডার থেকে ছোটতে, শেষে ফাইল। জেলা → থানা → বাড়ির মতো।',
+          textBn: '**পথ** হলো ফাইলের ঠিকানা — বড় ফোল্ডার থেকে ভেতরের ফোল্ডার, শেষে ফাইল। যেন জেলা → থানা → বাড়ি।',
           visual: {
             kind: 'flow',
             items: [{ art: 'folder', labelBn: 'বড় ফোল্ডার' }, { art: 'folder-open', labelBn: 'ভেতরের ফোল্ডার' }, { art: 'file', labelBn: 'ফাইল' }],
@@ -651,7 +651,7 @@ const lesson: Lesson = {
         {
           id: 'c-path-widget',
           type: 'visual',
-          textBn: 'ফোল্ডারে ট্যাপ করে **Birthdays.txt**-এর পথ বানাতে পারেন?',
+          textBn: 'ফোল্ডারে ক্লিক করে **Birthdays.txt**-এর পথ বানাতে পারেন?',
           visual: { kind: 'widget', widget: 'path-explorer' },
         },
         {
@@ -664,7 +664,7 @@ const lesson: Lesson = {
             right: { visual: { kind: 'mock', name: 'path-bar-mac', os: 'mac', highlight: 'folders' }, labelBn: 'Mac', captionBn: '/Users/anika/Documents' },
             vs: 'বনাম',
           },
-          learnMoreBn: 'শুরুতে Windows-এ C: হলো ড্রাইভ (Drive) — সংরক্ষণের বড় বিভাগ। Mac-এ ড্রাইভ অক্ষর নেই; একদম শুরুর / হলো সবার ওপরের ফোল্ডার, যার নাম রুট (Root)। Mac-এর পথ বার না দেখালে মেনু বারে View → Show Path Bar দিন। টার্মিনালে (পরে শিখবেন) হোম ফোল্ডারকে ~ লেখা হয়, যেমন ~/Documents।',
+          learnMoreBn: 'শুরুতে Windows-এ C: হলো ড্রাইভ (Drive) — ফাইল জমানোর বড় একটি ভাগ। Mac-এ ড্রাইভ অক্ষর নেই; একদম শুরুর / হলো সবার ওপরের ফোল্ডার, যার নাম রুট (Root)। Mac-এর পথ বার না দেখালে মেনু বারে View → Show Path Bar দিন। টার্মিনালে (পরে শিখবেন) হোম ফোল্ডারকে ~ লেখা হয়, যেমন ~/Documents।',
         },
         {
           id: 'c-abs-rel',
@@ -710,7 +710,7 @@ const lesson: Lesson = {
         },
         {
           id: 'w-read-path', osVariant: 'windows', titleBn: 'ঠিকানার বার', target: 'fm-address', expectedAction: { type: 'continue' },
-          explanationBn: 'ওপরের বারটি ঠিকানার বার: C: › Users › Anika › Documents। এটিই পথ।',
+          explanationBn: 'ওপরের ঠিকানার বারটি দেখুন: C: › Users › Anika › Documents। এটিই পথ।',
           hintBn: '“বুঝেছি, পরের ধাপ” বোতামে চাপুন।',
         },
         {
@@ -739,7 +739,7 @@ const lesson: Lesson = {
         },
         {
           id: 'm-read-path', osVariant: 'mac', titleBn: 'পথ বার', target: 'fm-address', expectedAction: { type: 'continue' },
-          explanationBn: 'নিচের সারিটি পথ বার: Macintosh HD › Users › anika › Documents। এটিই পথ।',
+          explanationBn: 'নিচের পথ বারটি দেখুন: Macintosh HD › Users › anika › Documents। এটিই পথ।',
           hintBn: '“বুঝেছি, পরের ধাপ” বোতামে চাপুন। (আসল Mac-এ না দেখালে View → Show Path Bar।)',
         },
         {

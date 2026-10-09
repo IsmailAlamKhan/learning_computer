@@ -607,6 +607,8 @@
   }
   /* phones: keep the practice area as tall as possible */
   .deck-practice [data-testid='small-screen-note'] {
+    align-items: center;
+    border-width: 1px;
     gap: 8px;
     padding: 6px 8px;
     font-size: 0.8rem;
@@ -746,4 +748,44 @@
   .deck-unit-go {
     padding: 0;
   }
+}
+
+/* flow visuals wrap on phones: smaller pictures, labels stay readable */
+@media (max-width: 519px) {
+  .deck-flow { gap: 8px 4px; }
+  .deck-flow li { gap: 4px; }
+  .deck-flow svg { width: 72px; height: 72px; }
+}
+
+/* phones: the shortcut pad is a compact, scrollable strip under the simulated computer (it must never push the practice area off the screen) */
+@media (max-width: 767px) {
+  .deck-sim [data-testid='shortcut-pad'] {
+    flex: none;
+    max-height: 38%;
+    overflow-y: auto;
+    padding: 8px;
+    gap: 6px;
+  }
+  /* keys scroll sideways in one row instead of wrapping into five */
+  .deck-sim [data-testid='shortcut-pad'] [role='group'] {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 2px;
+  }
+  .deck-sim [data-testid='shortcut-pad'] [role='group'] > button {
+    flex: none;
+  }
+  .deck-sim [data-testid='shortcut-pad'] > .text-sm {
+    display: none;
+  }
+  .deck-sim [data-testid='shortcut-pad'] button {
+    min-height: 40px;
+    min-width: 40px;
+    padding-inline: 8px;
+  }
+}
+/* phones: compare pictures stay small enough that the stacked pair fits without shrinking its labels */
+@media (max-width: 519px) {
+  .deck-compare-side { padding: 8px 10px; gap: 4px; }
+  .deck-compare-side svg { width: auto !important; max-width: 100% !important; max-height: 104px; }
 }

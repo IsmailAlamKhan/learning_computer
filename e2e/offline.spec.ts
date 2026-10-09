@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test'
-import { coach, cont, runDemoCode, seedProfile, startGuided, watchProblems } from './helpers'
+import { coach, openModule, runDemoCode, seedProfile, skipToPractice, startUnit, watchProblems } from './helpers'
 
 /** After one online visit (service worker + background Python download) the whole app works with the network cut. See docs/OFFLINE.md. */
 test('offline: lessons, simulator, JavaScript and Python all work without a network', async ({ page, context }) => {
@@ -38,9 +38,9 @@ test('offline: lessons, simulator, JavaScript and Python all work without a netw
   await expect(page.getByRole('link', { name: /হোম/ }).first()).toBeVisible()
 
   // a lesson + a guided step in the simulator
-  await startGuided(page, 2)
-  await cont(page)
-  await cont(page)
+  await openModule(page, 2)
+  await startUnit(page, 0)
+  await skipToPractice(page)
   await coach(page, 'icon-Welcome.txt').click()
   await coach(page, 'icon-Welcome.txt').dblclick()
   await expect(page.locator('[data-sim-root] [data-coach="win-editor-close"]')).toBeVisible()

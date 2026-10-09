@@ -37,7 +37,7 @@ const lesson: Lesson = {
         {
           id: 'c-open',
           type: 'compare',
-          textBn: 'সেটিংস হলো কম্পিউটারের **নিয়ন্ত্রণ ঘর**। Windows আর Mac-এ দেখতে আলাদা, কাজ এক।',
+          textBn: 'সেটিংস হলো কম্পিউটারের **কন্ট্রোল রুম**। Windows আর Mac-এ দেখতে আলাদা, কাজ এক।',
           visual: {
             kind: 'compare',
             left: { visual: { kind: 'mock', name: 'settings-win', os: 'windows', highlight: 'sidebar' }, labelBn: 'Windows', captionBn: 'Settings' },
@@ -187,7 +187,7 @@ const lesson: Lesson = {
           explanationBn: 'স্কেল বাড়ালে লেখা আর আইকন বড় হয়।',
         },
       ],
-      recapBn: ['Settings = নিয়ন্ত্রণ ঘর', 'Dark মোড = রাতের সাজ', 'Scale বাড়ালে সব বড়'],
+      recapBn: ['Settings = কন্ট্রোল রুম', 'Dark মোড = রাতের সাজ', 'Scale বাড়ালে সব বড়'],
       freeTryBn: 'আরেকটা ওয়ালপেপার বেছে নিজের পছন্দ খুঁজুন।',
     },
 
@@ -368,9 +368,9 @@ const lesson: Lesson = {
         {
           id: 'c-bt',
           type: 'visual',
-          textBn: '**ব্লুটুথ** কাছের স্পিকার, হেডফোন বা কিবোর্ডকে তার ছাড়া জোড়ে। প্রথমবার জোড়ার নাম **পেয়ারিং**।',
+          textBn: '**ব্লুটুথ** কাছের স্পিকার, হেডফোন বা কিবোর্ডকে তার ছাড়াই জুড়ে দেয়। প্রথমবার জোড়ার নাম **পেয়ারিং**।',
           visual: { kind: 'art', name: 'bluetooth' },
-          chipsBn: ['এক বার পেয়ার', 'পরে নিজে জোড়ে'],
+          chipsBn: ['একবার পেয়ার', 'পরে নিজেই যুক্ত'],
           learnMoreBn: 'একবার পেয়ার করলে পরে ব্লুটুথ চালু থাকলেই যন্ত্রটি নিজে থেকে যুক্ত হয়। যন্ত্রটিও চালু আর পেয়ারিং-মোডে থাকতে হয়।',
         },
         {
@@ -516,7 +516,7 @@ const lesson: Lesson = {
           textBn: '**টাইমজোন** ঠিক না থাকলে ঘড়ি ভুল সময় দেখায়। বাংলাদেশের জন্য বেছে নিন **Dhaka** (UTC+6)।',
           visual: { kind: 'art', name: 'clock' },
           chipsBn: ['Dhaka = UTC+6'],
-          learnMoreBn: 'ভুল টাইমজোন থাকলে ফাইলের তারিখ-সময় আর ইমেলের সময়ও গোলমেলে দেখায়। ২৪ ঘণ্টার ঘড়িও এখানেই বদলানো যায়।',
+          learnMoreBn: 'ভুল টাইমজোন থাকলে ফাইলের তারিখ-সময় আর ইমেইলের সময়ও গোলমেলে দেখায়। ২৪ ঘণ্টার ঘড়িও এখানেই বদলানো যায়।',
         },
         {
           id: 'c-time-route',
@@ -552,10 +552,10 @@ const lesson: Lesson = {
         {
           id: 'c-language',
           type: 'visual',
-          textBn: 'ভাষা আর কিবোর্ড বদলানো মডিউল ৫-এ শিখেছেন — সেটিংসের একই ঘরে থাকে।',
+          textBn: 'ভাষা আর কিবোর্ড বদলানো ৫ নম্বর পাঠে শিখেছেন — সেটিংসের একই ঘরে থাকে।',
           visual: { kind: 'art', name: 'language' },
-          chipsBn: ['মডিউল ৫ মনে করুন'],
-          learnMoreBn: 'Windows-এ Settings → Time & language → Language & region। Mac-এ System Settings → Keyboard এবং General → Language & Region। বাংলা কিবোর্ড যোগ করার ধাপগুলো মডিউল ৫-এ আছে।',
+          chipsBn: ['পাঠ ৫ মনে করুন'],
+          learnMoreBn: 'Windows-এ Settings → Time & language → Language & region। Mac-এ System Settings → Keyboard এবং General → Language & Region। বাংলা কিবোর্ড যোগ করার ধাপগুলো ৫ নম্বর পাঠে আছে।',
         },
       ],
       steps: [
@@ -623,7 +623,7 @@ const lesson: Lesson = {
           questionBn: 'বাংলাদেশের ঘড়ির জন্য কোন টাইমজোন ঠিক?',
           options: [
             { id: 'dhaka', textBn: 'Dhaka (UTC+6)' },
-            { id: 'ny', textBn: 'New York (UTC−5)' },
+            { id: 'ny', textBn: 'New York (আমেরিকা)' },
             { id: 'london', textBn: 'London (UTC+0)' },
           ],
           correct: ['dhaka'],
@@ -644,7 +644,7 @@ const lesson: Lesson = {
           explanationBn: 'চালু আর একই নেটওয়ার্কে থাকলেই খুঁজে পাবে।',
         },
       ],
-      recapBn: ['বাংলাদেশ = Dhaka (UTC+6)', 'প্রিন্টার: Add করুন', 'ভাষা: মডিউল ৫'],
+      recapBn: ['বাংলাদেশ = Dhaka (UTC+6)', 'প্রিন্টার: Add করুন', 'ভাষা: ৫ নম্বর পাঠ'],
       freeTryBn: 'টাইমজোন অন্য জায়গায় বদলে আবার Dhaka করুন।',
     },
   ],

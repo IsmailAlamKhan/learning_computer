@@ -69,6 +69,11 @@ async function mainCards(lessons: any[]) {
     md += `\n## Violations\n\n| module | where | rule | detail |\n|---|---|---|---|\n`
     for (const v of res.violations) md += `| ${v.module} | ${v.where} | ${v.rule} | ${v.detail} |\n`
   }
+  // appendix: the 20 tightest items (most over their target, still under the hard cap)
+  const over = (t: { detail: string; rule: string }) => Number(/(\d+) words/.exec(t.detail)?.[1] ?? 0) - Number(/> (\d+)/.exec(t.rule)?.[1] ?? 18)
+  const tight = [...res.tight].sort((a, b) => over(b) - over(a)).slice(0, 20)
+  md += `\n## Appendix: tight list (top 20 of ${res.tight.length}; over the target, under the hard cap)\n\n| module | where | rule | detail |\n|---|---|---|---|\n`
+  for (const t of tight) md += `| ${t.module} | ${t.where} | ${t.rule} | ${t.detail} |\n`
   const i = process.argv.indexOf('--report')
   if (i > 0) writeFileSync(join(root, process.argv[i + 1]), md)
   const j = process.argv.indexOf('--json')

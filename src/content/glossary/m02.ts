@@ -2,7 +2,7 @@ import type { GlossaryEntry } from '../../engine/types'
 
 const entries: GlossaryEntry[] = [
   { id: 'desktop', termBn: 'ডেস্কটপ', termEn: 'Desktop', icon: '🖥️', art: 'desktop', meaningBn: 'কম্পিউটার চালু করলে প্রথমে যে পর্দা দেখা যায় — আপনার পড়ার টেবিলের মতো।', module: 2 },
-  { id: 'icon', termBn: 'আইকন', termEn: 'Icon', icon: '🖼️', meaningBn: 'ফাইল, ফোল্ডার বা প্রোগ্রামের ছোট ছবি। ক্লিক করে বাছা বা খোলা যায়।', module: 2 },
+  { id: 'icon', termBn: 'আইকন', termEn: 'Icon', icon: '🖼️', meaningBn: 'ফাইল, ফোল্ডার বা প্রোগ্রামের ছোট ছবি। ক্লিকে বাছা, ডাবল ক্লিকে খোলা যায়।', module: 2 },
   { id: 'click', termBn: 'ক্লিক', termEn: 'Click', icon: '👆', art: 'hand-click', meaningBn: 'মাউসের বাঁ বোতাম (বা টাচপ্যাডে এক টোকা) একবার চাপা। কিছু বেছে নেওয়ার জন্য।', module: 2 },
   { id: 'double-click', termBn: 'ডাবল ক্লিক', termEn: 'Double Click', icon: '✌️', meaningBn: 'পরপর দুবার চটপট ক্লিক। কিছু খোলার জন্য।', module: 2 },
   { id: 'right-click', termBn: 'রাইট ক্লিক', termEn: 'Right Click', icon: '📋', meaningBn: 'মাউসের ডান বোতাম (টাচপ্যাডে দুই আঙুলে ট্যাপ) চাপা। একটা মেনু আসে।', module: 2 },

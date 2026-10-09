@@ -23,8 +23,9 @@ teacher and maintains the app (adds or edits lessons, checks progress on the Tea
   runs JavaScript and Python (Pyodide) in a sandbox.
 - A **coach** that points at the exact thing to click, gives a hint after ~10 s of inactivity and offers "দেখিয়ে দিন"
   (show me) after ~20 s. Steps advance only when the right action actually happens.
-- Every module follows the same pattern: explanation -> guided practice -> free practice -> quiz (4-5 questions) ->
-  "মনে রাখুন" summary -> real-world tasks -> optional teacher tip.
+- Every module is a few short **units**, each a one-card-at-a-time deck: a relatable hook -> 3-6 picture cards ->
+  guided practice in the simulator -> a 3-question quiz -> a celebration with "মনে রাখুন" recap chips; real-world
+  tasks and an optional teacher tip close the module.
 - Windows and Mac progress are tracked separately; she can switch any time.
 - Searchable Bengali glossary (শব্দকোষ), personal **notebook**, printable **cheat sheets**, printable
   **certificates** (end of Part 1 and Part 2), a "what next" roadmap and a printable 30-minute daily habit sheet.
@@ -73,8 +74,10 @@ Open the URL, go through the welcome screens (name, computer type, text size, go
 ├── PROJECT_BRIEF.md          Non-negotiable rules: language, tone, safety, design, tech, accuracy
 ├── README.md                 This file
 ├── docs/
-│   ├── LESSON_SCHEMA.md      Lesson data format and every step/quiz action type
-│   ├── AUTHORING_BRIEF.md    Rules for writing a module (Bengali style, accuracy, step design)
+│   ├── LESSON_SCHEMA.md      Lesson data format (units, cards, visuals, steps, quiz, action types)
+│   ├── UX_CONTRACT.md        UX rules, text budget, design tokens, deck engine and authoring checklist
+│   ├── UX_AUTHORING.md       How to write or rewrite a module in the cards format
+│   ├── AUTHORING_BRIEF.md    Bengali style, accuracy, step design, shared infrastructure
 │   ├── SIM_CONTRACT.md       The simulator contract and the list of data-coach ids
 │   ├── RUNNER.md             The sandboxed JS/Python runner
 │   ├── ARCHITECTURE.md       How the pieces fit together (read this second)
@@ -94,7 +97,7 @@ Open the URL, go through the welcome screens (name, computer type, text size, go
 │   │   ├── glossary/mNN.ts   Glossary entries per module (auto-discovered)
 │   │   ├── widgets/*.tsx     Interactive explanation widgets (auto-registered)
 │   │   └── cheatsheets/*.tsx Printable cheat sheets (auto-registered)
-│   ├── engine/               Lesson engine: step matching, guided run + coach, quiz grading, roadmap
+│   ├── engine/               Deck builder (deck.ts), step matching, guided run + coach, quiz grading, roadmap
 │   ├── sim/                  The simulated computer
 │   │   ├── bus.ts, vfs.ts, windowManager.ts, DesktopContext.tsx, Frame.tsx, SimStage.tsx
 │   │   ├── windows/, mac/    The two desktop shells
@@ -106,7 +109,7 @@ Open the URL, go through the welcome screens (name, computer type, text size, go
 │   ├── pages/                Home, Module page, Settings, Teacher, Glossary, Notebook, Certificate, Cheat sheets, Next steps
 │   ├── state/                Progress store (localStorage + in-memory fallback) and the React hook
 │   ├── lib/                  Pure helpers (numerals, download, notebook, teacher summaries, typing, symbols...)
-│   ├── ui/                   Layout, dialogs, quiz runner, help button, shared components
+│   ├── ui/                   Layout, dialogs, cards/ (deck slides), quiz/ (question views), illustrations/ (art, mocks, demos), shared components
 │   └── pwa/                  Service-worker registration and the offline-cache helper
 ├── scripts/                  check-privacy.mjs, gen-icons.mjs
 ├── tests/                    Cross-cutting unit tests (privacy guard)
@@ -120,221 +123,228 @@ Open the URL, go through the welcome screens (name, computer type, text size, go
 **You never need to touch engine code.** A lesson is one TypeScript data file in `src/content/lessons/`. Authoritative
 types are in [`src/engine/types.ts`](src/engine/types.ts); the field reference is
 [docs/LESSON_SCHEMA.md](docs/LESSON_SCHEMA.md). Before writing Bengali, read [PROJECT_BRIEF.md](PROJECT_BRIEF.md) and
-[docs/AUTHORING_BRIEF.md](docs/AUTHORING_BRIEF.md): spoken Bengali, "আপনি", religion-neutral wording (never
+[docs/UX_AUTHORING.md](docs/UX_AUTHORING.md) and [docs/AUTHORING_BRIEF.md](docs/AUTHORING_BRIEF.md): spoken Bengali, "আপনি", religion-neutral wording (never
 নমস্কার/সালাম etc.; use "স্বাগতম"), gentle hints, and **every shortcut/menu/command must be real**.
 
 ### A. Edit an existing lesson
 
 1. Open `src/content/lessons/mNN.ts` (for example `m02.ts` is the reference module).
-2. Change text, add a step, add a quiz question. Save. The dev server reloads.
-3. Keep the rules that `npm test` enforces (see `src/content/content.test.ts`): unique step and quiz ids, a `hintBn`
-   and `explanationBn` on every step, steps for both Windows and Mac, glossary ids that exist, no religion-specific words.
+2. Change text, edit a card, add a step. Save. The dev server reloads. Look at the card in the browser: nothing may need scrolling.
+3. Keep the rules that `npm test` and `npm run audit:content` enforce (see `src/content/content.test.ts` and
+   the "UX rules" section below): unique ids, a visual on every card, short text, a `hintBn` and `explanationBn` on every
+   step, steps for both Windows and Mac, exactly 3 quiz questions per unit, glossary ids that exist, no religion-specific words.
 4. **Step ids are how progress is saved.** If you rename or delete a step id, her saved progress for that step is
    ignored (the Teacher page only counts ids that still exist). Rename ids only when you must.
 
 ### B. Add a new lesson (a complete minimal example)
 
 The curriculum has 20 modules; to add module 21, create the file, add a line to `src/content/modules.ts` (section D)
-and a glossary file (section C). The example below shows **every** feature once: explanation blocks, a GUI step,
-a terminal step (`typeCommand`), code steps (`codeOutputEquals`, `fileContains`, `previewContains`, `predictOutput`),
-all five quiz question types, summary, real-world tasks, teacher tip, chapters, `setup.openApps` and `setup.vfs`.
+and a glossary file (section C). A lesson is a list of **units**; each unit is one short deck:
+hook -> 3-6 cards -> guided steps -> exactly 3 quiz questions -> recap. The example below is one complete minimal unit that shows
+**every** feature once: a hook, a card of each visual kind (`art`, `flow`, `compare`, `mock`, `demo`, `code`, `widget`, `big`),
+OS and input variants, a GUI step, a terminal step (`typeCommand`), a code step (`codeOutputEquals`), `setup`, `checklist`,
+three quiz questions, the recap, real-world tasks and a teacher tip. Field reference: [docs/LESSON_SCHEMA.md](docs/LESSON_SCHEMA.md).
+(Real units have 3-6 cards; this one has 8 only to show all visual kinds, so it would be split in a real lesson.)
 
 `src/content/lessons/m21.ts`:
 
 ```ts
-import type { Lesson, SimSetup } from '../../engine/types'
-
-/** Put files into ~/coding (the Code Editor's default folder). Never overwrite existing ones. */
-const seed =
-  (files: Record<string, string>): NonNullable<SimSetup['vfs']> =>
-  (vfs) => {
-    const folder = vfs.child(vfs.home, 'coding') ?? vfs.mkdir(vfs.home, 'coding')
-    for (const [name, content] of Object.entries(files)) if (!vfs.child(folder, name)) vfs.createFile(folder, name, content)
-  }
+import type { Lesson } from '../../engine/types'
 
 const lesson: Lesson = {
   module: 21,
   part: 2,
   id: 'm21',
   titleBn: 'নমুনা পাঠ',
-  oneLineBn: 'একটি ছোট নমুনা পাঠ, যেখানে সব ধরনের ধাপ আছে।',
+  oneLineBn: 'একটি ছোট নমুনা পাঠ, যেখানে সব ধরনের কার্ড আছে।',
   minutes: 6,
-  simulation: 'desktop',
   glossaryIds: ['sample-term'],
 
-  // (1) Explanation: p, analogy, list, note, widget, code
-  explanation: [
-    { kind: 'p', textBn: 'ফোল্ডার (Folder) হলো ফাইল রাখার একটি জায়গা।' },
-    { kind: 'analogy', textBn: 'ফোল্ডার হলো আলমারির তাকের মতো — প্রতিটি তাকে একই ধরনের জিনিস সাজানো থাকে।' },
-    { kind: 'list', itemsBn: ['প্রথম কথা', 'দ্বিতীয় কথা'] },
-    { kind: 'note', textBn: 'আপনার কম্পিউটারে একটু আলাদা দেখাতে পারে।' },
-    // a widget from src/content/widgets/<id>.tsx (file name = widget id)
-    { kind: 'widget', widget: 'path-explorer' },
-    { kind: 'code', code: 'print("Hello")', language: 'python' },
-  ],
-
-  steps: [], // empty because this lesson uses chapters (below)
-
-  // (2) Guided practice, split into independent micro-lessons. Each chapter starts a FRESH simulated computer.
-  chapters: [
+  units: [
     {
-      id: 'gui',
-      titleBn: 'ক: ক্লিক করা',
-      introBn: 'ডেস্কটপের একটি আইকনে ক্লিক করব।',
+      id: 'sample-unit', // unique in the module; the saved position and quiz result use it
+      titleBn: 'ফোল্ডার ও কমান্ড',
+
+      // (1) HOOK: one relatable line (max ~15 words), spoken by the mentor "didi". It needs a visual too.
+      hook: {
+        id: 'h-folder',
+        type: 'hook',
+        textBn: 'ফোনের গ্যালারির মতোই কম্পিউটারে ছবি রাখার **ফোল্ডার** আছে!',
+        visual: {
+          kind: 'compare',
+          left: { visual: { kind: 'art', name: 'phone' }, labelBn: 'ফোন', captionBn: 'গ্যালারি' },
+          right: { visual: { kind: 'art', name: 'desktop' }, labelBn: 'কম্পিউটার', captionBn: 'ফোল্ডার' },
+          vs: 'আর',
+        },
+      },
+
+      // (2) CARDS: 3-6 per unit, ONE idea each. textBn max ~25 words (hard 35), max 2 **bold** words, max 3 chips.
+      // Every card has a visual. Names for art/mock come ONLY from src/ui/illustrations/names.ts (see /#/demo/art).
+      cards: [
+        {
+          id: 'c-art',
+          type: 'visual',
+          textBn: 'ফোল্ডার হলো আলমারির **তাক** — একই ধরনের ফাইল এক জায়গায়।',
+          visual: { kind: 'art', name: 'folder', captionBn: 'ফোল্ডার' },
+          chipsBn: ['ফোল্ডার = তাক', 'ফাইল = জিনিস'], // up to 3 chips of 2-3 words
+          learnMoreBn: 'যত খুশি লম্বা লেখা চলে — এটি "আরও জানুন" বোতামের পেছনে একটি শিটে খোলে।',
+        },
+        {
+          id: 'c-flow',
+          type: 'visual',
+          textBn: 'আপনি কিছু **দিলে** কম্পিউটার সেটি ভেবে **ফল** দেখায়।',
+          // flow: 2-4 items joined by arrows
+          visual: { kind: 'flow', items: [{ art: 'keyboard', labelBn: 'ইনপুট' }, { art: 'chip', labelBn: 'ভাবনা' }, { art: 'monitor', labelBn: 'আউটপুট' }] },
+        },
+        {
+          id: 'c-compare',
+          type: 'compare',
+          textBn: 'Windows-এ নাম File Explorer, Mac-এ **Finder**।',
+          visual: {
+            kind: 'compare',
+            left: { visual: { kind: 'mock', name: 'file-explorer', os: 'windows' }, labelBn: 'Windows' },
+            right: { visual: { kind: 'mock', name: 'finder', os: 'mac' }, labelBn: 'Mac' },
+          },
+        },
+        {
+          // OS variant: only Windows learners see this card (write a Mac twin when the UI differs)
+          id: 'c-mock-win',
+          type: 'visual',
+          osVariant: 'windows',
+          textBn: 'নিচের বাঁ দিকের **স্টার্ট** বোতামে সব প্রোগ্রাম থাকে।',
+          // mock: an annotated mini-screenshot; `highlight` must be a region listed for that mock in names.ts
+          visual: { kind: 'mock', name: 'win-desktop', os: 'windows', highlight: 'taskbar' },
+        },
+        {
+          // Input variant: only learners with a mouse (a touchpad twin shows two-finger-tap). The device is auto-detected.
+          id: 'c-demo-mouse',
+          type: 'visual',
+          inputVariant: 'mouse',
+          textBn: 'মাউসের **ডান বোতামে** একবার চাপলে মেনু আসে।',
+          // demo: a looping 3-4 s animated cursor
+          visual: { kind: 'demo', gesture: 'right-click', captionBn: 'ডান বোতামে একবার' },
+        },
+        {
+          id: 'c-code',
+          type: 'code',
+          textBn: 'এই এক লাইনই কম্পিউটারকে **কথা** বলায়।',
+          // code: max 6 lines, a short note per line, optional output lines and browserPreview (for html/css)
+          visual: { kind: 'code', lang: 'python', lines: [{ code: 'print("Hello")', noteBn: 'print = পর্দায় দেখাও' }], output: ['Hello'] },
+        },
+        {
+          // widget: an interactive "পারেন?" moment; the id is the file name in src/content/widgets/
+          id: 'c-widget',
+          type: 'visual',
+          textBn: 'এবার নিজে চেষ্টা করুন — পারেন?',
+          visual: { kind: 'widget', widget: 'path-explorer', captionBn: 'ফোল্ডার খুঁজুন' },
+        },
+        { id: 'c-big', type: 'visual', textBn: 'অনেক হলো — এবার হাতে-কলমে!', visual: { kind: 'big', emoji: '🚀' } }, // fallback, use sparingly
+      ],
+
+      // (3) STEPS: guided practice. ONE action per step: instruction max ~12 words starting with a verb, hint max ~15, success max ~6.
+      setup: { openApps: ['terminal'] }, // starting state of the practice: open apps, extra files via `vfs`, `settings`
       steps: [
         {
-          id: 'gui-click', // unique in the whole module; progress is saved by this id
-          osVariant: 'windows', // 'windows' | 'mac' | 'both'
-          titleBn: 'স্টার্ট বোতামে ক্লিক',
-          explanationBn: 'নিচের বাঁ দিকের স্টার্ট (Start) বোতামে একবার ক্লিক করুন।',
+          id: 'gui-click', // unique across the whole module; progress is saved by this id
+          osVariant: 'windows', // required: 'windows' | 'mac' | 'both'
+          titleBn: 'স্টার্টে ক্লিক',
+          explanationBn: 'নিচের বাঁ দিকের স্টার্ট বোতামে ক্লিক করুন।', // the coach line
           target: 'start-button', // the data-coach id the coach points at
           expectedAction: { type: 'click', target: 'start-button' },
-          hintBn: 'টাস্কবারের একদম বাঁ দিকের আইকনটি দেখুন।', // shown after ~10 s without a correct action
-          simplerBn: 'মাউসের তীরটি ওই আইকনের ওপর রেখে বাঁ বোতামে একবার চাপুন।', // "আমি আটকে গেছি"
-          teacherTipBn: 'হাত কাঁপলে একটু সময় দিন।', // optional
+          hintBn: 'টাস্কবারের একদম বাঁ দিকের আইকনটি দেখুন।', // after ~10 s without a correct action
+          simplerBn: 'তীরটি ওই আইকনের ওপর রেখে একবার চাপুন।', // "আমি আটকে গেছি"
+          successMessageBn: 'চমৎকার!',
         },
         {
           id: 'gui-click-mac',
           osVariant: 'mac',
           titleBn: 'ডকে Finder-এ ক্লিক',
-          explanationBn: 'নিচের ডকে প্রথম আইকনটিতে (Finder) একবার ক্লিক করুন।',
+          explanationBn: 'নিচের ডকের প্রথম আইকনে (Finder) ক্লিক করুন।',
           target: 'dock-files',
           expectedAction: { type: 'click', target: 'dock-files' },
-          hintBn: 'পর্দার নিচের আইকনের সারিটি দেখুন।',
+          hintBn: 'ডকের একদম বাঁ দিকের আইকনটি দেখুন।',
         },
-      ],
-    },
-    {
-      id: 'terminal',
-      titleBn: 'খ: টার্মিনালে কমান্ড',
-      steps: [
         {
           id: 'term-pwd',
           osVariant: 'both',
-          titleBn: 'আমি এখন কোথায়? — pwd',
+          titleBn: 'কমান্ড চালান',
           explanationBn: 'টার্মিনালে pwd লিখে Enter চাপুন।',
           target: 'terminal-input',
-          // accepted forms; whitespace-normalised and case-sensitive. match: 'exact' (default) | 'prefix' | 'contains'
-          expectedAction: { type: 'typeCommand', command: ['pwd', 'Get-Location'] },
-          hintBn: 'ছোট হাতের অক্ষরে p, w, d লিখুন।',
+          // terminal step: accepted spellings; match: 'exact' (default) | 'prefix' | 'contains'
+          expectedAction: { type: 'typeCommand', command: ['pwd'] },
+          hintBn: 'ছোট হাতের তিনটি অক্ষর p, w, d লিখুন।',
+          successMessageBn: 'কমান্ড চলেছে!',
         },
-      ],
-      setup: { openApps: ['terminal'] }, // open this app when the chapter starts
-    },
-    {
-      id: 'code',
-      titleBn: 'গ: কোড লেখা ও চালানো',
-      steps: [
         {
-          id: 'code-run',
+          id: 'code-hello',
           osVariant: 'both',
-          titleBn: 'প্রোগ্রামটি চালান',
-          explanationBn: 'Run বোতাম চাপুন। hello.py-র ফল নিচে দেখা যাবে।',
+          titleBn: 'কোড চালান',
+          explanationBn: 'Run বোতামে চেপে কোডটি চালান।',
           target: 'code-run',
-          // exact (trimmed) output of the last successful run; use an array for several accepted outputs
-          expectedAction: { type: 'codeOutputEquals', output: 'Hello, Rumi', language: 'python' },
-          hintBn: 'Run বোতামটি কোড-এডিটরের ওপরে আছে।',
+          // code step: the last successful run must have printed exactly this
+          expectedAction: { type: 'codeOutputEquals', output: 'Hello', language: 'python' },
+          hintBn: 'কোডের ওপরের সবুজ Run বোতামটি দেখুন।',
         },
-        {
-          id: 'code-predict',
-          osVariant: 'both',
-          titleBn: 'আগে অনুমান করুন',
-          explanationBn: 'print("a" + "b") চালালে কী ছাপা হবে? কোচের বাক্সে লিখুন।',
-          target: 'code-editor',
-          expectedAction: { type: 'predictOutput', acceptedAnswers: ['ab'], ignoreCase: false },
-          hintBn: 'দুটি লেখা জোড়া লাগে।',
-        },
-        {
-          id: 'code-save',
-          osVariant: 'both',
-          titleBn: 'সেভ করুন',
-          explanationBn: 'Windows-এ Ctrl+S, Mac-এ Cmd+S চাপুন।',
-          target: 'code-save',
-          // checked after every event: the virtual file must contain the text (canonical path, ~ = home)
-          expectedAction: { type: 'fileContains', path: '~/coding/hello.py', text: 'Hello' },
-          hintBn: 'Save বোতামেও চাপতে পারেন।',
-        },
-        {
-          id: 'code-preview',
-          osVariant: 'both',
-          titleBn: 'ওয়েবপেজের প্রিভিউ',
-          explanationBn: 'index.html খুলে <h1>Hello</h1> লিখুন; প্রিভিউয়ে শিরোনাম দেখা যাবে।',
-          target: 'code-editor',
-          expectedAction: { type: 'previewContains', text: '<h1>Hello</h1>' },
-          hintBn: 'ট্যাগ খোলা আর বন্ধ করতে ভুলবেন না।',
-        },
-        // other useful actions: { type: 'fileExists', path: '~/coding/notes.txt', kind: 'file' }, { type: 'continue' } (reading step)
+        // Other stage-5 actions: fileExists, fileContains, previewContains, predictOutput. All types: docs/LESSON_SCHEMA.md
+        // (a unit that opens the code editor would use setup: { openApps: ['code'], vfs: … } instead of the terminal)
       ],
-      // open the editor and seed a file
-      setup: { openApps: ['code'], vfs: seed({ 'hello.py': 'print("Hello, Rumi")\n', 'index.html': '<html>\n<body>\n\n</body>\n</html>\n' }) },
-      // optional checklist shown above the simulator; an item ticks when all its stepIds are done
-      checklist: [{ id: 'c1', textBn: 'প্রোগ্রাম চালানো ও সেভ করা', stepIds: ['code-run', 'code-save'] }],
+      // optional: ticks appear when ALL listed steps are done (use ids that exist for the learner's OS)
+      checklist: [{ id: 'k-term', textBn: 'কমান্ড চালালাম', stepIds: ['term-pwd'] }],
+
+      // (4) QUIZ: EXACTLY 3 questions, valid for both OSes (no OS-only wording). hintBn after a wrong answer, explanationBn after the right one.
+      // Types: multipleChoice, clickTarget, dragMatch, ordering, predictOutput. Keep ids stable (the teacher dashboard uses them).
+      quiz: [
+        {
+          id: 'q21-choice',
+          type: 'multipleChoice',
+          questionBn: 'ফোল্ডারে কী রাখা হয়?',
+          options: [
+            { id: 'a', textBn: 'ফাইল' },
+            { id: 'b', textBn: 'বিদ্যুৎ' },
+          ],
+          correct: ['a'],
+          hintBn: 'আলমারির তাকে কী রাখেন, ভাবুন।',
+          explanationBn: 'ফোল্ডারে ফাইল সাজানো থাকে।',
+        },
+        {
+          id: 'q21-click',
+          type: 'clickTarget',
+          questionBn: 'কোনটি ফোল্ডারের আইকন?',
+          items: [
+            { id: 'folder', labelBn: 'ফোল্ডার', icon: '📁' },
+            { id: 'photo', labelBn: 'ছবি', icon: '🖼️' },
+          ],
+          correct: 'folder',
+          hintBn: 'হলুদ তাকের মতো আইকন খুঁজুন।',
+          explanationBn: 'ফোল্ডার-আইকন দেখতে তাকের মতো।',
+        },
+        {
+          id: 'q21-predict',
+          type: 'predictOutput',
+          questionBn: 'কোডটি পর্দায় কী দেখাবে?',
+          code: 'print("Hello")',
+          language: 'python',
+          acceptedAnswers: ['Hello'],
+          hintBn: 'print-এর ভেতরের লেখাটি দেখুন।',
+          explanationBn: 'print ভেতরের লেখাটিই দেখায়।',
+        },
+      ],
+
+      // (5) RECAP "মনে রাখুন": max 3 chips, each max ~8 words
+      recapBn: ['ফোল্ডার = ফাইলের তাক', 'pwd = আমি কোথায়', 'print = পর্দায় দেখাও'],
+      freeTryBn: 'নিজে একটি নতুন ফোল্ডার বানিয়ে দেখুন।', // optional "পারেন?" challenge
     },
   ],
 
-  // (3) Free practice (self-ticked checklist is optional)
-  freePractice: {
-    titleBn: 'নিজে করুন',
-    instructionBn: 'নিজের মতো করে একটি ফোল্ডার বানিয়ে দেখুন। কোনো তাড়া নেই।',
-    checklistBn: ['একটি ফোল্ডার বানালাম', 'ফোল্ডারের নাম বদলালাম'],
-  },
-
-  // (4) Quiz: 3-5 questions, several types. hintBn is shown after a wrong answer, explanationBn after the right one.
-  quiz: [
-    {
-      id: 'q-mc', type: 'multipleChoice', multi: false,
-      questionBn: 'ফোল্ডার কীসের জন্য?',
-      options: [{ id: 'a', textBn: 'ফাইল সাজিয়ে রাখার জন্য' }, { id: 'b', textBn: 'গান শোনার জন্য' }],
-      correct: ['a'],
-      hintBn: 'আলমারির তাকের কথা ভাবুন।',
-      explanationBn: 'ঠিক! ফোল্ডারে ফাইল সাজিয়ে রাখা হয়।',
-    },
-    {
-      id: 'q-click', type: 'clickTarget',
-      questionBn: 'কোনটি স্টার্ট বোতাম?',
-      items: [{ id: 'start', labelBn: 'Start', icon: '🪟' }, { id: 'clock', labelBn: 'ঘড়ি', icon: '🕒' }],
-      correct: 'start',
-      hintBn: 'টাস্কবারের বাঁ দিকে দেখুন।',
-      explanationBn: 'স্টার্ট বোতাম থেকে প্রোগ্রাম খোলা যায়।',
-    },
-    {
-      id: 'q-match', type: 'dragMatch',
-      questionBn: 'মিলিয়ে দিন।',
-      pairs: [{ id: 'p1', leftBn: 'pwd', rightBn: 'এখন কোথায় আছি' }, { id: 'p2', leftBn: 'ls', rightBn: 'কী কী আছে' }],
-      hintBn: 'প্রতিটি কমান্ডের কাজ মনে করুন।',
-      explanationBn: 'pwd জায়গা দেখায়, ls তালিকা দেখায়।',
-    },
-    {
-      id: 'q-order', type: 'ordering', // items listed in the CORRECT order; the UI shuffles them
-      questionBn: 'সঠিক ক্রমে সাজান।',
-      items: [{ id: 'o1', textBn: 'ফোল্ডার বানান' }, { id: 'o2', textBn: 'ফাইল বানান' }, { id: 'o3', textBn: 'সেভ করুন' }],
-      hintBn: 'আগে জায়গা, তারপর জিনিস।',
-      explanationBn: 'আগে ফোল্ডার, তারপর তার ভেতরে ফাইল।',
-    },
-    {
-      id: 'q-predict', type: 'predictOutput',
-      questionBn: 'এই কোড চালালে কী ছাপা হবে?',
-      code: 'print(2 + 3)', language: 'python',
-      acceptedAnswers: ['5'],
-      hintBn: 'যোগ করে দেখুন।',
-      explanationBn: '২ আর ৩ যোগ করলে ৫ হয়।',
-      osVariant: 'both', // optional: restrict a question to one OS with 'windows' | 'mac'
-    },
-  ],
-
-  // (5) "মনে রাখুন"
-  summaryCard: { titleBn: 'মনে রাখুন', pointsBn: ['ফোল্ডারে ফাইল সাজানো থাকে।', 'ভুল হলে আবার চেষ্টা করা যায়।'], extraBn: 'আস্তে আস্তে হলেই চলবে।' },
-
-  // (6) "এবার আসল কম্পিউটারে চেষ্টা করুন": 2-3 SAFE tasks, plus optional per-OS lists
+  // Shown on the module's last celebration screen ("এবার আসল কম্পিউটারে"); learner can tick them. 2-3 safe tasks, max ~18 words.
   realWorld: {
-    titleBn: 'এবার আসল কম্পিউটারে চেষ্টা করুন',
+    titleBn: 'এবার আসল কম্পিউটারে চেষ্টা করুন। সবগুলো সম্পূর্ণ নিরাপদ।',
     tasksBn: ['ডেস্কটপে একটি নতুন ফোল্ডার বানান।', 'ফোল্ডারের নাম বদলে নিজের নাম দিন।'],
     windowsTasksBn: ['স্টার্ট বোতাম চেপে File Explorer খুলুন।'],
     macTasksBn: ['ডকের Finder খুলুন।'],
   },
 
-  // (7) "শিক্ষকের জন্য"
-  teacherTipBn: 'এই পাঠ দুই দফায় করতে পারেন। তাড়া দেবেন না।',
+  teacherTipBn: 'এই পাঠ দুই দফায় করতে পারেন। তাড়া দেবেন না।', // hidden behind "শিক্ষকের জন্য"
 }
 
 export default lesson
@@ -342,15 +352,34 @@ export default lesson
 
 Notes on the example:
 
+- A real lesson has 2-4 units like this one (split anything over ~15 steps per OS or 12 deck items; `splitIfLong` and the content test
+  complain). Each unit starts a **fresh** simulated computer from its own `setup`; step ids must be unique across the whole module.
 - `target` can be a `data-coach` id or any CSS selector. The ids that exist are listed in
   [docs/SIM_CONTRACT.md](docs/SIM_CONTRACT.md) (see "data-coach ids" below).
 - Paths in lessons are canonical and OS-neutral: `~/Documents` (home-relative). The same step works for Windows and Mac.
 - Shortcuts are written `mod+c` in `keyCombo` actions (`mod` = Ctrl on Windows, Cmd on Mac): `{ type: 'keyCombo', keys: 'mod+c' }`.
-- A lesson with plain `steps` (no chapters) is also fine: put the steps in `steps`, use `setup` at the top level, and
-  omit `chapters`. Aim for 3-7 minutes (about 10-18 steps per OS); longer content belongs in chapters or the free-practice list.
+- `osVariant` filters cards, steps and questions by the learner's OS; `inputVariant: 'mouse' | 'touchpad'` is only for gestures that
+  differ by pointing device (right-click, scroll, zoom, drag) and is matched against the **auto-detected** device, so you never ask her.
 - Do not require typing Bengali in the simulation (her keyboard may not have Bengali yet); ASCII text is fine.
-- Optional lesson fields: `checklist` (top-level, like the chapter one), `certificatePart: 1 | 2` (completing the lesson issues that part's certificate).
-- Full list of GUI/terminal/code actions: [docs/LESSON_SCHEMA.md](docs/LESSON_SCHEMA.md).
+- Optional lesson field: `certificatePart: 1 | 2` (completing the module issues that part's certificate).
+- Full list of GUI/terminal/code actions and every field: [docs/LESSON_SCHEMA.md](docs/LESSON_SCHEMA.md).
+
+### UX rules and the content audit (`npm run audit:content`)
+
+The learner is a young Bengali woman who will **not** read paragraphs, so the course is built on hard rules
+(full text: [PROJECT_BRIEF.md](PROJECT_BRIEF.md) "UX RULES" and [docs/UX_CONTRACT.md](docs/UX_CONTRACT.md)):
+
+- One idea and one visual per card; text <= 25 words (hard cap 35), <= 2 sentences, <= 2 `**bold**` words, <= 3 chips;
+  longer detail goes into `learnMoreBn`.
+- Steps: one action, <= 12 words, starting with a verb; hint <= 15; success <= 6. Quiz: question <= 20 words, option <= 8,
+  explanation <= 15. Recap: <= 3 items of <= 8 words. Glossary meaning <= 18 words, one line.
+- Exactly 3 quiz questions per unit, one per screen; a wrong answer shows a gentle hint, never a harsh error.
+- A card never needs vertical scrolling (the visual is scaled to fit); one primary button per screen.
+
+`npm run audit:content` measures every card, step, question and recap against these numbers, writes `docs/UX_AUDIT_AFTER.md` and
+`docs/ux-audit-after.json`, and **fails (exit 1) on any hard violation**; "tight" items (over the target but under the hard cap) are
+listed so you can shorten them. `npm run build` runs it first, so a violating lesson cannot ship. Run it after every content edit,
+together with `npx vitest run src/content` (structure: ids, visuals, 3 questions, glossary ids, religion-neutral wording).
 
 ### C. Glossary entries
 
@@ -462,10 +491,11 @@ so always check each step with the walkthrough below.
 
 ### I. Walk the lesson in a real browser (Playwright)
 
-Each module has `e2e/mNN.spec.ts` that completes **every** guided step on both Windows and Mac; copy `e2e/module2.spec.ts`
-(GUI) or `e2e/m17.spec.ts` (terminal) or `e2e/m20.spec.ts` (code editor) and adapt it. Helpers in `e2e/helpers.ts`:
-`seedProfile(page, 'windows' | 'mac')` (skips onboarding and unlocks all modules), `startGuided(page, n)`, `coach(page, id)`,
-`cont(page)` (the "বুঝেছি, পরের ধাপ" button).
+Each module has `e2e/mNN.spec.ts` that completes **every** guided step of every unit on both Windows and Mac; copy `e2e/module2.spec.ts`
+(GUI), `e2e/m17.spec.ts` (terminal) or `e2e/m20.spec.ts` (code editor) and adapt it. The helpers in `e2e/helpers.ts` (documented at the top
+of the file): `seedProfile(page, 'windows' | 'mac', { input, modules, extras })` (skips onboarding, unlocks all modules, pins the pointing
+device), `openModule(page, n)`, `startUnit(page, i)`, `nextCard(page)`, `skipToPractice(page)`, `coach(page, id)` (an element inside the
+simulated computer), `expectPracticeDone(page)` and the quiz helpers (`answerChoice`, `matchPairs`, `orderItems`, `predict`, `checkAnswer`).
 
 ```bash
 PW_PORT=4301 PW_OUTDIR=/tmp/dist-m21 npx playwright test e2e/m21.spec.ts

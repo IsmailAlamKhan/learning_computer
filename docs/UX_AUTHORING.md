@@ -1,4 +1,6 @@
-# Authoring brief: migrate one module to the cards format
+# Authoring brief: write or rewrite a module in the cards format
+
+> All 20 modules are already in the cards format. This brief is the authoring guide for new or reworked modules; read "old format" / "legacy" below as historical (the old format no longer exists in the code). Format reference: [LESSON_SCHEMA.md](LESSON_SCHEMA.md).
 
 Read first: `PROJECT_BRIEF.md` ("UX RULES (mandatory)"), `docs/UX_CONTRACT.md` (data model, text budget, tokens, **"Deck engine, UI and authoring guide"** — unit checklist and visual guidance), `docs/AUTHORING_BRIEF.md` (older rules on accuracy, Bengali quality, religion-neutral wording — still valid), and the REFERENCE lesson `src/content/lessons/m02.ts` + `src/content/glossary/m02.ts` + its e2e `e2e/module2*.spec.ts` and `e2e/helpers.ts`. Look at the finished look in `docs/screenshots/after-pilot/` (open the PNGs). The learner is an 18-year-old Gen-Z Bengali girl who will NOT read paragraphs.
 

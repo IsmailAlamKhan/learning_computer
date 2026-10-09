@@ -28,6 +28,13 @@ export function CardVisual({ visual }: { visual: Visual }) {
           <VisualView visual={visual} />
         </FitBox>
       )
+    case 'flow':
+      // wraps onto several rows instead of shrinking the labels below a readable size
+      return (
+        <FitBox width="fill" maxWidth={760} maxScale={1.3}>
+          <VisualView visual={visual} />
+        </FitBox>
+      )
     case 'code':
       return (
         <FitBox width="fill" maxWidth={680} maxScale={1.3}>

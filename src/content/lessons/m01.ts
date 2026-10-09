@@ -380,7 +380,7 @@ const lesson: Lesson = {
       ],
       steps: [
         // ---------- Windows ----------
-        { id: 'w-start-1', osVariant: 'windows', titleBn: 'এবার স্লিপ: স্টার্ট বোতাম', target: 'start-button', expectedAction: { type: 'click', target: 'start-button' }, explanationBn: 'নিচের স্টার্ট বোতামে ক্লিক করুন।', hintBn: 'টাস্কবারের মাঝের দিকের চারকোনা আইকন।' },
+        { id: 'w-start-1', osVariant: 'windows', titleBn: 'এবার স্লিপ: স্টার্ট বোতাম', target: 'start-button', expectedAction: { type: 'click', target: 'start-button' }, explanationBn: 'নিচের স্টার্ট বোতামে ক্লিক করুন।', hintBn: 'টাস্কবারের মাঝের দিকের চার-খোপের আইকন।' },
         { id: 'w-power-1', osVariant: 'windows', titleBn: 'পাওয়ার বোতাম', target: 'start-power', expectedAction: { type: 'click', target: 'start-power' }, explanationBn: 'স্টার্ট মেনুর নিচের ডানের পাওয়ার চিহ্নে (⏻) ক্লিক করুন।', hintBn: 'স্টার্ট মেনুর একদম নিচে ডান দিকে, একটি গোল চিহ্ন।' },
         { id: 'w-sleep', osVariant: 'windows', titleBn: 'Sleep বেছে নিন', target: 'power-sleep', expectedAction: { type: 'custom', event: 'power-sleep' }, explanationBn: '“Sleep”-এ ক্লিক করুন। পর্দা অন্ধকার হবে, কাজ হারাবে না।', hintBn: 'তালিকার “Sleep” লেখাটি।', successMessageBn: 'কম্পিউটার ঘুমাচ্ছে!' },
         { id: 'w-wake', osVariant: 'windows', titleBn: 'কম্পিউটারকে জাগানো', target: 'wake-button', expectedAction: { type: 'custom', event: 'power-wake' }, explanationBn: 'আসল কম্পিউটারে যেকোনো কী চাপলেই জাগে। এখানে বোতামটিতে ক্লিক করুন।', hintBn: 'অন্ধকার পর্দার মাঝখানের বোতামটি।', successMessageBn: 'জেগে উঠেছে!' },

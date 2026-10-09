@@ -155,7 +155,7 @@ function Flashcards() {
         />
         <span className="absolute right-2 top-2" style={{ zIndex: 3 }}><SpeakButton text={`${g.termBn}। ${g.meaningBn}`} /></span>
       </div>
-      <p className="text-center text-sm text-muted">কার্ডে ট্যাপ করে উল্টান · ← → চেপে এগোন</p>
+      <p className="text-center text-sm text-muted">কার্ডে ক্লিক বা ট্যাপ করে উল্টান · ← → চেপে এগোন</p>
       <div className="grid grid-cols-2 gap-3">
         <button className="btn btn-outline whitespace-nowrap px-3 text-base" onClick={again}>আবার দেখব ↺</button>
         <button className="btn" onClick={know}>জানতাম ✓</button>

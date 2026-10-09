@@ -103,7 +103,7 @@ function TaskbarButton({ coach, label, bn, children, running, active, onClick, p
         aria-label={label}
         aria-pressed={pressed}
         onClick={onClick}
-        className={`relative flex h-10 w-10 items-center justify-center rounded-md transition-colors ${active ? th.active : th.hover}`}
+        className={`sim-tb-btn relative flex h-10 w-10 items-center justify-center rounded-md transition-colors ${active ? th.active : th.hover}`}
       >
         {children}
         {running && <span aria-hidden className={`absolute bottom-0.5 h-[3px] rounded-full ${active ? 'w-4 bg-sky-500' : 'w-1.5 bg-gray-400'}`} />}
@@ -141,8 +141,8 @@ function Taskbar({ startRef, trayRef }: { startRef: React.RefObject<HTMLDivEleme
       onPointerDown={() => d.closeMenu()}
       onContextMenu={(e) => e.preventDefault()}
     >
-      <div className="flex flex-1 items-center justify-center gap-1">
-        <div ref={startRef} className="flex items-center gap-1">
+      <div className="sim-tb-apps flex flex-1 items-center justify-center gap-1">
+        <div ref={startRef} className="sim-tb-apps flex items-center gap-1">
           <TaskbarButton coach="start-button" label="Start" bn="শুরু করার মেনু" pressed={d.ui.startOpen} active={d.ui.startOpen} onClick={() => { d.closeMenu(); d.setUi({ startOpen: !d.ui.startOpen }) }}>
             <StartMark size={24} />
           </TaskbarButton>
@@ -167,7 +167,7 @@ function Taskbar({ startRef, trayRef }: { startRef: React.RefObject<HTMLDivEleme
         data-coach="show-desktop"
         aria-label="Show desktop"
         title="Show desktop"
-        className={`h-full w-2.5 border-l ${th.dark ? 'border-white/20 hover:bg-white/20' : 'border-black/15 hover:bg-black/10'}`}
+        className={`sim-tb-show h-full w-2.5 border-l ${th.dark ? 'border-white/20 hover:bg-white/20' : 'border-black/15 hover:bg-black/10'}`}
         onClick={() => { d.closeMenu(); d.setUi({ startOpen: false }); d.wmDispatch({ type: 'minimizeAll' }) }}
       />
     </div>
@@ -184,7 +184,7 @@ function Tray({ qs, setQs, trayRef }: { qs: boolean; setQs: (v: boolean) => void
   }, [])
   const { time, date } = fmtClock(now, d.sim.timezone, d.sim.clock24)
   return (
-    <div ref={trayRef} className="relative flex h-full items-center gap-0.5 pr-1">
+    <div ref={trayRef} className="sim-tb-tray relative flex h-full items-center gap-0.5 pr-1">
       <InputIndicator mac={false} />
       <Tooltip text="Quick settings" bn="ওয়াই-ফাই, আওয়াজ ও আলো এখানে ঠিক করা যায়">
         <button
@@ -192,7 +192,7 @@ function Tray({ qs, setQs, trayRef }: { qs: boolean; setQs: (v: boolean) => void
           data-coach="tray"
           aria-label="Quick settings"
           aria-expanded={qs}
-          className={`flex h-10 items-center gap-2.5 rounded-md px-2.5 ${qs ? th.active : th.hover}`}
+          className={`sim-tb-traybtn flex h-10 items-center gap-2.5 rounded-md px-2.5 ${qs ? th.active : th.hover}`}
           onClick={() => { d.closeMenu(); d.setUi({ startOpen: false }); setQs(!qs) }}
         >
           <span data-coach="tray-wifi"><WifiGlyph size={17} off={!d.sim.wifiOn} /></span>
@@ -200,9 +200,9 @@ function Tray({ qs, setQs, trayRef }: { qs: boolean; setQs: (v: boolean) => void
           <span data-coach="tray-battery"><BatteryGlyph size={19} /></span>
         </button>
       </Tooltip>
-      <div data-coach="tray-clock" role="button" tabIndex={0} aria-label={`${time} ${date}`} className={`flex h-10 min-w-[72px] flex-col items-end justify-center rounded-md px-2 text-[12px] leading-tight ${th.hover}`} onClick={() => d.closeMenu()}>
+      <div data-coach="tray-clock" role="button" tabIndex={0} aria-label={`${time} ${date}`} className={`sim-tb-clock flex h-10 min-w-[72px] flex-col items-end justify-center rounded-md px-2 text-[12px] leading-tight ${th.hover}`} onClick={() => d.closeMenu()}>
         <span>{time}</span>
-        <span>{date}</span>
+        <span className="sim-tb-date">{date}</span>
       </div>
       {qs && <QuickSettings />}
     </div>

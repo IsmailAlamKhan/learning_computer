@@ -6,7 +6,7 @@ const entries: GlossaryEntry[] = [
   { id: 'path', termBn: 'পথ', termEn: 'Path', icon: '🧭', art: 'path-map', meaningBn: 'ফাইল বা ফোল্ডার কম্পিউটারের ঠিক কোথায় আছে তার ঠিকানা — ফোল্ডারের নামগুলো পরপর লেখা।', module: 4 },
   { id: 'absolute-path', termBn: 'সম্পূর্ণ পথ', termEn: 'Absolute Path', icon: '🗺️', meaningBn: 'একদম শুরু (Windows-এ C:, Mac-এ /) থেকে লেখা পুরো ঠিকানা। যেখান থেকেই দেখুন, একই।', module: 4 },
   { id: 'relative-path', termBn: 'আপেক্ষিক পথ', termEn: 'Relative Path', icon: '📍', meaningBn: 'এখন যে ফোল্ডারে আছেন সেখান থেকে লেখা ঠিকানা — “আমার বাড়ি থেকে তিন বাড়ি পরে”-র মতো।', module: 4 },
-  { id: 'drive', termBn: 'ড্রাইভ', termEn: 'Drive', icon: '💽', art: 'hard-drive', meaningBn: 'Windows-এ সংরক্ষণের বড় বিভাগ, নাম অক্ষর আর কোলন, যেমন C:। সাধারণত সব ফাইল C:-তে।', module: 4 },
+  { id: 'drive', termBn: 'ড্রাইভ', termEn: 'Drive', icon: '💽', art: 'hard-drive', meaningBn: 'Windows-এ ফাইল জমানোর বড় ভাগ, নাম অক্ষর আর কোলন, যেমন C:। সাধারণত সব ফাইল C:-তে।', module: 4 },
   { id: 'root', termBn: 'রুট (সবার ওপরের ফোল্ডার)', termEn: 'Root', icon: '🌳', meaningBn: 'ডিস্কের সবচেয়ে ওপরের ফোল্ডার, যার ভেতরে বাকি সব। Windows-এ C:\\, Mac-এ একটি স্ল্যাশ ( / )।', module: 4 },
   { id: 'home-folder', termBn: 'হোম ফোল্ডার', termEn: 'Home Folder', icon: '🏠', meaningBn: 'আপনার নিজের সব ফাইলের বাড়ি: Windows-এ C:\\Users\\নাম, Mac-এ /Users/নাম। টার্মিনালে ~ লেখা হয়।', module: 4 },
   { id: 'parent-folder', termBn: 'ওপরের ফোল্ডার (প্যারেন্ট)', termEn: 'Parent Folder', icon: '⬆️', meaningBn: 'যে ফোল্ডারের ভেতরে আপনার ফোল্ডারটি আছে। পথে এক ধাপ ওপরের চিহ্ন দুই ডট ( .. )।', module: 4 },

@@ -74,7 +74,7 @@ for (const [w, h] of [[390, 844], [1440, 900]] as const) {
     await expect(page.getByTestId('part-1')).toBeVisible()
     await expect(page.getByTestId('path-row-20')).toBeAttached()
     await expect(page.getByRole('link', { name: /পাঠ ২:.*এখন করুন/ })).toBeVisible()
-    await expect(page.getByRole('img', { name: /পাঠ ৩:.*তালা/ })).toBeAttached()
+    await expect(page.getByRole('img', { name: /পাঠ ৩:.*এখনও বন্ধ/ })).toBeAttached()
     expect(await noHScroll(page)).toBe(true)
     await page.getByTestId('continue-card').getByRole('link', { name: /চালিয়ে যান|শুরু করি/ }).click()
     await expect(page).toHaveURL(/#\/module\/2/)

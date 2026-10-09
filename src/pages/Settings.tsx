@@ -51,7 +51,7 @@ export default function Settings() {
         <p className="chip chip-brand text-base" data-testid="my-computer">
           {OS_LABEL[profile.os]} {profile.os === 'windows' ? '💻' : '🍎'} · {profile.input === 'mouse' ? 'মাউস 🖱️' : 'টাচপ্যাড 👆'}
         </p>
-        {profile.autoDetected && !manual && <p className="text-muted" data-testid="auto-note">স্বয়ংক্রিয়ভাবে চেনা হয়েছে ✓</p>}
+        {profile.autoDetected && !manual && <p className="text-muted" data-testid="auto-note">নিজে থেকেই চেনা হয়েছে ✓</p>}
         <Choice<OsFlavor>
           legend="কম্পিউটারের ধরন"
           value={profile.os}
@@ -62,7 +62,7 @@ export default function Settings() {
           ]}
         />
         <Choice<InputKind>
-          legend="পয়েন্টিং ডিভাইস"
+          legend="মাউস না টাচপ্যাড?"
           value={profile.input}
           onChange={(v) => {
             store.setExtra(INPUT_MANUAL_KEY, true)

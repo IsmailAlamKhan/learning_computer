@@ -96,7 +96,7 @@ async function quiz2(page: Page) {
   await answerChoice(page, /^ডাল রেসিপি$/)
   await expectRight(page)
   await nextCard(page)
-  await matchPairs(page, [['অ্যাড্রেস বার', 'ঠিকানা লেখা বা খোঁজা'], ['পিছনের তীর', 'আগের পাতায় ফেরা'], ['ট্যাব', 'আলাদা ঘরে পাতা খোলা'], ['তারা চিহ্ন', 'পাতা বুকমার্ক করা']])
+  await matchPairs(page, [['অ্যাড্রেস বার', 'ঠিকানা লেখা বা খোঁজা'], ['পেছনের তীর', 'আগের পাতায় ফেরা'], ['ট্যাব', 'আলাদা ঘরে পাতা খোলা'], ['তারা চিহ্ন', 'পাতা বুকমার্ক করা']])
   await checkAnswer(page)
   await expectRight(page)
   await nextCard(page)
@@ -115,7 +115,7 @@ async function quiz3(page: Page) {
 }
 
 async function quiz4(page: Page) {
-  await orderItems(page, ['প্রোগ্রামটির আসল সাইটে', 'আসল ডাউনলোড বোতামে', 'নামার লাইন ভরা', 'Downloads ফোল্ডারে ফাইলটি'])
+  await orderItems(page, ['প্রোগ্রামটির আসল সাইটে', 'আসল ডাউনলোড বোতামে', 'ডাউনলোডের বার ভরা', 'Downloads ফোল্ডারে ফাইলটি'])
   await checkAnswer(page)
   await expectRight(page)
   await nextCard(page)

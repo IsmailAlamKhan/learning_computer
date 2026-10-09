@@ -64,7 +64,7 @@ const lesson: Lesson = {
           type: 'visual',
           textBn: 'ফাইলে **ডাবল ক্লিক** করলেই ঠিক প্রোগ্রাম নিজে খুলে যায় — ছবি Photos-এ, গান Media Player-এ।',
           visual: { kind: 'demo', gesture: 'double-click', captionBn: 'টুক-টুক!' },
-          learnMoreBn: 'এই অনুশীলনে আসল আওয়াজ হবে না, শুধু নকল গান চলবে।',
+          learnMoreBn: 'এই অনুশীলনে আসল আওয়াজ হবে না, শুধু নমুনা গান চলবে।',
         },
         {
           id: 'c-photos',
@@ -277,7 +277,7 @@ const lesson: Lesson = {
       hook: {
         id: 'h-shot',
         type: 'hook',
-        textBn: 'কেউ জিজ্ঞেস করলে পর্দার ছবি **পাঠিয়ে** দিলেই তো হয় — তার নাম স্ক্রিনশট!',
+        textBn: 'কেউ বুঝতে না পারলে পর্দার ছবি তুলে **পাঠিয়ে** দিন — একেই বলে স্ক্রিনশট!',
         visual: { kind: 'art', name: 'camera', captionBn: 'পর্দার ছবি' },
       },
       cards: [
@@ -500,7 +500,7 @@ const lesson: Lesson = {
         {
           id: 'c-eject',
           type: 'visual',
-          textBn: 'পেনড্রাইভ কখনো সরাসরি টেনে খুলবেন না। আগে **Eject** করুন, তারপর খুলুন।',
+          textBn: 'পেনড্রাইভ হুট করে টেনে বের করবেন না। আগে **Eject** করুন, তারপর খুলুন।',
           visual: { kind: 'art', name: 'warning', captionBn: 'আগে Eject!' },
           chipsBn: ['আগে Eject', 'তারপর খোলা'],
           learnMoreBn: 'সরাসরি টেনে খুললে ভেতরের ফাইল নষ্ট হয়ে যেতে পারে। Windows-এ টাস্কবারের ডান দিকের ইউএসবি চিহ্ন থেকে (Safely Remove), Mac-এ ফাইন্ডারে ড্রাইভের নামের পাশের ⏏ চিহ্ন থেকে Eject হয়।',
@@ -923,7 +923,7 @@ const lesson: Lesson = {
   ],
 
   realWorld: {
-    titleBn: 'এবার আসল কম্পিউটারে চেষ্টা করুন। সবগুলো সম্পূর্ণ নিরাপদ।',
+    titleBn: 'এবার আসল কম্পিউটারে চেষ্টা করুন। সবই সম্পূর্ণ নিরাপদ।',
     tasksBn: [
       'Pictures ফোল্ডারের একটি ছবি খুলে তীর-কী দিয়ে পরের ছবিতে যান।',
       'একটি গান বা ভিডিও চালান, থামান আর আওয়াজ কমান-বাড়ান।',

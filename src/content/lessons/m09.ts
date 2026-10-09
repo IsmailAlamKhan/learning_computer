@@ -32,7 +32,7 @@ const lesson: Lesson = {
         {
           id: 'c-long',
           type: 'compare',
-          textBn: 'জটিল চিহ্ন নয়, **দৈর্ঘ্যই** আসল শক্তি। চারটি এলোমেলো শব্দ জুড়ে বানান **পাসফ্রেজ**।',
+          textBn: 'জটিল চিহ্ন নয়, **লম্বা** হওয়াই আসল শক্তি। চারটি এলোমেলো শব্দ জুড়ে বানান **পাসফ্রেজ**।',
           visual: {
             kind: 'compare',
             left: { visual: { kind: 'art', name: 'lock' }, labelBn: 'P@ss1', captionBn: 'ছোট, দুর্বল' },
@@ -69,7 +69,7 @@ const lesson: Lesson = {
         {
           id: 'w-pw-start', osVariant: 'windows', titleBn: 'স্টার্ট খুলুন', target: 'start-button', expectedAction: { type: 'click', target: 'start-button' },
           explanationBn: 'অ্যাকাউন্টের পাসওয়ার্ড ওয়েবসাইটে লাগে। আগে স্টার্ট বোতামে ক্লিক করুন।',
-          hintBn: 'টাস্কবারের চারকোনা Windows আইকনটি।',
+          hintBn: 'টাস্কবারের চার-খোপের Windows আইকনটি।',
           successMessageBn: 'স্টার্ট খুলেছে!',
         },
         {
@@ -80,7 +80,7 @@ const lesson: Lesson = {
         },
         {
           id: 'm-pw-browser', osVariant: 'mac', titleBn: 'ব্রাউজার খুলুন', target: 'dock-browser', expectedAction: { type: 'openApp', app: 'browser' },
-          explanationBn: 'ডকের গোলকের মতো আইকন, ব্রাউজারে ক্লিক করুন।',
+          explanationBn: 'ডকে গোলকের মতো আইকনটিতে (ব্রাউজার) ক্লিক করুন।',
           hintBn: 'ডকের বাঁ দিক থেকে তৃতীয় আইকনটি।',
           successMessageBn: 'ব্রাউজার খুলেছে!',
         },
@@ -148,7 +148,7 @@ const lesson: Lesson = {
           textBn: 'OTP আর PIN **কাউকে বলবেন না** — ব্যাংক, পুলিশ বা সাপোর্টের লোক সেজে চাইলেও।',
           visual: { kind: 'art', name: 'warning', captionBn: 'আসল প্রতিষ্ঠান কখনো চায় না' },
           chipsBn: ['কাউকে নয়', 'কখনো নয়'],
-          learnMoreBn: 'কর্মী হলেও তার আপনার কোড জানার কোনো দরকার নেই। নিজে কিছু না করলে হঠাৎ OTP এলে কাউকে বলবেন না, আর পাসওয়ার্ড বদলে নিন।',
+          learnMoreBn: 'আসল কর্মীরও আপনার কোড জানার দরকার নেই। নিজে না চাইতেই হঠাৎ OTP এলে কাউকে বলবেন না, আর পাসওয়ার্ড বদলে নিন।',
         },
         {
           id: 'c-2fa',
@@ -282,7 +282,7 @@ const lesson: Lesson = {
         {
           id: 'w-ph-start', osVariant: 'windows', titleBn: 'স্টার্ট খুলুন', target: 'start-button', expectedAction: { type: 'click', target: 'start-button' },
           explanationBn: 'সন্দেহের লিংক সবসময় ব্রাউজারে নিজে খুলুন। আগে স্টার্টে ক্লিক করুন।',
-          hintBn: 'টাস্কবারের চারকোনা Windows আইকনটি।',
+          hintBn: 'টাস্কবারের চার-খোপের Windows আইকনটি।',
           successMessageBn: 'স্টার্ট খুলেছে!',
         },
         {
@@ -359,10 +359,10 @@ const lesson: Lesson = {
         {
           id: 'c-update',
           type: 'visual',
-          textBn: '**আপডেট** নিরাপত্তার ফাঁক বন্ধ করে। বিল্ট-ইন সুরক্ষা চালু রাখুন, প্রোগ্রাম নামান শুধু অফিসিয়াল জায়গা থেকে।',
+          textBn: '**আপডেট** নিরাপত্তার ফাঁক বন্ধ করে। তাই আপডেট আর বিল্ট-ইন সুরক্ষা চালু রাখুন।',
           visual: { kind: 'art', name: 'refresh', captionBn: 'আপডেট = মেরামত' },
           chipsBn: ['বিল্ট-ইন সুরক্ষা চালু রাখুন'],
-          learnMoreBn: 'Windows-এ Windows Security নামে বিল্ট-ইন সুরক্ষা থাকে, Mac-এও থাকে (যেমন XProtect)। সাধারণ ব্যবহারে এটুকুই সাধারণত যথেষ্ট। “আপনার কম্পিউটারে ভাইরাস!” লেখা পপ-আপে ক্লিক বা কল করবেন না।',
+          learnMoreBn: 'Windows-এ Windows Security নামে বিল্ট-ইন সুরক্ষা থাকে, Mac-এও থাকে (যেমন XProtect)। বেশিরভাগ ক্ষেত্রে এটুকুই যথেষ্ট। প্রোগ্রাম নামান শুধু অফিসিয়াল জায়গা থেকে। “আপনার কম্পিউটারে ভাইরাস!” লেখা পপ-আপে ক্লিক বা কল করবেন না।',
         },
         {
           id: 'c-lock-win',
@@ -383,7 +383,7 @@ const lesson: Lesson = {
         {
           id: 'c-privacy',
           type: 'visual',
-          textBn: '**গোপনীয়তা**: বাসার ঠিকানা, NID বা “ছুটিতে বাইরে” — অনলাইনে দেবেন না। অ্যাপ অনুমতি চাইলে দরকার না হলে “না”।',
+          textBn: '**গোপনীয়তা**: বাসার ঠিকানা, NID বা “ছুটিতে বাইরে” — অনলাইনে দেবেন না। অ্যাপ অনুমতি চাইলে দরকার না হলে “না” বলুন।',
           visual: { kind: 'art', name: 'id-card', captionBn: 'যা গোপন, তা গোপন' },
           chipsBn: ['শেষে Log out', 'Incognito আড়াল নয়'],
           learnMoreBn: 'ছবিতে লোকেশন যুক্ত থাকতে পারে। অন্যের বা সবার কম্পিউটারে কাজ করলে শেষে Log out করুন আর পাসওয়ার্ড সেভের প্রস্তাবে “না” বলুন। Private/Incognito শুধু এই কম্পিউটারে ইতিহাস জমা রাখে না — ওয়েবসাইট বা ইন্টারনেট কোম্পানি তবুও দেখতে পারে। আর ভুল করে ফেললে ঘাবড়াবেন না: অফিসিয়াল নম্বরে এখনই জানান, পাসওয়ার্ড বদলান, পরিবারের কাউকে বলুন।',
@@ -434,7 +434,7 @@ const lesson: Lesson = {
           id: 'm-lock', osVariant: 'mac', titleBn: 'Control + Command + Q চাপুন', expectedAction: { type: 'keyCombo', keys: 'ctrl+cmd+q' },
           explanationBn: 'প্যাডে আগে “⌃ Control” ও “⌘ Command”, তারপর “Q”-তে ক্লিক করুন।',
           hintBn: 'প্যাডে প্রথমে দুটি বোতাম বেছে নিন — ⌃ Control আর ⌘ Command। তারপর Q।',
-          simplerBn: 'তিনটি পরপর ক্লিক: ⌃ Control, ⌘ Command, তারপর Q। (মেনু থেকে Lock Screen বাছলেও একই কাজ হয়।)',
+          simplerBn: 'তিনটি পরপর ক্লিক: ⌃ Control, ⌘ Command, তারপর Q। (মেনু থেকে Lock Screen বেছে নিলেও একই কাজ হয়।)',
           successMessageBn: 'স্ক্রিন লক!',
         },
         {
@@ -513,7 +513,7 @@ const lesson: Lesson = {
   realWorld: {
     titleBn: 'এবার আসল কম্পিউটারে চেষ্টা করুন। সবগুলো সম্পূর্ণ নিরাপদ।',
     tasksBn: [
-      'ইমেইলের সেটিংসে গিয়ে ২-ধাপ যাচাই চালু করা যায় কিনা দেখুন; ব্যাকআপ কোড নিরাপদে রাখুন।',
+      'ইমেইলের সেটিংসে গিয়ে ২-ধাপ যাচাই চালু করা যায় কি না দেখুন; ব্যাকআপ কোড নিরাপদে রাখুন।',
       'নিয়ম বানান: কেউ ফোনে OTP বা PIN চাইলে কল কেটে দেব। পরিবারকে একবার বলুন।',
       'একটি লিংকের ওপর (ক্লিক না করে) মাউস রেখে নিচের কোণে আসল ঠিকানা দেখুন।',
     ],

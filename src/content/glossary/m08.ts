@@ -8,7 +8,7 @@ const entries: GlossaryEntry[] = [
   { id: 'draft', termBn: 'ড্রাফট (খসড়া)', termEn: 'Draft', icon: '📝', meaningBn: 'লেখা শুরু করেও এখনও না-পাঠানো ইমেইল। পরে শেষ করে পাঠানো যায়।', module: 8 },
   { id: 'spam', termBn: 'স্প্যাম (বাজে ইমেইল)', termEn: 'Spam', icon: '🚫', art: 'warning', meaningBn: 'অচেনা কারও পাঠানো বিজ্ঞাপন বা প্রতারণার ইমেইল। আলাদা Spam ফোল্ডারে সরে যায়।', module: 8 },
   { id: 'compose', termBn: 'নতুন চিঠি লেখা', termEn: 'Compose', icon: '✍️', meaningBn: 'নতুন ইমেইল শুরু করার বোতাম। চাপলে To, Subject আর লেখার ঘর আসে।', module: 8 },
-  { id: 'subject', termBn: 'সাবজেক্ট (বিষয়)', termEn: 'Subject', icon: '🏷️', meaningBn: 'ইমেইলের এক লাইনের শিরোনাম। ছোট ও পরিষ্কার লিখুন, প্রাপক এখান থেকেই বোঝেন।', module: 8 },
+  { id: 'subject', termBn: 'সাবজেক্ট (বিষয়)', termEn: 'Subject', icon: '🏷️', meaningBn: 'ইমেইলের এক লাইনের শিরোনাম। ছোট ও পরিষ্কার লিখুন, যিনি পাবেন তিনি এখান থেকেই বোঝেন।', module: 8 },
   { id: 'attachment', termBn: 'অ্যাটাচমেন্ট (জুড়ে দেওয়া ফাইল)', termEn: 'Attachment', icon: '📎', art: 'paperclip', meaningBn: 'ইমেইলের সাথে জুড়ে দেওয়া ফাইল, ক্লিপ চিহ্নে দেখা যায়। খুব বড় হলে পাঠানো যায় না।', module: 8 },
   { id: 'reply', termBn: 'রিপ্লাই (উত্তর দেওয়া)', termEn: 'Reply', icon: '↩️', meaningBn: 'আসা ইমেইলের উত্তর পাঠানো। ঠিকানা আর বিষয় (Re:) নিজে থেকেই বসে।', module: 8 },
   { id: 'forward', termBn: 'ফরোয়ার্ড (এগিয়ে দেওয়া)', termEn: 'Forward', icon: '➡️', meaningBn: 'পাওয়া ইমেইল অন্য কাউকে পাঠানো। বিষয়ের আগে Fwd: বসে।', module: 8 },

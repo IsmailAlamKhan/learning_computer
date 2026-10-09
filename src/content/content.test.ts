@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { isCardsLesson, type Card, type GlossaryEntry, type LegacyLesson, type Lesson, type QuizQuestion, type Visual } from '../engine/types'
+import type { Card, GlossaryEntry, Lesson, QuizQuestion, Visual } from '../engine/types'
 import { MODULES } from './modules'
 import { lessonSteps } from '../engine/lessonSteps'
 import { buildSlides, splitIfLong } from '../engine/deck'
@@ -7,12 +7,10 @@ import { ART_NAMES, MOCK_REGIONS, MOCK_NAMES } from '../ui/illustrations/names'
 import { WIDGETS } from './widgets'
 
 /**
- * Content integrity for BOTH lesson formats during the migration:
- *  - legacy (`LegacyLesson`: explanation / steps / quiz / summaryCard) until a module is migrated,
- *  - cards (`Lesson`: units of hook + cards + steps + exactly 3 quiz questions).
+ * Content integrity of the cards format (`Lesson`: units of hook + cards + steps + exactly 3 quiz questions).
  * The text-budget numbers themselves are enforced by scripts/audit-core.ts (npm run audit:content); here we check structure.
  */
-const lessonFiles = import.meta.glob<{ default: Lesson | LegacyLesson }>('./lessons/m*.ts', { eager: true })
+const lessonFiles = import.meta.glob<{ default: Lesson }>('./lessons/m*.ts', { eager: true })
 const glossaryFiles = import.meta.glob<{ default: GlossaryEntry[] }>('./glossary/m*.ts', { eager: true })
 const lessons = Object.values(lessonFiles).map((f) => f.default).sort((a, b) => a.module - b.module)
 const glossary = Object.values(glossaryFiles).flatMap((f) => f.default)
@@ -20,7 +18,7 @@ const FORBIDDEN = /নমস্কার|আদাব|সালাম|প্র�
 const words = (t: string) => t.replace(/\*\*/g, '').trim().split(/\s+/).filter(Boolean).length
 const dups = (ids: string[]) => ids.filter((id, i) => ids.indexOf(id) !== i)
 
-const quizOf = (l: Lesson | LegacyLesson): QuizQuestion[] => (isCardsLesson(l) ? l.units.flatMap((u) => u.quiz) : l.quiz)
+const quizOf = (l: Lesson): QuizQuestion[] => l.units.flatMap((u) => u.quiz)
 
 function visualProblems(v: Visual | undefined, where: string): string[] {
   if (!v) return [`${where}: no visual`]
@@ -76,16 +74,15 @@ describe('content integrity', () => {
     expect(lessons.map((l) => l.module)).toEqual(playable)
   })
 
-  it('glossary meanings of migrated modules are one short line (≤ 22 words) and have an icon or art', () => {
-    const migrated = new Set(lessons.filter(isCardsLesson).map((l) => l.module))
-    for (const g of glossary.filter((x) => migrated.has(x.module))) {
+  it('glossary meanings are one short line (≤ 22 words) and have an icon or art', () => {
+    for (const g of glossary) {
       expect(words(g.meaningBn), g.id).toBeLessThanOrEqual(22)
       expect(!!(g.icon || g.art), `${g.id} needs icon or art`).toBe(true)
     }
   })
 
   for (const l of lessons) {
-    describe(`module ${l.module} (${isCardsLesson(l) ? 'cards' : 'legacy'})`, () => {
+    describe(`module ${l.module}`, () => {
       it('is listed with the right part and has real-world tasks', () => {
         expect(MODULES.find((m) => m.module === l.module)?.part).toBe(l.part)
         expect(l.realWorld.tasksBn.length).toBeGreaterThanOrEqual(2)
@@ -109,15 +106,6 @@ describe('content integrity', () => {
       it('is religion-neutral', () => {
         expect(JSON.stringify(l)).not.toMatch(FORBIDDEN)
       })
-
-      if (!isCardsLesson(l)) {
-        it('legacy: has the required lesson parts', () => {
-          expect(l.explanation.length).toBeGreaterThan(0)
-          expect(l.quiz.length).toBeGreaterThanOrEqual(3)
-          expect(l.summaryCard.pointsBn.length).toBeGreaterThan(0)
-        })
-        return
-      }
 
       it('cards: one or more units with unique ids, and no unit is too long', () => {
         expect(l.units.length).toBeGreaterThan(0)

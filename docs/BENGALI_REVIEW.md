@@ -204,3 +204,121 @@ Scope reviewed: lessons m14–m20, glossary m14–m20 (plus a duplicate scan of 
 | `sim/terminal/messages.ts` | "আপনি কিছু ভুল করেননি — এটা শুধু আপনাকে নিরাপদ রাখার জন্য" | Intended to be protective; confirm it does not sound patronising. |
 | `sim/runner/errors.ts` | "চাবি (key)" for a dictionary key | Natural for dictionary, but different from "কী" used for keyboard keys. |
 | `content/widgets/lib/m19Logic.ts` | "আপডেট করা (নতুন করা)" | Check the gloss. |
+
+## UX overhaul pass — modules 11–20
+
+Scope: `src/content/lessons/m11…m20.ts`, `src/content/glossary/m11…m20.ts`. Checks after edits: `npx tsc -b` clean, `audit-content` 0 violations, `vitest run src/content` 360/360 (incl. real Pyodide), e2e m11–m20 all green (one m12 mac run was flaky once and passed on retry; unrelated to text). No spec selector had to change.
+
+### Changes by category
+
+- **Spelling and term consistency**: "Node js" -> "Node.js" (m18 hook); download wording unified to "ডাউনলোড" in short labels/steps/hints (m18 "নামা শুরু!", "নামান", "নামাবেন", "নামার পর" and m12 popup text) while the glossary gloss "নামানো" stays; "ভুল-বার্তা" -> "ভুলের বার্তা" (m18); "মিলান" -> "মেলান" (m20); "জানালা" -> "উইন্ডো" (m18); "প্রজেক্ট" -> "প্রকল্প" in m13 and m18 to match glossary "সমাপনী প্রকল্প" and m20; m13 lesson title now "পর্ব ১-এর সমাপনী প্রকল্প" (same as modules.ts); "সনদপত্র" -> "সনদ" inside m20 lesson text (the certificate page's own aria-label "সনদপত্র" is untouched because a spec depends on it); "উদ্ধৃতি চিহ্ন সহ" -> "উদ্ধৃতি-চিহ্নসহ" (m17); "এইটুকু" -> "এটুকু".
+- **Natural spoken Bengali / ambiguity**: m11 hook ("কেউ জিজ্ঞেস করলে … পাঠিয়ে দিলেই তো হয়") rewritten; m11 "সরাসরি টেনে খুলবেন না" -> "হুট করে টেনে বের করবেন না"; m11 "নকল গান" -> "নমুনা গান"; m12 "জোর করে বন্ধ করলে কোন ঝুঁকি" -> "কী ঝুঁকি", "আটকানো প্রোগ্রাম" -> "আটকে যাওয়া প্রোগ্রাম" (also m13), "ঘূর্ণি-তীর" -> "গোল তীর"; m13 "শেখা নেই" -> "শেখার নেই", "কম কথা, সংক্ষেপে" -> "কথা কম, শুধু কাজটুকু"; m14 "ব্যবস্থাপক" -> "ম্যানেজার" (cards, chips, hint, recap, glossary); m14 "প্রসেসর ভাবল" -> "প্রসেসর কাজ করল"; m15 subject mix-ups "সে ঠিক যা বলবেন" -> "আপনি যা বলবেন, রোবট ঠিক তা-ই করবে"; m15 "সৎ কথা" -> "সত্যি কথা", "মস্তিষ্ক ভালো শেখে" -> "মাথায় ভালো বসে", JS vs Python line made concrete; m16 "কম্পিউটার আক্ষরিক" -> "কম্পিউটার যা শোনে, হুবহু তা-ই করে", "ডিঙালেই" -> "বাদ দিলেই", "লুপ কখনো শেষ হয় না" -> "আর শেষই হয় না"; m18 "রং-করা, দাগ-টানা খাতা" -> "কোড লেখার রঙিন খাতা", "গোল দিকচিহ্নের আইকন" -> "কম্পাসের মতো গোল আইকন"; m19 "Cancel ফিরিয়ে আনে" -> "বাতিল করে" (it contradicted the chip "Cancel = বাতিল"); m20 "রং আর পর্দা" (পর্দা = screen was confusing) -> "রং আর সাজসজ্জা".
+- **"তুমি"-style leftovers**: m16 teacher tip "চলো ডিবাগ করি" -> "চলুন ডিবাগ করি" (and "এইটাই" -> "এটাই"). m14 teacher tip "ওঁর" -> "শিক্ষার্থীর"; m17 "ওঁর" -> "শিক্ষার্থীর".
+- **Technical accuracy**: all code on cards re-read (HTML/CSS/Python); outputs verified by hand and by the real-Pyodide content test (`25*4=100`, `2**3=8`, `7/2=3.5`, `age+1`, `range(3)`). "অ" = 2437 (U+0985) and "A" = 65 confirmed. Windows/Mac screenshot shortcuts, Task Manager (Ctrl+Shift+Esc) and Force Quit (Option+Command+Esc), Ctrl+Shift+X (Extensions), Esc-then-Tab to leave the CodeMirror editor, "Add python.exe to PATH", VS Code Mac download normally .zip -> no change needed. m17 "Ctrl+C চাপলে লাইনটি মুছে যায়" -> "বাতিল হয়ে যায়" (Ctrl+C cancels the input line, it does not delete text). m19 "Accepted answer ভরসাযোগ্য" -> "সাধারণত ভরসাযোগ্য" (accepted answers can be outdated). m15 "অটোমেশন" now carries a Bengali gloss on first use.
+- **Protective tone**: m17 unit-3 hook "ফিরে আসার পথ নেই — মোছা মানে চিরতরে মোছা। তাই সাবধান!" -> "টার্মিনালে মোছা ফাইল ঝুড়িতে যায় না — তাই আগে বুঝি, তারপর চালাই।" Rest of the safety/terminal-danger text already protective; m12 scam-popup example changed to "ডাউনলোড করুন".
+- **Wrong-answer hints**: reviewed all; all are gentle and point to the idea, none blame. m15 hint "বিরতি" (wrong sense) fixed.
+- **Glossary cross-file**: m18 "পাথ" -> "পাথ (PATH)" (distinct from m04 "পথ"); m18 download entry renamed "ডাউনলোড (ইনস্টলার)" so it no longer duplicates m07; m18 "সংস্করণ" meaning reworded; m19 install meaning aligned with m06, "invalid" meaning grammar fixed, "এআই সহকারী" meaning reworded; m15 "অ্যালগরিদম" meaning aligned with m16; m14 OS meaning "বাড়ির ম্যানেজারের মতো".
+
+### Left alone / for the lead
+- `src/content/widgets/lib/ioFlow.ts` (outside my scope) still says "বাড়ির ব্যবস্থাপক" for the OS; change to "বাড়ির ম্যানেজার" to match m14.
+- m15 uses "ATM" in Latin, m16 "এটিএম" in Bengali; m14 "ATM". Harmless; pick one if desired.
+- "অ্যাড্রেস বার" (m13) vs "ঠিকানার ঘর" (m12, m18): both understandable; left.
+- "বেশিরভাগ" kept (as in the earlier review).
+- m17 mentions `del /s` (cmd syntax) as a dangerous example; in PowerShell the flag differs. Left because the sentence is only a warning list, not a command to type.
+- m18 "বাংলা ভাষার প্যাক (ঐচ্ছিক)" for VS Code: I am not certain an official pack of that name exists; the earlier review says text should read "পাওয়া গেলে". Please verify.
+
+### Phrases a native speaker should double-check
+
+| File | Phrase | Why |
+|---|---|---|
+| `lessons/m14.ts` | "বাড়ির ম্যানেজার" for the operating system | Replaces the stiffer "ব্যবস্থাপক"; confirm it feels natural, not corporate. |
+| `lessons/m14.ts` | "প্রসেসর কাজ করল" (flow label) | Short past tense inside a visual label. |
+| `lessons/m15.ts` | "আপনি যা বলবেন, রোবট ঠিক তা-ই করবে" | New sentence; check rhythm. |
+| `lessons/m15.ts` | "অল্প অল্প করে রোজ করলে মাথায় ভালো বসে" | Idiomatic replacement for the old hint; confirm "মাথায় বসা". |
+| `lessons/m16.ts` | "কম্পিউটার যা শোনে, হুবহু তা-ই করে" | Replaces "আক্ষরিক"; check it reads as "literally". |
+| `lessons/m16.ts` | "এক ধাপ বাদ দিলেই পুরো কাজ গোলমাল" | Short clause without a verb at the end. |
+| `lessons/m17.ts` | "টার্মিনালে মোছা ফাইল ঝুড়িতে যায় না — তাই আগে বুঝি, তারপর চালাই" | New protective hook; "ঝুড়ি" = Recycle Bin/Trash. |
+| `lessons/m17.ts` | "ঘোরার তিন উপায়" | Replaces "ঘোরার তিন চাল". |
+| `lessons/m18.ts` | "ডাউনলোড শুরু!", "Python বসে গেছে!" | Mix of "ডাউনলোড" (labels) and "বসে যাওয়া" (install); confirm the pairing is clear. |
+| `lessons/m18.ts` | "কোড এডিটর হলো কোড লেখার রঙিন খাতা" | New analogy wording. |
+| `lessons/m18.ts` | "ডকে কম্পাসের মতো গোল আইকন" | Safari-style icon hint for the browser. |
+| `lessons/m19.ts` | "এরর আসলে কম্পিউটারের একটা চিরকুট" (unchanged) | Cute metaphor; confirm "চিরকুট" is not too literary. |
+| `lessons/m19.ts` + glossary | "মেনে নেওয়া উত্তর" for Accepted answer | Unchanged from earlier pass. |
+| `lessons/m20.ts` | "HTML হলো ঘরের দেয়াল। CSS হলো রং আর সাজসজ্জা" | Replaced "পর্দা"; confirm analogy still clear. |
+| `lessons/m20.ts` | "আন্দাজ / চালান / মেলান" flow labels | "মেলান" (imperative) as a label next to nouns. |
+| `glossary/m18.ts` | "পাথ (PATH)" vs m04 "পথ" | Two similar words with different meanings; check it is not confusing. |
+
+## UX overhaul pass — modules 1–10 and UI
+
+Scope: `content/lessons/m01–m10.ts`, `content/glossary/m01–m10.ts`, and the Bengali strings of `Home`, `Onboarding`, `Settings`, `Glossary`, `DeckPage`, `ui/cards/*`, `Celebration`, `Layout`, `CoachOverlay`, `runner.ts` (PRAISE) and `gamification.ts` (badges). The rewritten cards were already in good spoken চলিত with a consistent "আপনি" (no তুমি/তোমার anywhere; no religion-specific wording; no unusual যুক্তাক্ষর problems; য়/ড়/ঢ় are consistently the decomposed form in all files, and the edits keep that). Changes are small and direct; ids, `data-coach` targets, `expectedAction`s, code/commands and the array structure are untouched. `npx tsc -b` is clean, `npx tsx scripts/audit-content.ts` shows 0 violations, `vitest run src/content src/pages src/state` passes, and the e2e specs m01, m03–m10, module2*, onboarding, design, complete, progress, privacy pass.
+
+### Changes by category
+
+1. Spelling / term consistency (about 45 edits)
+   - Start-button hint: "চারকোনা" / "চারটি ছোট বিন্দুর মতো" (three different descriptions of the Windows Start icon in m01, m02, m06–m09) → one phrase, "চার-খোপের আইকন".
+   - "পিছনে/পিছনের" → "পেছনে/পেছনের" (m07, glossary m07; m03 already used পেছনের).
+   - "সঙ্গে" → "সাথে" (m06, m07), as the earlier pass decided. "রঙ" → "রং" (m03). "ইমেলের" → "ইমেইলের" (m10). "কিনা" → "কি না" (m09). "লেখা সহ" → "লেখাসহ" (m06). "খালি জায়গা" → "ফাঁকা জায়গা" (m03, one word for "empty area" in the course).
+   - "মডিউল ৫" (m10, four places) → "৫ নম্বর পাঠ", matching the UI word "পাঠ" (Home, Deck, units overview).
+   - m05 unit title "কিবোর্ডের চাবিগুলো" → "কিবোর্ডের কী-গুলো" (glossary term is "কী (বোতাম)"; "চাবি" now means only the password-as-key analogy).
+   - OTP: m08 used "ওটিপি" while m07 and m09 (27 uses) use "OTP" as the learner sees it on screen and in SMS; m08 now uses "OTP". The glossary entry keeps both: "ওটিপি (এককালীন কোড)" / OTP.
+   - "ওয়াই-ফাই": m07 had five "Wi‑Fi" inside Bengali sentences → "ওয়াই-ফাই" (English "Wi-Fi" stays only where it is the Settings label).
+   - Glossary: "পিন" → "পিন (PIN)" (lessons write PIN).
+2. Natural phrasing (about 35 edits)
+   - Unclear, stiff or machine-like lines fixed: m05 Tab hint "নামটা ‘ট্যাবলে’ — ঘর থেকে ঘরে লাফ" (pun did not work) → location hint "Caps Lock-এর ঠিক ওপরের কী"; m05 "C for Copy" → "C মানে Copy"; m05 undo/redo sentence reordered; m05 "সারণি দেখুন" → "তালিকাটি দেখুন"; m03 touchpad drag card ("অথবা পুরো আঙুল ধরেই টানুন" was unclear) shortened; m04 "বড় ফোল্ডার থেকে ছোটতে" → "…ভেতরের ফোল্ডার"; m09 "দৈর্ঘ্যই আসল শক্তি" → "লম্বা হওয়াই আসল শক্তি"; m07 "ভাবনার সময় কেড়ে নেয়" → "ঠকবাজেরা ভাবার সময় দিতে চায় না"; m08 hook "চিঠি পাঠাতে চাই" → "চিঠি পাঠানো সোজা"; "প্রাপক" (bookish) → "যাকে পাঠাবেন" (m08 card/quiz/glossary).
+   - Real wording mistake: m08 "পাঠক অচেনা" / "অচেনা পাঠক" / "পাঠকের নাম" (পাঠক = reader) → "প্রেরক".
+   - First-person leftovers in instructions: m05 Install hint "শুধু বাংলা লিখতে চাই…নামাতে একটু সময় লাগে" → "আমরা শুধু বাংলা লিখব… ইনস্টল হতে একটু সময় লাগে"; m06 "বার পূর্ণ হতে/হলে" → "বার ভরতে/ভরে গেলে"; m07 quiz item "নামার লাইন ভরা" → "ডাউনলোডের বার ভরা".
+   - Awkward step instructions: "ডকের গোলকের মতো আইকন, ব্রাউজারে ক্লিক করুন" (m07, m09) → "ডকে গোলকের মতো আইকনটিতে (ব্রাউজার) ক্লিক করুন"; m02 Launchpad step; m06 "ম্যাগনিফাইং গ্লাস" → "🔍 চিহ্ন".
+   - m10 "নিয়ন্ত্রণ ঘর" → "কন্ট্রোল রুম" (card, recap, glossary); m10 Bluetooth "জোড়ে" → "জুড়ে দেয়".
+   - Card text trimmed to one idea: m07 tabs card (the back-arrow sentence moved to "আরও জানুন"), m09 update card (official-source advice moved to "আরও জানুন").
+   - m07 search step: three actions in one instruction → "বক্সে dal recipe লিখে Enter চাপুন"; m04 long Mac hint shortened.
+3. Register: no "তুমি" form anywhere. The only imperative in the friendly "তুমি" shape is the quoted fake message "বিপদে আছি, এখনই ৫,০০০ টাকা পাঠাও" (m09 quiz), kept on purpose because a friend (or a scammer imitating one) would write it that way.
+4. Religion-neutral wording: grepped নমস্কার, সালাম, আদাব, প্রণাম, ঈদ, পূজা, রমজান, ঈশ্বর, আল্লাহ, ভগবান, বড়দিন, হালখাতা — nothing found. Examples are tea, rickshaw, rice/dal, spice jars, load-shedding ("কারেন্ট গেলে"), Facebook/YouTube, a Dhaka clock, cafe Wi‑Fi.
+5. Technical accuracy (only certain fixes)
+   - m07 "OTP, PIN বা পাসওয়ার্ড কোনো পাতায় লিখবেন না" was wrong for passwords (you do type them on real login pages) → "OTP আর PIN কাউকে বলবেন না, সন্দেহের পাতায় লিখবেনও না"; recap and teacher tip changed to match.
+   - m02 teacher tip "কম্পিউটারের গতি কম মনে হলে… ডাবল-ক্লিকের গতি কমিয়ে দেওয়া যায়" mixed two ideas → "ডাবল ক্লিক কঠিন লাগলে…".
+   - m10 quiz "New York (UTC−5)" (it is UTC−4 in summer) → "New York (আমেরিকা)".
+   - Verified OK: Cmd+Option+V move in Finder, Cmd+` for same-app windows, Shift+Cmd+G, Win+L, Control+Command+Q, Win+Space, Control+Space, Ctrl+Y/Ctrl+Shift+Z redo, Shift+9/0 for ( ), F/J home-row bumps, Shift+[ for {, "Restore the selected items" label.
+6. Wrong-answer hints: all hints are gentle ("আবার ভাবুন", "ভুল হলে ঘাবড়াবেন না"); nothing blames the learner. m05's riddle-style Tab hint replaced by a clear one.
+7. UI strings: Home state labels "তালা দেওয়া" → "এখনও বন্ধ", "শীঘ্রই" → "শিগগিরই"; Settings "স্বয়ংক্রিয়ভাবে চেনা হয়েছে" → "নিজে থেকেই চেনা হয়েছে", legend "পয়েন্টিং ডিভাইস" → "মাউস না টাচপ্যাড?"; Glossary flashcard hint now says "ক্লিক বা ট্যাপ"; badges "কুইজ ধুরন্ধর" ("ধুরন্ধর" can mean cunning) → "কুইজ ওস্তাদ", "কম্পিউটার-পারদর্শী" → "কম্পিউটারে দক্ষ". PRAISE lines, Celebration cheers, quiz feedback, coach buttons and deck buttons were already natural and left alone.
+
+### Specs and tests edited (minimal)
+- `e2e/m07.spec.ts`: "পিছনের তীর" → "পেছনের তীর"; "নামার লাইন ভরা" → "ডাউনলোডের বার ভরা".
+- `e2e/design.spec.ts`: locked-module label regex `/তালা/` → `/এখনও বন্ধ/`.
+- `src/pages/pages.test.tsx`: auto-detected note text.
+- Tried "২-ধাপ যাচাই" as the glossary term for 2FA (to match the lessons): it made `/glossary` overflow horizontally at the largest text size (a11y spec), so the glossary term stays "দুই ধাপের যাচাই" while the lessons write "২-ধাপ যাচাই".
+
+### Left alone on purpose / uncertain
+- "সম্পন্ন" (state label, celebration "পুরো পাঠ সম্পন্ন", Teacher dashboard) is slightly formal, but four e2e specs and three unit tests match on it; "শেষ" would be warmer. Suggest changing it in one coordinated pass.
+- "আপনার মনে হয় কী ছাপা হবে?" (CoachOverlay) is natural enough; "আপনার কী মনে হয়, কী ছাপা হবে?" is smoother but `e2e/m20.spec.ts` matches the current text. Same for "ধাপ n এর মধ্যে m" (module2.spec).
+- "ব্যাকআপ নামান" (Settings) is understandable; "ডাউনলোড" may be more familiar, but three specs match it.
+- m07 padlock card: current Chrome shows a "tune" icon instead of a padlock in the address bar; the simulated browser still shows a padlock, text kept.
+- m06 "অ্যাপ = হাতিয়ার / কাজের হাতিয়ার": "হাতিয়ার" also means "weapon" in some contexts; "যন্ত্র/সরঞ্জাম" are alternatives.
+- m06/m07 "নামান" for download follows the glossary ("ডাউনলোড … নামানো"); fine for older learners, but younger ones say "ডাউনলোড করুন".
+- Glossary duplicates (ids `copy`/`kb-copy`, `slash`/`sym-slash`, etc.) from the earlier review are still there.
+
+### Phrases a native speaker should double-check
+
+| File | Phrase | Why |
+|---|---|---|
+| `lessons/m01–m02, m06–m09` | "চার-খোপের আইকন" (Windows Start button) | New wording to replace "চারকোনা"; "খোপ" = small compartment. Does it paint the four-pane logo clearly? |
+| `lessons/m02.ts` | "ডকের লঞ্চপ্যাড আইকনে (রঙিন বর্গের সারি) ক্লিক করুন" | Rewritten step; check it reads in one breath. |
+| `lessons/m03.ts` | "টাচপ্যাডে একটি আঙুলে **চেপে** ধরে রাখুন, অন্য আঙুলটি সরান" | Shortened; is the "press and hold with one finger" gesture clear? |
+| `lessons/m03.ts` | "উইন্ডো সাথে হাঁটবে" (step hints) | Playful personification kept; confirm it is not childish. |
+| `lessons/m04.ts` | "কভার = ফোল্ডার, কাগজ = ফাইল"; "যেন জেলা → থানা → বাড়ি" | Analogy wording; check "কভার" feels natural for a folder. |
+| `lessons/m05.ts` | "কিবোর্ডের কী-গুলো" (unit title) | "কী-গুলো" with hyphen vs "কীগুলো". |
+| `lessons/m05.ts` | "কিবোর্ডের বাঁ দিকে, Caps Lock-এর ঠিক ওপরের কী — ঘর থেকে ঘরে লাফ দেয়" | New Tab hint; true for standard layouts. |
+| `lessons/m05.ts` | "আমরা শুধু বাংলা লিখব… তাই টিক দেবেন না" | Mixes "আমরা" and "আপনি"; check it is natural for didi. |
+| `lessons/m06.ts` | "হঠাৎ কারেন্ট গেলে, না-সেভ লেখা **হারিয়ে** যায়। 😬" | Local flavour + emoji; "না-সেভ" hyphen style. |
+| `lessons/m07.ts` | "ব্রাউজার হলো রিকশা — যেটায় চড়ে দোকানে যান" | Analogy; "যেটায়" vs "যেটাতে". |
+| `lessons/m07.ts` | "ঠকবাজেরা ভাবার সময় দিতে চায় না" | Replaces a literary sentence; "ঠকবাজ" for scammer is informal. |
+| `lessons/m08.ts` | "অচেনা প্রেরক" (chip), "প্রেরকের নাম" | "প্রেরক" is more formal than "যিনি পাঠিয়েছেন"; chip space is tight. |
+| `lessons/m08.ts` | "চিঠি পাঠানো সোজা — কাকে, কী বিষয়ে, কী লিখে?" | New hook line. |
+| `lessons/m09.ts` | "বাসার চাবি কি অচেনা কাউকে দেন? OTP-ও তেমনই গোপন।" | Unchanged; "OTP-ও" hyphen + Latin letters. |
+| `lessons/m09.ts` | "জটিল চিহ্ন নয়, **লম্বা** হওয়াই আসল শক্তি।" | Rewritten; check bold word choice. |
+| `lessons/m09.ts` | "আসল কর্মীরও আপনার কোড জানার দরকার নেই" | Rewritten for clarity. |
+| `lessons/m10.ts` | "কন্ট্রোল রুম" for Settings | New analogy wording; "নিয়ন্ত্রণ ঘর" was stiffer. |
+| `lessons/m10.ts` | "জুড়ে দেয়" / "জোড়ার নাম পেয়ারিং" (Bluetooth card) | "জুড়ে দেয়" vs "জোড়া লাগায়"; two forms nearby. |
+| `lessons/m10.ts` | "ঢাকায় বসে ঘড়িতে নিউ ইয়র্কের সময়?" | Humour; fine if the sim clock really starts on New York time. |
+| `glossary/m09.ts` | "দুই ধাপের যাচাই" vs lessons "২-ধাপ যাচাই" | Two spellings of one term (kept because of the layout overflow noted above). |
+| `state/gamification.ts` | "কুইজ ওস্তাদ", "কম্পিউটারে দক্ষ", "প্রথম পদক্ষেপ" | New or changed badge names; confirm tone. |
+| `pages/Home.tsx` | "এখনও বন্ধ" (locked module) | Replaces "তালা দেওয়া"; reads as a state label next to "এখন করুন". |

@@ -23,9 +23,7 @@
  *      expectWrong(page) / expectRight(page)  the gentle hint box / the green ✓ box
  *    savedProgress(page)             the parsed progress JSON from localStorage
  *
- * B) Legacy lessons (old sectioned page; removed with the migration): startGuided, cont.
- *
- * Both: watchProblems(page) collects page errors / console errors / CSP violations; runDemoCode(page) for /#/demo/tools.
+ * Also: watchProblems(page) collects page errors / console errors / CSP violations; runDemoCode(page) for /#/demo/tools.
  * Text matching tip: the deck shows numbers per the learner's numeral setting; seedProfile uses western digits ("3 / 17").
  */
 import { expect, type Locator, type Page } from '@playwright/test'
@@ -162,20 +160,6 @@ export const expectWrong = (page: Page) => expect(page.getByTestId('quiz-wrong')
 export const expectRight = (page: Page) => expect(page.getByTestId('quiz-right')).toBeVisible()
 
 export const savedProgress = (page: Page) => page.evaluate(() => JSON.parse(localStorage.getItem('computer-shikhi:v1') ?? 'null'))
-
-// ---------------------------------------------------------------------------------------------
-// legacy lessons (old sectioned page) — removed once every module is migrated
-// ---------------------------------------------------------------------------------------------
-
-export async function startGuided(page: Page, module: number) {
-  await page.goto(`/#/module/${module}`)
-  await page.getByRole('button', { name: /হাতে-কলমে/ }).click()
-  await page.getByRole('button', { name: /শুরু করি/ }).click()
-}
-
-export async function cont(page: Page) {
-  await page.getByRole('button', { name: /বুঝেছি/ }).click()
-}
 
 /** Collects uncaught page errors, console errors and CSP violations; assert `expect(problems).toEqual([])` at the end of a flow. */
 export function watchProblems(page: Page): string[] {

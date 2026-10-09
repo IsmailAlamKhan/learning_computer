@@ -4,7 +4,7 @@
  */
 import { lessonSteps } from '../engine/lessonSteps'
 import { MODULES } from '../content/modules'
-import { isCardsLesson, type InputKind, type LegacyLesson, type Lesson, type ModuleMeta, type OsFlavor, type QuizQuestion } from '../engine/types'
+import type { InputKind, Lesson, ModuleMeta, OsFlavor, QuizQuestion } from '../engine/types'
 import { matchesInput } from '../engine/filter'
 import type { ModuleProgress, ProgressData } from '../state/progress'
 
@@ -31,7 +31,7 @@ export interface LessonMeta {
   stepIds: Record<OsFlavor, string[]>
   /** every question of the module (cards format: all units merged) */
   quiz: QuestionMeta[]
-  /** cards format: ids of the units (mini-lessons); empty for legacy lessons */
+  /** ids of the units (mini-lessons) */
   unitIds: string[]
   /** number of real-world tasks (common + per OS) */
   realWorld: Record<OsFlavor, number>
@@ -40,13 +40,13 @@ export interface LessonMeta {
 const forOs = (v: { osVariant?: string }, os: OsFlavor) => !v.osVariant || v.osVariant === 'both' || v.osVariant === os
 
 /**
- * Reduce a full lesson (cards format or legacy) to the small numbers/texts the dashboard needs (so lessons need not stay in memory).
+ * Reduce a full lesson (cards format) to the small numbers/texts the dashboard needs (so lessons need not stay in memory).
  * `input`: the learner's pointing device; steps meant for the other device are not counted (they can never be done by her).
  */
-export function lessonMetaOf(lesson: Lesson | LegacyLesson, input?: InputKind): LessonMeta {
+export function lessonMetaOf(lesson: Lesson, input?: InputKind): LessonMeta {
   const steps = lessonSteps(lesson).filter((s) => matchesInput(s.inputVariant, input))
   const r = lesson.realWorld
-  const questions: QuizQuestion[] = isCardsLesson(lesson) ? lesson.units.flatMap((u) => u.quiz) : lesson.quiz
+  const questions: QuizQuestion[] = lesson.units.flatMap((u) => u.quiz)
   return {
     module: lesson.module,
     steps: {
@@ -58,7 +58,7 @@ export function lessonMetaOf(lesson: Lesson | LegacyLesson, input?: InputKind): 
       mac: steps.filter((s) => forOs(s, 'mac')).map((s) => s.id),
     },
     quiz: questions.map((q) => ({ id: q.id, questionBn: q.questionBn, hintBn: q.hintBn })),
-    unitIds: isCardsLesson(lesson) ? lesson.units.map((u) => u.id) : [],
+    unitIds: lesson.units.map((u) => u.id),
     realWorld: {
       windows: r.tasksBn.length + (r.windowsTasksBn?.length ?? 0),
       mac: r.tasksBn.length + (r.macTasksBn?.length ?? 0),
@@ -82,7 +82,7 @@ export interface QuizSummary {
 
 /**
  * Quiz stats of a module. Cards format: one attempt per unit (`unitQuiz`), merged across units (scores and totals added up,
- * retries = sum of all wrong attempts). Legacy lessons: the single `quiz` attempt.
+ * retries = sum of all wrong attempts). Old backups (pre-cards): the single `quiz` attempt.
  */
 export function quizSummary(p: ModuleProgress | undefined, lm: LessonMeta | undefined): QuizSummary | undefined {
   if (!p) return undefined
@@ -238,7 +238,7 @@ export function weakQuestions(
   for (const m of modules) {
     const p = data.modules[m.module]
     if (!p) continue
-    // cards format: every unit's last attempt; legacy: the single quiz attempt
+    // every unit's last attempt; old backups: the single quiz attempt
     const attempts = Object.keys(p.unitQuiz ?? {}).length > 0 ? Object.values(p.unitQuiz) : p.quiz ? [p.quiz] : []
     const misses: Record<string, number> = {}
     for (const a of attempts) for (const [id, n] of Object.entries(a.wrongByQuestion)) misses[id] = (misses[id] ?? 0) + n

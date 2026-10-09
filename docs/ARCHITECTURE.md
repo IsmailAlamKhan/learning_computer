@@ -19,7 +19,8 @@ flowchart LR
     R[runner.ts + actions.ts<br/>matchAction]
     UG[useGuidedRun<br/>10 s hint / 20 s demo]
     CO[CoachOverlay]
-    Q[quiz.ts + ui/quiz]
+    DK[deck.ts + ui/cards<br/>DeckPage]
+    Q[quiz.ts + ui/quiz/DeckQuestions]
     RM[roadmap.ts]
   end
 
@@ -36,7 +37,7 @@ flowchart LR
 
   BUS((SimBus<br/>SimEvent))
   ST[(ProgressStore<br/>localStorage)]
-  P[pages/*<br/>Home, Module, Settings, Teacher...]
+  P[pages/*<br/>Home, Module/DeckPage, Settings, Teacher...]
 
   L --> P
   M --> P
@@ -51,7 +52,9 @@ flowchart LR
   UG --> CO
   CO -- points at data-coach --> F
   UG -- markStepDone --> ST
-  Q -- recordQuiz --> ST
+  Q -- recordUnitQuiz --> ST
+  DK --> Q
+  DK -- practice slide --> UG
   P <--> ST
   RM --> P
 ```
@@ -135,10 +138,50 @@ maps an id like `files`, `editor`, `terminal`, `code` to a title (per OS), icon 
 
 ## Content / data model
 
-`src/engine/types.ts` is the contract: `Lesson` (explanation blocks, `steps` or `chapters`, free practice, quiz, summary,
-real-world tasks, teacher tip, glossary ids, `setup`), `Step`, `ExpectedAction`, `QuizQuestion` (5 types), `Chapter`,
-`ModuleMeta`, `GlossaryEntry`. `content/modules.ts` is the curriculum list; `engine/roadmap.ts` derives
-completed/unlocked/locked/soon states and "আজকের পাঠ". `src/content/content.test.ts` enforces lesson integrity.
+`src/engine/types.ts` is the contract: `Lesson { units }`, `Unit` (hook, cards, steps, setup, checklist, 3 quiz questions, recap), `Card`, `Visual`,
+`Step`, `ExpectedAction`, `QuizQuestion` (5 types), `ModuleMeta`, `GlossaryEntry`. Field reference: [LESSON_SCHEMA.md](LESSON_SCHEMA.md).
+`content/modules.ts` is the curriculum list; `engine/roadmap.ts` derives completed/unlocked/locked/soon states and "আজকের পাঠ".
+`src/content/content.test.ts` enforces lesson structure; `scripts/audit-core.ts` (`npm run audit:content`, also run by `npm run build`)
+enforces the text budget of the UX contract.
+
+## Deck engine (one card at a time)
+
+`ModulePage` loads the lesson (`loadLesson`, lazy) and renders `DeckPage`; locked/unavailable modules get a "coming soon" screen.
+
+- `src/engine/deck.ts` (pure, unit tested): `buildSlides(unit, {os, input})` filters cards by `osVariant` / `inputVariant` and quiz questions
+  by `osVariant`, and returns `hook → card × n → practice (only if steps apply) → quiz × 3 → celebrate`. It also holds the navigation
+  reducer (practice and quiz slides are gated until done; going back is always allowed; a finished unit has no gates), `keyIntent` /
+  `swipeIntent`, the saved position (`extras['deck:<module>:<unit>'] = {index, wrong?}`) and `splitIfLong` (a unit with more than 12 deck items must be split).
+- `src/pages/DeckPage.tsx`: units overview, then one unit at a time; header OS chip; resume prompt; writes progress (`markStepDone` + XP per step,
+  `recordUnitQuiz` after the 3rd right answer, `completeUnit`, then `completeModule` + certificate/badges when every unit is done).
+- `src/ui/cards/*`: `CardSlide` (+ `CardVisual` / `FitBox`, which scales the visual to the space left, never scrolls), `PracticeSlide` (the lazy
+  `SimStage` + `useGuidedRun` + `CoachOverlay` + checklist), `QuizSlide`, `CelebrateSlide` (recap, notebook, real-world tasks, certificate links),
+  `UnitsOverview`, `Sheet` ("আরও জানুন"), `DeckFooter`, `deck.css`. `src/ui/quiz/DeckQuestions.tsx` renders the five question types as big answer cards
+  (grading is pure, in `engine/quiz.ts`; drag uses `sim/dnd.tsx`).
+- `/#/demo/deck` shows a sample lesson with every card kind and question type (`src/pages/demo/deckSample.ts`, stored as module 99, not part of the course).
+
+## Visual library (`src/ui/illustrations`)
+
+Every card has a `Visual`; `VisualView.tsx` maps the `kind` to a renderer: `ArtView` (original flat SVG illustrations in `art/part1`, `art/part2`;
+palette in `palette.ts`), `mocks.tsx` + `mocks/` (annotated mini-screenshots of the simulated OS with named highlight regions), `demos.tsx` (looping
+animated-cursor gestures; honours `prefers-reduced-motion` via `useReducedMotion`), `codeVisual.tsx` (annotated code with a line-by-line "run" and an
+optional browser preview), and the `widget` kind which lazy-loads a component from `src/content/widgets/`. `names.ts` is the single list of valid art
+names, mock names and mock regions; the content test rejects anything else. `/#/demo/art` is the gallery.
+
+## Gamification (`src/state/gamification.ts`)
+
+Pure helpers, no storage: `XP` values (step, unit done, quiz first-try answers, perfect-quiz bonus, module done), the daily `streak`
+(`advanceStreak`, `streakAlive`, local calendar days), the daily goal (`rollDaily`) and the `BADGES` list (first lesson, perfect quiz, 3/7-day streak,
+part 1, part 2). `ProgressStore` (`addXp`, `completeUnit`, `recordUnitQuiz`, `awardBadge`) applies them and persists `xp`, `streak`, `badges`, `daily`;
+`Celebration.tsx` and the header pills (`Layout.tsx`) show them. Nothing is sent anywhere; reset clears it with the rest of the progress.
+
+## Device detection (`src/lib/device.ts`)
+
+The app never asks "which computer do you use?". `detectOs()` guesses Windows or Mac from the browser (unknown on phones/Linux: onboarding asks once).
+The pointing device is detected too: `initialInput()` starts from touch capabilities (touch-only = touchpad, otherwise mouse) and `InputDetector`
+classifies live wheel/pointer events (physical wheel notches vs smooth touchpad scrolling) into `'mouse' | 'touchpad'`, stored as `profile.input`.
+Cards and steps with `inputVariant` are filtered by it (a touchscreen counts as touchpad); steps for the other device are not counted in progress or
+on the teacher dashboard. E2E tests pin the device with `seedProfile(page, os, { input })` so detection cannot change it mid-test.
 
 ## State and progress (`src/state`)
 
@@ -153,12 +196,13 @@ per-module progress, notebook, certificates, `extras`) persisted as JSON under `
 - `useProgress()` (`store.ts`) is a `useSyncExternalStore` hook over the singleton store.
 - `applySettings` mirrors theme and text size onto `<html data-theme data-text>`; CSS reacts to those.
 - Export/import: `store.exportJson()` / `store.importJson(text)`; downloads go through `src/lib/download.ts`.
+- `sanitize()` stays backward compatible: older backups (with `explanationRead`, `freePracticeDone`, a single `quiz` attempt, `bestQuizScore`) still import; the teacher dashboard reads them.
 
 ### Teacher dashboard
 
 `src/lib/teacher.ts` holds the pure logic: `lessonMetaOf(lesson)` (step counts and ids per OS, quiz question texts),
-`summarize(progressData, metas, now)` -> `TeacherSummary` (overall/part progress, per-module status, steps done/total per
-OS, quiz best/last/retries, weak questions from `quiz.wrongByQuestion`, weak modules: best quiz below 60% or guided steps
+`summarize(progressData, metas, now)` -> `TeacherSummary` (overall/part progress, per-module status, units and steps done/total per
+OS, quiz scores merged across units, weak questions from every unit's `wrongByQuestion`, weak modules: best quiz below 60% or guided steps
 stalled for 7+ days, recent activity), and `buildReportHtml()` for the downloadable report. `src/pages/Teacher.tsx` loads
 every lesson lazily (`loadLesson`), reduces each to metadata, and renders the tables.
 

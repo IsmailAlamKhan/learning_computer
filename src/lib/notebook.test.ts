@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { NOTE_TEMPLATES, displayTitle, exportNotes, newNoteId, searchNotes, sortNewest, summaryToNote } from './notebook'
+import { NOTE_TEMPLATES, displayTitle, exportNotes, newNoteId, searchNotes, sortNewest } from './notebook'
 import type { NotebookNote } from '../state/progress'
 
 const n = (id: string, title: string, body: string, updatedAt: string): NotebookNote => ({ id, title, body, updatedAt })
@@ -31,8 +31,7 @@ describe('notebook helpers', () => {
     expect(txt).not.toContain('##')
     expect(exportNotes([], 'md')).toContain('0টি নোট')
   })
-  it('converts a summary card to a note and makes unique ids', () => {
-    expect(summaryToNote('সারকথা', ['এক', 'দুই'], 'শেষ')).toEqual({ title: 'সারকথা', body: '- এক\n- দুই\n\nশেষ' })
+  it('makes unique ids', () => {
     expect(newNoteId()).not.toBe(newNoteId())
   })
 })

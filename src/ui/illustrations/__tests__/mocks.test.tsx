@@ -1,5 +1,6 @@
 import { render } from '@testing-library/react'
 import { MOCKS, regionBoxes } from '../mocks'
+import { H, RING_STROKE, ringBox, W } from '../mocks/kit'
 import { MOCK_NAMES, MOCK_REGIONS } from '../names'
 
 describe('MOCKS', () => {
@@ -41,5 +42,28 @@ describe('MOCKS', () => {
     const m = render(<M os="mac" />).container.textContent
     expect(w).toContain('Delete')
     expect(m).toContain('Move to Trash')
+  })
+})
+
+describe('highlight ring stays inside the drawing', () => {
+  it('region boxes and the ring (with its thick glow stroke) fit the 480×300 viewBox for every mock, region and OS', () => {
+    for (const n of MOCK_NAMES)
+      for (const os of ['windows', 'mac'] as const)
+        for (const [name, b] of Object.entries(regionBoxes(n, os))) {
+          const where = `${n}/${os}/${name}`
+          expect(b.x, where).toBeGreaterThanOrEqual(0)
+          expect(b.y, where).toBeGreaterThanOrEqual(0)
+          expect(b.x + b.w, where).toBeLessThanOrEqual(W)
+          expect(b.y + b.h, where).toBeLessThanOrEqual(H)
+          const r = ringBox(b)
+          const half = RING_STROKE / 2
+          expect(r.x - half, where).toBeGreaterThanOrEqual(0)
+          expect(r.y - half, where).toBeGreaterThanOrEqual(0)
+          expect(r.x + r.w + half, where).toBeLessThanOrEqual(W)
+          expect(r.y + r.h + half, where).toBeLessThanOrEqual(H)
+          expect(r.w, where).toBeGreaterThan(0)
+          expect(r.x, where).toBeLessThanOrEqual(b.x + half + 1) // still surrounds the region (up to the edge inset)
+          expect(r.x + r.w, where).toBeGreaterThanOrEqual(b.x + b.w - half - 1)
+        }
   })
 })

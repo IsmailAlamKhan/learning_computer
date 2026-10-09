@@ -17,8 +17,7 @@ import {
   type Fmt,
   type LessonMeta,
 } from './teacher'
-import type { LegacyLesson, Lesson, Step } from '../engine/types'
-import { isCardsLesson } from '../engine/types'
+import type { Lesson, Step } from '../engine/types'
 
 const NOW = new Date('2026-10-20T10:00:00.000Z')
 const daysAgo = (d: number) => new Date(NOW.getTime() - d * 86400000).toISOString()
@@ -57,34 +56,7 @@ const cardsLesson: Lesson = {
     unit('u2', [st('w2', { osVariant: 'windows' }), st('m2', { osVariant: 'mac' })], ['q4', 'q5', 'q6']),
   ],
 }
-const legacyLesson = {
-  module: 3,
-  part: 1,
-  id: 'm03',
-  titleBn: 't',
-  oneLineBn: 'o',
-  minutes: 5,
-  explanation: [],
-  steps: [st('lw', { osVariant: 'windows' }), st('lm', { osVariant: 'mac' }), st('lb')],
-  quiz: ['a', 'b'].map(qq),
-  summaryCard: { titleBn: 's', pointsBn: ['p'] },
-  realWorld: { titleBn: 'r', tasksBn: ['a', 'b'] },
-  glossaryIds: [],
-} as LegacyLesson
-const chaptered = { ...legacyLesson, module: 20, steps: [], chapters: [{ id: 'c1', titleBn: 'c', steps: [st('x1', { osVariant: 'windows' }), st('x2')] }, { id: 'c2', titleBn: 'c', steps: [st('x3')] }] } as LegacyLesson
-
 describe('lessonMetaOf', () => {
-  it('legacy: counts steps per OS (both counts for each) and keeps ids', () => {
-    const lm = lessonMetaOf(legacyLesson)
-    expect(lm.steps).toEqual({ windows: 2, mac: 2 })
-    expect(lm.stepIds.windows).toEqual(['lw', 'lb'])
-    expect(lm.quiz).toEqual([{ id: 'a', questionBn: 'প্রশ্ন a', hintBn: 'ইঙ্গিত a' }, { id: 'b', questionBn: 'প্রশ্ন b', hintBn: 'ইঙ্গিত b' }])
-    expect(lm.unitIds).toEqual([])
-    expect(lm.realWorld.windows).toBe(2)
-  })
-  it('legacy chapters are flattened', () => {
-    expect(lessonMetaOf(chaptered).steps.windows).toBe(3)
-  })
   it('cards format: steps of all units per OS, questions of all units merged, real-world per OS', () => {
     const lm = lessonMetaOf(cardsLesson)
     expect(lm.unitIds).toEqual(['u1', 'u2'])
@@ -136,8 +108,8 @@ describe('cards-format progress (units)', () => {
   })
 })
 
-describe('every real lesson (either format) reduces to metadata', () => {
-  const files = import.meta.glob<{ default: Lesson | LegacyLesson }>('../content/lessons/m*.ts', { eager: true })
+describe('every real lesson reduces to metadata', () => {
+  const files = import.meta.glob<{ default: Lesson }>('../content/lessons/m*.ts', { eager: true })
   for (const [path, f] of Object.entries(files)) {
     it(`${path}`, () => {
       const l = f.default
@@ -145,7 +117,7 @@ describe('every real lesson (either format) reduces to metadata', () => {
       expect(lm.module).toBe(l.module)
       expect(lm.steps.windows).toBeGreaterThan(0)
       expect(new Set(lm.stepIds.windows).size).toBe(lm.stepIds.windows.length)
-      expect(lm.unitIds.length > 0).toBe(isCardsLesson(l))
+      expect(lm.unitIds.length).toBeGreaterThan(0)
     })
   }
 })

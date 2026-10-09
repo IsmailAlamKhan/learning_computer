@@ -4,6 +4,8 @@
  *
  * Thresholds: `target` is the authoring goal (reported as "tight" when exceeded), `max` is the hard limit that FAILS the audit.
  */
+import { splitWarnings } from '../src/engine/deck'
+
 export const LIMITS = {
   cardText: { target: 25, max: 35 },
   cardSentences: { max: 2 },
@@ -60,6 +62,8 @@ export interface AuditOptions {
   artNames?: Set<string>
   mockRegions?: Record<string, readonly string[]>
   glossary?: { id: string; meaningBn: string; module: number; icon?: string; art?: string }[]
+  /** skip the deck-size and input-variant structure checks (unit-test fixtures only) */
+  skipStructure?: boolean
 }
 
 export function auditLessons(lessons: Any[], opt: AuditOptions): AuditResult {
@@ -123,6 +127,17 @@ export function auditLessons(lessons: Any[], opt: AuditOptions): AuditResult {
       if (cs.length < LIMITS.cardsPerUnit.min || cs.length > LIMITS.cardsPerUnit.max)
         violations.push({ module: m, where: uid, rule: 'cards per unit must be 3–6 (split longer lessons)', detail: String(cs.length) })
       cs.forEach((c, i) => checkCard(m, uid, c, `card#${i + 1}`))
+      // deck size: hook + cards + practice + quiz + celebration must stay <= 12 items for every OS / device
+      if (!opt.skipStructure) for (const w of splitWarnings({ units: [u] } as Any)) violations.push({ module: m, where: uid, rule: 'unit deck > 12 items (split the unit)', detail: w })
+      // pointing-device sanity: a mouse-only item needs a touchpad/both alternative in the same unit, and vice versa
+      if (!opt.skipStructure)
+        for (const [label, list] of [['step', u.steps ?? []], ['card', cs]] as [string, Any[]][]) {
+          const kinds = new Set(list.map((x) => x.inputVariant ?? 'both'))
+          const hasTouch = kinds.has('touchpad') || kinds.has('both')
+          const hasMouse = kinds.has('mouse') || kinds.has('both')
+          if (kinds.has('mouse') && !hasTouch) violations.push({ module: m, where: uid, rule: `${label}s are mouse-only: no touchpad/both alternative`, detail: '' })
+          if (kinds.has('touchpad') && !hasMouse) violations.push({ module: m, where: uid, rule: `${label}s are touchpad-only: no mouse/both alternative`, detail: '' })
+        }
       // steps
       const perOs = (os: string) => (u.steps as Any[]).filter((s) => s.osVariant === 'both' || s.osVariant === os)
       for (const os of ['windows', 'mac']) {
@@ -167,6 +182,7 @@ export function auditLessons(lessons: Any[], opt: AuditOptions): AuditResult {
 
   for (const g of opt.glossary ?? []) {
     const w = words(g.meaningBn)
+    if (!g.icon && !g.art) violations.push({ module: g.module, where: `glossary ${g.id}`, rule: 'glossary entry has no icon or art', detail: '' })
     items.push({ module: g.module, where: `glossary ${g.id}`, kind: 'glossary', words: w })
     if (w > LIMITS.glossary.max) violations.push({ module: g.module, where: `glossary ${g.id}`, rule: `glossary meaning > ${LIMITS.glossary.max} words`, detail: `${w} words` })
     else if (w > LIMITS.glossary.target) tight.push({ module: g.module, where: `glossary ${g.id}`, rule: 'glossary > target', detail: `${w} words` })

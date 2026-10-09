@@ -1,6 +1,8 @@
 import { expect, test, type Page } from '@playwright/test'
 import lesson from '../src/content/lessons/m01'
-import type { QuizQuestion } from '../src/engine/types'
+import { buildSlides } from '../src/engine/deck'
+import type { Lesson, QuizQuestion, Unit } from '../src/engine/types'
+import { openModule, startUnit, skipToPractice, quizOption } from './helpers'
 import { mockPlatform } from './platform'
 import { axeScan, fmtViolations, seedA11y, type TextSize, type Theme } from './a11y-util'
 
@@ -9,10 +11,24 @@ const PAGES = [
   '/cheatsheet/terminal-commands', '/cheatsheet/setup-checklist', '/cheatsheet/html-basics', '/cheatsheet/python-basics',
   '/certificate/1', '/certificate/2', '/next-steps', '/teacher', '/demo/tools',
 ]
-const SECTIONS = ['১ জানুন', '২ হাতে-কলমে', '৩ নিজে করুন', '৪ কুইজ', '৫ মনে রাখুন', '৬ আসল কম্পিউটারে', '৭ শেষ']
 const COMBOS: [Theme, TextSize][] = [['light', 'normal'], ['dark', 'normal'], ['light', 'xxlarge'], ['dark', 'xxlarge']]
 
-const sectionBtn = (page: Page, label: string) => page.getByRole('navigation', { name: 'পাঠের অংশ' }).getByRole('button', { name: label })
+const loadLesson = async (m: number): Promise<Lesson> => (await import(`../src/content/lessons/m${String(m).padStart(2, '0')}`)).default
+
+/** Open a unit of a module at a given slide: writes the saved deck position, reloads and "continues where she left off". */
+async function openAt(page: Page, m: number, unitIdx: number, unit: Unit, index: number) {
+  await page.evaluate(
+    ([key, idx]) => {
+      const d = JSON.parse(localStorage.getItem('computer-shikhi:v1') ?? '{}')
+      d.extras = { ...(d.extras ?? {}), [key]: { index: idx } }
+      localStorage.setItem('computer-shikhi:v1', JSON.stringify(d))
+    },
+    [`deck:${m}:${unit.id}`, index] as const,
+  )
+  await page.goto(`/#/module/${m}`)
+  await page.reload()
+  await startUnit(page, unitIdx, index > 0 ? 'continue' : 'restart')
+}
 
 for (const [theme, size] of COMBOS) {
   test.describe(`axe ${theme} / ${size}`, () => {
@@ -29,25 +45,31 @@ for (const [theme, size] of COMBOS) {
       expect(bad.join('\n\n')).toBe('')
     })
 
-    test('module sections (incl. widgets, quiz, started guided practice) are clean', async ({ page }) => {
-      test.setTimeout(480_000)
+    test('module decks (units overview, hook, widget cards, practice, quiz, celebration) are clean', async ({ page }) => {
+      test.setTimeout(900_000)
       await page.emulateMedia({ reducedMotion: 'reduce' }) // no mid-transition colours while axe measures contrast
       await seedA11y(page, { theme, textSize: size })
       const bad: string[] = []
+      const scan = async (label: string) => {
+        const v = await axeScan(page)
+        if (v.length) bad.push(`${label}\n${fmtViolations(v)}`)
+      }
       // a spread of modules covering most widgets and every quiz type
       const mods = size === 'normal' ? [1, 2, 5, 9, 14, 16, 19] : [3, 4, 8, 12, 15, 17, 20]
       for (const m of mods) {
-        await page.goto(`/#/module/${m}`)
-        await expect(page.getByRole('navigation', { name: 'পাঠের অংশ' })).toBeVisible()
-        for (const label of SECTIONS) {
-          await sectionBtn(page, label).click()
-          if (label.startsWith('২')) {
-            const start = page.getByRole('button', { name: /শুরু করি/ }).first()
-            if (await start.count()) await start.click()
-            await page.waitForTimeout(500)
+        await openModule(page, m)
+        const l = await loadLesson(m)
+        if (l.units.length > 1) await scan(`module ${m} units overview`)
+        for (const [ui, unit] of l.units.entries()) {
+          const slides = buildSlides(unit, { os: 'windows', input: 'mouse' })
+          // hook, every widget card, the practice (simulated computer excluded from axe), the first quiz question and the celebration
+          const at = (pred: (s: (typeof slides)[number]) => boolean) => slides.map((x, i) => (pred(x) ? i : -1)).filter((i) => i >= 0)
+          const wanted = [0, ...at((x) => x.kind === 'card' && x.card.visual.kind === 'widget'), ...at((x) => x.kind === 'practice').slice(0, 1), ...at((x) => x.kind === 'quiz').slice(0, 1), slides.length - 1]
+          for (const idx of [...new Set(wanted)]) {
+            await openAt(page, m, ui, unit, idx)
+            await page.waitForTimeout(idx === 0 ? 100 : 500)
+            await scan(`module ${m} / unit ${unit.id} / slide ${idx} (${slides[idx].kind})`)
           }
-          const v = await axeScan(page)
-          if (v.length) bad.push(`module ${m} / ${label}\n${fmtViolations(v)}`)
         }
       }
       expect(bad.join('\n\n')).toBe('')
@@ -137,23 +159,29 @@ test.describe('keyboard', () => {
     await page.getByRole('link', { name: /চালিয়ে যান|শুরু করি|পাঠ ১/ }).first().focus()
     await page.keyboard.press('Enter')
     await expect(page).toHaveURL(/#\/module\/1$/)
-    await expect(page.getByRole('heading', { level: 1 })).toBeFocused()
-    // section navigation by keyboard
-    await sectionBtn(page, '৪ কুইজ').focus()
+    await expect(page.getByTestId('units-overview')).toBeVisible()
+    await expect(page.getByRole('heading', { level: 1 })).toHaveCount(1)
+    // unit cards are real buttons: Enter starts the first unit and the hook card is on screen (Mac was chosen above)
+    await page.getByTestId('unit-card-0').focus()
     await page.keyboard.press('Enter')
-    await expect(page.getByRole('heading', { level: 2, name: /কুইজ/ })).toBeFocused()
-    // answer every question with the keyboard only (the first answer of each question is deliberately wrong)
-    const first = lesson.quiz[0]
-    await answerByKeyboard(page, first, false)
-    await expect(page.getByText('একটু আবার ভেবে দেখি')).toBeVisible()
-    await expect(page.getByText('একটু আবার ভেবে দেখি').locator('..')).toBeFocused() // hint gets focus after a wrong answer
-    for (const q of lesson.quiz) {
+    await expect(page.getByTestId('deck-hook')).toBeVisible()
+    // go straight to the first quiz question (saved position), then answer every question with the keyboard only
+    const unit = lesson.units[0]
+    const slides = buildSlides(unit, { os: 'mac', input: 'mouse' })
+    await openAt(page, 1, 0, unit, slides.findIndex((x) => x.kind === 'quiz'))
+    await expect(page.getByTestId('deck-quiz')).toBeVisible()
+    const qs = slides.flatMap((x) => (x.kind === 'quiz' ? [x.question] : []))
+    // the first answer of the first question is deliberately wrong
+    await answerByKeyboard(page, qs[0], false)
+    await expect(page.getByTestId('quiz-wrong')).toBeVisible()
+    for (const q of qs) {
       await answerByKeyboard(page, q, true)
-      const next = page.getByRole('button', { name: /পরের প্রশ্ন|কুইজ শেষ করি/ })
+      await expect(page.getByTestId('quiz-right')).toBeVisible()
+      const next = page.getByTestId('deck-primary')
       await expect(next).toBeFocused() // focus moves to the continue button
       await page.keyboard.press('Enter')
     }
-    await expect(page.getByRole('button', { name: /আবার করি/ })).toBeVisible()
+    await expect(page.getByTestId('deck-celebrate')).toBeVisible()
   })
 
   test('dialog: focus moves in, Esc closes, focus returns to the opener', async ({ page }) => {
@@ -201,56 +229,45 @@ test.describe('keyboard', () => {
   })
 })
 
-/** Answer one quiz question using only keyboard interaction. `right=false` submits something wrong first-try. */
+/** Answer one quiz question (deck quiz slide) using only keyboard interaction. `right=false` submits something wrong first-try. */
 async function answerByKeyboard(page: Page, q: QuizQuestion, right: boolean) {
-  const submit = async (name: string) => {
-    await page.getByRole('button', { name }).focus()
-    await page.keyboard.press('Enter')
+  const press = async (loc: ReturnType<Page['locator']>, key = 'Enter') => {
+    await loc.focus()
+    await page.keyboard.press(key)
   }
+  const check = () => press(page.getByTestId('deck-primary').filter({ hasText: /যাচাই করুন/ }))
   if (q.type === 'ordering') {
     const order = right ? q.items.map((i) => i.textBn) : [...q.items.map((i) => i.textBn)].reverse()
     for (let pos = 0; pos < order.length; pos++) {
       // bring the wanted item up to position `pos` with the "move up" button
       for (let guard = 0; guard < 10; guard++) {
-        const rows = await page.locator('ol > li').allInnerTexts()
+        const rows = await page.getByTestId('order-item').allInnerTexts()
         const at = rows.findIndex((t) => t.includes(order[pos]))
         if (at <= pos) break
-        const up = page.locator('ol > li').nth(at).getByRole('button', { name: 'ওপরে সরান' })
-        await up.focus()
-        await page.keyboard.press('Enter')
+        await press(page.getByTestId('order-item').nth(at).getByRole('button', { name: 'ওপরে সরান' }))
       }
     }
-    await submit('যাচাই করুন')
+    await check()
   } else if (q.type === 'dragMatch') {
     const order = right ? q.pairs : [...q.pairs].reverse()
     for (const p of order) {
       // right=false: place chips in reverse so everything is mismatched at once
       const want = (right ? p : q.pairs[q.pairs.length - 1 - q.pairs.indexOf(p)]).rightBn
       const chip = page.locator('[data-chip]:not(:disabled)').filter({ hasText: new RegExp('^\\s*' + want.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\s*$') }).first()
-      await chip.focus()
-      await page.keyboard.press('Enter')
+      await press(chip)
       await expect(page.locator('[data-slot]:not(:disabled)').first()).toBeFocused() // focus jumps to the first free slot
       await page.keyboard.press('Enter')
     }
-    await submit('যাচাই করুন')
+    await check()
   } else if (q.type === 'multipleChoice') {
     const ids = right ? q.correct : [q.options.find((o) => !q.correct.includes(o.id))!.id]
-    for (const id of ids) {
-      const opt = q.options.find((o) => o.id === id)!
-      const el = page.getByRole(q.correct.length > 1 || q.multi ? 'checkbox' : 'radio', { name: opt.textBn })
-      await el.focus()
-      await page.keyboard.press('Space')
-    }
-    await submit('উত্তর দিন')
+    for (const id of ids) await press(quizOption(page, q.options.find((o) => o.id === id)!.textBn), 'Space')
+    if (q.correct.length > 1 || q.multi) await check() // single-answer questions answer instantly
   } else if (q.type === 'clickTarget') {
     const id = right ? q.correct : q.items.find((i) => i.id !== q.correct)!.id
-    const item = q.items.find((i) => i.id === id)!
-    const btn = page.getByRole('group', { name: q.questionBn }).getByRole('button', { name: new RegExp(item.labelBn.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')) })
-    await btn.focus()
-    await page.keyboard.press('Enter')
+    await press(quizOption(page, q.items.find((i) => i.id === id)!.labelBn))
   } else {
-    const ans = right ? q.acceptedAnswers[0] : 'zzz-wrong'
-    await page.getByRole('textbox').fill(ans)
+    await page.getByTestId('predict-input').fill(right ? q.acceptedAnswers[0] : 'zzz-wrong')
     await page.keyboard.press('Enter')
   }
 }
@@ -260,15 +277,15 @@ test.describe('motion and text size', () => {
     test.setTimeout(90_000)
     await page.emulateMedia({ reducedMotion: 'reduce' })
     await seedA11y(page)
-    await page.goto('/#/module/1')
-    await sectionBtn(page, '২ হাতে-কলমে').click()
-    await page.getByRole('button', { name: /শুরু করি/ }).first().click()
+    await openModule(page, 1)
+    await startUnit(page, 0)
+    await skipToPractice(page)
     const ring = page.getByTestId('coach-ring')
     const bubble = page.getByTestId('coach-overlay').getByRole('status')
     await expect(bubble).toBeVisible()
     // the first step may be a plain "continue" step; advance until a target ring shows
     for (let i = 0; i < 6 && !(await ring.count()); i++) {
-      const c = page.getByRole('button', { name: /বুঝেছি, পরের ধাপ/ })
+      const c = page.getByRole('button', { name: /বুঝেছি/ })
       if (await c.count()) await c.click()
       await page.waitForTimeout(300)
     }
@@ -295,8 +312,9 @@ test.describe('motion and text size', () => {
 
   test('simulator container has an accessible name and instructions', async ({ page }) => {
     await seedA11y(page)
-    await page.goto('/#/module/1')
-    await sectionBtn(page, '৩ নিজে করুন').click()
+    await openModule(page, 1)
+    await startUnit(page, 0)
+    await skipToPractice(page)
     const sim = page.locator('[data-sim-root]')
     await expect(sim).toBeVisible()
     await expect(sim).toHaveAttribute('aria-label', /কম্পিউটার/)

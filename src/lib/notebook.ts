@@ -46,12 +46,6 @@ export function exportNotes(notes: NotebookNote[], format: ExportFormat = 'md', 
   return [head, ...parts].join(format === 'md' ? '\n---\n\n' : '\n')
 }
 
-/** A lesson summary card → note body. */
-export function summaryToNote(titleBn: string, pointsBn: string[], extraBn?: string): { title: string; body: string } {
-  const body = [...pointsBn.map((p) => `- ${p}`), ...(extraBn ? ['', extraBn] : [])].join('\n')
-  return { title: titleBn || 'পাঠের সারকথা', body }
-}
-
 export function formatNoteDate(iso: string): string {
   const d = new Date(iso)
   if (Number.isNaN(d.getTime())) return ''

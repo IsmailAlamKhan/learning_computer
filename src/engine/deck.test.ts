@@ -10,6 +10,8 @@ import {
   isGated,
   keyIntent,
   readSavedIndex,
+  readSavedWrong,
+  splitWarnings,
   resumeIndex,
   saveIndex,
   splitIfLong,
@@ -196,5 +198,61 @@ describe('splitIfLong', () => {
     expect(splitIfLong(six)).toBeNull()
     const seven = unit({ cards: Array.from({ length: 7 }, (_, i) => card(`c${i}`)) })
     expect(splitIfLong(seven)).toMatch(/split/)
+  })
+})
+
+describe('back from a quiz, resume with wrong tries, split guidance', () => {
+  const slides = buildSlides(unit(), ctx)
+  const q1 = slides.findIndex((s) => s.kind === 'quiz')
+  it('going back from a quiz is always allowed and keeps finished gates finished', () => {
+    let st = initDeckState(slides, q1)
+    st = deckReducer(st, { type: 'complete', id: slides[q1].id }, slides)
+    st = deckReducer(st, { type: 'next' }, slides) // on q2, unfinished
+    expect(canGoNext(slides, st)).toBe(false)
+    const back = deckReducer(st, { type: 'back' }, slides)
+    expect(back.index).toBe(q1)
+    expect(canGoNext(slides, back)).toBe(true) // q1 stays done
+    expect(deckReducer(back, { type: 'next' }, slides).index).toBe(q1 + 1)
+    // all the way back to the hook, then forward again: still gated at q2
+    const start = deckReducer(back, { type: 'goto', index: 0 }, slides)
+    expect(start.index).toBe(0)
+    expect(deckReducer(start, { type: 'goto', index: 99 }, slides).index).toBe(q1 + 1)
+  })
+  it('a finished practice stays finished after going back to cards', () => {
+    const practice = slides.findIndex((s) => s.kind === 'practice')
+    let st = initDeckState(slides, practice)
+    st = deckReducer(st, { type: 'complete', id: slides[practice].id }, slides)
+    st = deckReducer(deckReducer(st, { type: 'back' }, slides), { type: 'next' }, slides)
+    expect(st.index).toBe(practice)
+    expect(canGoNext(slides, st)).toBe(true)
+  })
+  it('the quiz slide cannot be left via goto while unanswered, even from the start', () => {
+    const st = deckReducer(initDeckState(slides, 0, false), { type: 'goto', index: slides.length - 1 }, slides)
+    expect(slides[st.index].kind).toBe('practice')
+  })
+  it('wrong tries are saved with the index and restored; malformed values are ignored', () => {
+    const m = new Map<string, string>()
+    const store = new ProgressStore({ getItem: (k) => m.get(k) ?? null, setItem: (k, v) => void m.set(k, v), removeItem: (k) => void m.delete(k) })
+    saveIndex(store, 3, 'u', 7, { q1: 2 })
+    expect(store.getSnapshot().extras['deck:3:u']).toEqual({ index: 7, wrong: { q1: 2 } })
+    expect(readSavedWrong(store.getSnapshot().extras, 3, 'u')).toEqual({ q1: 2 })
+    saveIndex(store, 3, 'u', 8, {})
+    expect(store.getSnapshot().extras['deck:3:u']).toEqual({ index: 8 })
+    store.setExtra('deck:3:x', { index: 1, wrong: { a: 'x', b: 0, c: 3 } })
+    expect(readSavedWrong(store.getSnapshot().extras, 3, 'x')).toEqual({ c: 3 })
+    expect(readSavedWrong(store.getSnapshot().extras, 3, 'none')).toEqual({})
+  })
+  it('splitWarnings lists every long unit of a lesson', () => {
+    const long = unit({ id: 'long', cards: Array.from({ length: 7 }, (_, i) => card(`c${i}`)) })
+    const w = splitWarnings({ units: [unit(), long] } as never)
+    expect(w).toHaveLength(1)
+    expect(w[0]).toContain('long')
+  })
+  it('resume mid-unit restores earlier gates; a replay of a done unit never offers resume', () => {
+    const at = slides.length - 3
+    const st = initDeckState(slides, at)
+    expect(st.done).toContain('practice-windows')
+    expect(st.done).not.toContain(slides[at].id)
+    expect(resumeIndex(slides, at, true)).toBeUndefined()
   })
 })

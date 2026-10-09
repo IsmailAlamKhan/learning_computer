@@ -63,10 +63,10 @@ export interface BadgeDef {
 
 export const BADGES: BadgeDef[] = [
   { id: 'first-lesson', titleBn: 'প্রথম পদক্ষেপ', art: 'star', descBn: 'প্রথম ছোট পাঠ শেষ' },
-  { id: 'perfect-quiz', titleBn: 'কুইজ ধুরন্ধর', art: 'medal', descBn: 'একটি কুইজে সবগুলো প্রথমবারে ঠিক' },
+  { id: 'perfect-quiz', titleBn: 'কুইজ ওস্তাদ', art: 'medal', descBn: 'একটি কুইজে সবগুলো প্রথমবারে ঠিক' },
   { id: 'streak-3', titleBn: '৩ দিনের ধারা', art: 'flame', descBn: 'টানা ৩ দিন শিখেছেন' },
   { id: 'streak-7', titleBn: '৭ দিনের ধারা', art: 'flame', descBn: 'টানা ৭ দিন শিখেছেন' },
-  { id: 'part1', titleBn: 'কম্পিউটার-পারদর্শী', art: 'trophy', descBn: 'পর্ব ১ শেষ' },
+  { id: 'part1', titleBn: 'কম্পিউটারে দক্ষ', art: 'trophy', descBn: 'পর্ব ১ শেষ' },
   { id: 'part2', titleBn: 'কোডিংয়ের জন্য তৈরি', art: 'rocket', descBn: 'পর্ব ২ শেষ' },
 ]
 

@@ -6,7 +6,7 @@ const entries: GlossaryEntry[] = [
   { id: 'prog-code', termBn: 'কোড', termEn: 'Code', meaningBn: 'প্রোগ্রামিং ভাষায় লেখা নির্দেশ। দেখতে লেখার মতো, কিন্তু কম্পিউটার পড়ে কাজ করে।', art: 'code-brackets', module: 15 },
   { id: 'prog-instruction', termBn: 'নির্দেশ', termEn: 'Instruction', meaningBn: 'কম্পিউটারকে দেওয়া একটি ছোট আদেশ, যেমন “পর্দায় এই লেখা দেখাও”।', icon: '📝', module: 15 },
   { id: 'prog-programmer', termBn: 'প্রোগ্রামার', termEn: 'Programmer', meaningBn: 'যিনি কোড লিখে কম্পিউটারকে কাজ শেখান। পড়েন, ভাবেন, পরীক্ষা করেন — টাইপ কম।', art: 'brain', module: 15 },
-  { id: 'prog-algorithm', termBn: 'অ্যালগরিদম', termEn: 'Algorithm', meaningBn: 'কাজ করার ধাপে ধাপে পদ্ধতি, যেমন চা বানানোর রেসিপি।', art: 'recipe-card', module: 15 },
+  { id: 'prog-algorithm', termBn: 'অ্যালগরিদম', termEn: 'Algorithm', meaningBn: 'কাজ শেষ করার ধাপে ধাপে স্পষ্ট নির্দেশ, যেমন চা বানানোর রেসিপি।', art: 'recipe-card', module: 15 },
   { id: 'prog-html', termBn: 'এইচটিএমএল', termEn: 'HTML', meaningBn: 'ওয়েবপেজের কাঠামোর ভাষা — কোথায় শিরোনাম, লেখা, ছবি বা লিংক।', art: 'html-tag', module: 15 },
   { id: 'prog-css', termBn: 'সিএসএস', termEn: 'CSS', meaningBn: 'ওয়েবপেজের সাজের ভাষা — রং, অক্ষরের আকার, ফাঁকা জায়গা।', art: 'css-brush', module: 15 },
   { id: 'prog-javascript', termBn: 'জাভাস্ক্রিপ্ট', termEn: 'JavaScript', meaningBn: 'ওয়েবপেজে আচরণ আনার ভাষা — বোতাম চাপলে কিছু ঘটা, হিসাব হওয়া।', art: 'braces', module: 15 },

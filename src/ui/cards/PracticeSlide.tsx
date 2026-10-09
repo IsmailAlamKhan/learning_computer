@@ -111,7 +111,7 @@ export function PracticeSlide({ lesson, unit, steps, os, alreadyDone, onFinished
         </ul>
       )}
 
-      <SmallScreenNote />
+      <SmallScreenNote compact />
 
       {!free && (finished || alreadyDone) && (
         <div className="deck-success" role="status" data-testid="practice-success">

@@ -93,7 +93,7 @@ export function Frame({ Shell, insetTop, insetBottom }: { Shell: ComponentType; 
       aria-describedby={helpId}
       data-sim-root="true"
       aria-label={d.os === 'mac' ? 'অনুশীলনের Mac কম্পিউটার' : 'অনুশীলনের Windows কম্পিউটার'}
-      className="relative h-[min(72vh,640px)] min-h-[420px] w-full overflow-hidden rounded-xl border-2 text-[14px] leading-normal outline-offset-2 select-none"
+      className="sim-root relative h-[min(72vh,640px)] min-h-[420px] w-full overflow-hidden rounded-xl border-2 text-[14px] leading-normal outline-offset-2 select-none"
       style={{ borderColor: 'var(--c-line)', fontFamily: 'var(--font-sans)', filter: `brightness(${0.5 + d.sim.brightness / 200})` }}
       onMouseDown={(e) => {
         if (!(e.target as HTMLElement).closest('input,textarea,[contenteditable]')) ref.current?.focus({ preventScroll: true })

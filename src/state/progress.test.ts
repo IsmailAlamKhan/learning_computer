@@ -35,8 +35,8 @@ describe('ProgressStore', () => {
 
   it('keeps best quiz score and completes modules', () => {
     const s = new ProgressStore(mem())
-    s.recordQuiz(2, { score: 3, total: 5, wrongByQuestion: { q1: 1 } })
-    s.recordQuiz(2, { score: 2, total: 5, wrongByQuestion: {} })
+    s.recordUnitQuiz(2, 'u1', { score: 3, total: 5, wrongByQuestion: { q1: 1 } })
+    s.recordUnitQuiz(2, 'u1', { score: 2, total: 5, wrongByQuestion: {} })
     expect(s.getSnapshot().modules[2].bestQuizScore).toBe(3)
     s.completeModule(2)
     expect(s.getSnapshot().modules[2].completed).toBe(true)

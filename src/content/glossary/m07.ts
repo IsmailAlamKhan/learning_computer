@@ -11,7 +11,7 @@ const entries: GlossaryEntry[] = [
   { id: 'search-engine', termBn: 'সার্চ ইঞ্জিন', termEn: 'Search engine', icon: '🔎', art: 'magnifier', meaningBn: 'শব্দ লিখে ইন্টারনেটে কিছু খোঁজার সাইট। মিলে যাওয়া পাতার তালিকা দেখায়।', module: 7 },
   { id: 'tab', termBn: 'ট্যাব', termEn: 'Tab', icon: '🗂️', art: 'tab', meaningBn: 'ব্রাউজারের ওপরের ছোট ঘর। এক ব্রাউজারে কয়েকটি পাতা আলাদা ঘরে খুলে রাখা যায়।', module: 7 },
   { id: 'bookmark', termBn: 'বুকমার্ক', termEn: 'Bookmark', icon: '⭐', art: 'bookmark', meaningBn: 'পছন্দের পাতায় তারা (★) দিয়ে চিহ্ন দেওয়া, যাতে পরে সহজে খুলতে পারেন।', module: 7 },
-  { id: 'back-forward-refresh', termBn: 'পিছনে / সামনে / রিফ্রেশ', termEn: 'Back / Forward / Refresh', icon: '↩️', art: 'refresh', meaningBn: 'পিছনে আগের পাতায় ফেরায়, সামনে এগিয়ে দেয়, রিফ্রেশ এখনকার পাতা নতুন করে আনে।', module: 7 },
+  { id: 'back-forward-refresh', termBn: 'পেছনে / সামনে / রিফ্রেশ', termEn: 'Back / Forward / Refresh', icon: '↩️', art: 'refresh', meaningBn: 'পেছনে আগের পাতায় ফেরায়, সামনে এগিয়ে দেয়, রিফ্রেশ এখনকার পাতা নতুন করে আনে।', module: 7 },
   { id: 'link', termBn: 'লিংক', termEn: 'Link', icon: '👆', art: 'link', meaningBn: 'ওয়েবপাতার লেখা বা ছবি, যাতে ক্লিক করলে অন্য পাতা খোলে। প্রায়ই নীল রঙের।', module: 7 },
   { id: 'download', termBn: 'ডাউনলোড', termEn: 'Download', icon: '⬇️', art: 'download', meaningBn: 'ইন্টারনেট থেকে ফাইল কম্পিউটারে নামানো। সাধারণত Downloads ফোল্ডারে জমা হয়।', module: 7 },
   { id: 'https', termBn: 'এইচটিটিপিএস', termEn: 'https', icon: '🔐', art: 'lock', meaningBn: 'ঠিকানার শুরুর অংশ। এর মানে সাইট আর আপনার মাঝের তথ্য সুরক্ষিত পথে যায়, তবে সাইট সৎ কি না বলে না।', module: 7 },

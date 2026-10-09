@@ -51,7 +51,7 @@ describe('Settings overrides', () => {
     store.setProfile({ onboarded: true, os: 'windows', input: 'mouse', autoDetected: true })
     const u = userEvent.setup()
     ui(<Settings />)
-    expect(screen.getByTestId('auto-note').textContent).toContain('স্বয়ংক্রিয়ভাবে চেনা হয়েছে')
+    expect(screen.getByTestId('auto-note').textContent).toContain('নিজে থেকেই চেনা হয়েছে')
     await u.click(screen.getByRole('radio', { name: /Mac/ }))
     expect(store.getSnapshot().profile.os).toBe('mac')
     await u.click(screen.getByRole('radio', { name: /টাচপ্যাড/ }))

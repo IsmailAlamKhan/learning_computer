@@ -40,7 +40,7 @@
   --c-brand-soft: #ede9fe;
   --c-teal: #0f766e;
   --c-teal-soft: #d6f3ee;
-  --c-accent: #c8324b; /* coral */
+  --c-accent: #b0243d; /* coral */
   --c-accent-soft: #ffe4e8;
   --c-line: #d9d0ee;
   --c-ok: #166534;
@@ -277,7 +277,6 @@ a.path-node:active { transform: translateY(4px); box-shadow: var(--shadow-press)
 .node-badge { position: absolute; right: -0.2rem; bottom: -0.2rem; display: inline-flex; width: 2rem; height: 2rem; align-items: center; justify-content: center; border-radius: 50%; border: 3px solid var(--c-surface); font-size: 0.95rem; font-weight: 800; background: var(--c-ok); color: #fff; }
 .node-badge[data-kind='lock'] { background: var(--c-muted); }
 .path-label { min-width: 0; flex: 1; }
-.path-connector { position: absolute; z-index: -1; left: 50%; top: 50%; width: 8px; border-radius: 4px; background: repeating-linear-gradient(var(--c-line) 0 10px, transparent 10px 20px); }
 .part-banner { display: inline-flex; align-items: center; gap: 0.5rem; border-radius: var(--r-pill); padding: 0.4rem 1.2rem; font-weight: 800; background: var(--c-teal-soft); color: var(--c-ink); border: 2px solid var(--c-teal); }
 
 /* ---------- Celebration ---------- */
@@ -345,6 +344,8 @@ a.path-node:active { transform: translateY(4px); box-shadow: var(--shadow-press)
 .coach-nudge { animation: coach-nudge 1.4s ease-in-out infinite; }
 .coach-card { border-radius: var(--r-md); border: 2px solid var(--c-brand); background: var(--c-surface); color: var(--c-ink); box-shadow: 0 8px 28px rgba(30, 27, 58, 0.28); font-size: 1rem; line-height: 1.55; }
 .coach-btn { display: inline-flex; min-height: 2.5rem; align-items: center; gap: 0.3rem; border-radius: var(--r-pill); border: 2px solid var(--c-line); background: var(--c-surface); padding: 0 0.85rem; font-size: 0.95rem; font-weight: 700; color: var(--c-ink); cursor: pointer; transition: transform 110ms ease, background-color 110ms ease; }
+.coach-card[data-bar='true'] { padding-block: 6px; }
+.coach-card[data-bar='true'] .coach-btn { min-height: 2.25rem; }
 .coach-btn:hover { background: var(--c-brand-soft); }
 .coach-btn:active { transform: scale(0.95); }
 .coach-btn[data-primary='true'] { background: var(--c-brand); border-color: var(--c-brand); color: var(--c-brand-ink); }
@@ -376,3 +377,21 @@ a.path-node:active { transform: translateY(4px); box-shadow: var(--shadow-press)
   a { text-decoration: underline; }
 }
 .habit-sheet { break-inside: avoid; }
+
+/* The simulated computer on narrow frames (phones): shrink the taskbar / Dock so every pinned app and the tray stay visible (nothing clipped). */
+.sim-root { container-type: inline-size; container-name: sim; }
+@container sim (max-width: 479px) {
+  .sim-tb-apps { gap: 0; min-width: 0; flex-shrink: 1; }
+  .sim-tb-btn { width: 29px; height: 36px; }
+  .sim-tb-btn svg { width: 20px; height: 20px; }
+  .sim-tb-tray { gap: 0; padding-right: 0; flex: none; }
+  .sim-tb-traybtn { gap: 5px; padding-inline: 4px; }
+  .sim-tb-traybtn svg { width: 15px; height: 15px; }
+  .sim-tb-clock { min-width: 0; padding-inline: 3px; font-size: 11px; }
+  .sim-tb-date { display: none; }
+  .sim-tb-show { width: 4px; }
+  .sim-dock { gap: 0; padding: 4px 6px 3px; }
+  .sim-dock-btn { width: 36px; height: 36px; }
+  .sim-dock-btn svg { width: 34px; height: 34px; }
+  .sim-dock-sep { height: 28px; margin-inline: 2px; }
+}

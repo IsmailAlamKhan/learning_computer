@@ -1,0 +1,78 @@
+{
+  "rows": [
+    {
+      "kind": "card",
+      "n": 437,
+      "avg": 11.8,
+      "max": 19
+    },
+    {
+      "kind": "chip",
+      "n": 130,
+      "avg": 1.2,
+      "max": 4
+    },
+    {
+      "kind": "glossary",
+      "n": 377,
+      "avg": 11.4,
+      "max": 20
+    },
+    {
+      "kind": "hint",
+      "n": 1171,
+      "avg": 7.4,
+      "max": 18
+    },
+    {
+      "kind": "instruction",
+      "n": 798,
+      "avg": 6.7,
+      "max": 14
+    },
+    {
+      "kind": "option",
+      "n": 883,
+      "avg": 3.2,
+      "max": 10
+    },
+    {
+      "kind": "question",
+      "n": 225,
+      "avg": 7.2,
+      "max": 14
+    },
+    {
+      "kind": "quiz-explain",
+      "n": 225,
+      "avg": 6.8,
+      "max": 13
+    },
+    {
+      "kind": "recap",
+      "n": 224,
+      "avg": 4.5,
+      "max": 7
+    },
+    {
+      "kind": "success",
+      "n": 333,
+      "avg": 2.9,
+      "max": 8
+    },
+    {
+      "kind": "task",
+      "n": 149,
+      "avg": 10.4,
+      "max": 18
+    }
+  ],
+  "cardAvg": 11.8,
+  "cardMax": 19,
+  "cardsWithVisual": 372,
+  "cards": 437,
+  "violations": 0,
+  "tight": 40,
+  "legacy": [],
+  "units": 75
+}

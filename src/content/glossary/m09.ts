@@ -4,7 +4,7 @@ const entries: GlossaryEntry[] = [
   { id: 'passphrase', termBn: 'পাসফ্রেজ', termEn: 'Passphrase', meaningBn: 'চার-পাঁচটি এলোমেলো শব্দ জুড়ে বানানো লম্বা পাসওয়ার্ড। মনে রাখা সহজ।', art: 'key', module: 9 },
   { id: 'password-manager', termBn: 'পাসওয়ার্ড ম্যানেজার', termEn: 'Password Manager', meaningBn: 'সব পাসওয়ার্ড তালাবন্ধ রাখার প্রোগ্রাম। মনে রাখতে হয় শুধু একটি মূল পাসওয়ার্ড।', art: 'almirah', module: 9 },
   { id: 'two-factor-auth', termBn: 'দুই ধাপের যাচাই', termEn: 'Two-factor authentication (2FA)', meaningBn: 'পাসওয়ার্ডের পরে আরেকটি প্রমাণ, যেমন ফোনের কোড। দ্বিতীয় তালার মতো।', art: 'shield', module: 9 },
-  { id: 'pin', termBn: 'পিন', termEn: 'PIN', meaningBn: 'কয়েক সংখ্যার গোপন কোড। ফোন, বার্তা বা লিংকে কাউকে দিতে নেই।', art: 'otp-code', module: 9 },
+  { id: 'pin', termBn: 'পিন (PIN)', termEn: 'PIN', meaningBn: 'কয়েক সংখ্যার গোপন কোড। ফোন, বার্তা বা লিংকে কাউকে দিতে নেই।', art: 'otp-code', module: 9 },
   { id: 'phishing', termBn: 'ফিশিং', termEn: 'Phishing', meaningBn: 'আসলের মতো সাজানো ভুয়া বার্তা বা সাইট, যা পাসওয়ার্ড বা কোড হাতাতে চায়।', art: 'fishing-hook', module: 9 },
   { id: 'scam', termBn: 'প্রতারণা', termEn: 'Scam', meaningBn: 'মিথ্যা কথা বা ভুয়া প্রস্তাব দিয়ে টাকা বা তথ্য হাতানোর ফাঁদ।', art: 'warning', module: 9 },
   { id: 'fraud', termBn: 'জালিয়াতি', termEn: 'Fraud', meaningBn: 'অন্যের টাকা বা পরিচয় অবৈধভাবে ব্যবহার করা। প্রতারণার ফলেও ঘটে।', art: 'warning', module: 9 },

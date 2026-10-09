@@ -52,7 +52,7 @@ const lesson: Lesson = {
           textBn: 'অ্যাপের নাম মনে থাকলে **স্টার্ট** চেপে নামটি লিখুন। কম্পিউটার নিজেই খুঁজে দেবে।',
           visual: { kind: 'mock', name: 'win-start-menu', os: 'windows', highlight: 'search' },
           chipsBn: ['স্টার্ট চাপি', 'নাম লিখি'],
-          learnMoreBn: 'স্টার্ট চেপে সঙ্গে সঙ্গে টাইপ করলেই খোঁজা শুরু হয়। টাস্কবারের সার্চ বক্সও একই কাজ করে। আপনার কম্পিউটারে একটু আলাদা দেখাতে পারে।',
+          learnMoreBn: 'স্টার্ট চেপে সাথে সাথে টাইপ করলেই খোঁজা শুরু হয়। টাস্কবারের সার্চ বক্সও একই কাজ করে। আপনার কম্পিউটারে একটু আলাদা দেখাতে পারে।',
         },
         {
           id: 'c-find-mac',
@@ -77,7 +77,7 @@ const lesson: Lesson = {
         {
           id: 'w-start', osVariant: 'windows', titleBn: 'স্টার্ট মেনু খুলুন', target: 'start-button', expectedAction: { type: 'click', target: 'start-button' },
           explanationBn: 'নিচের স্টার্ট বোতামে ক্লিক করুন।',
-          hintBn: 'টাস্কবারের চারকোনা আইকনটিই স্টার্ট বোতাম।',
+          hintBn: 'টাস্কবারের চার-খোপের আইকনটিই স্টার্ট বোতাম।',
         },
         {
           id: 'w-open-notepad', osVariant: 'windows', titleBn: 'নোটপ্যাড খুলুন', target: 'start-app-editor', expectedAction: { type: 'openApp', app: 'editor' },
@@ -96,7 +96,7 @@ const lesson: Lesson = {
         {
           id: 'm-spotlight', osVariant: 'mac', titleBn: 'স্পটলাইট খুলুন', target: 'menubar-search', expectedAction: { type: 'click', target: 'menubar-search' },
           explanationBn: 'ওপরের ডান দিকের 🔍 চিহ্নে ক্লিক করুন।',
-          hintBn: 'পর্দার একদম ওপরের সারির ডান দিকে ছোট ম্যাগনিফাইং গ্লাস।',
+          hintBn: 'পর্দার একদম ওপরের সারির ডান দিকে ছোট 🔍 চিহ্ন।',
         },
         {
           id: 'm-search-textedit', osVariant: 'mac', titleBn: 'নাম লিখুন', target: 'spotlight-input', expectedAction: { type: 'type', target: 'spotlight-input', text: 'TextEdit', ignoreCase: true },
@@ -141,7 +141,7 @@ const lesson: Lesson = {
           explanationBn: 'নাম লিখলেই অ্যাপ সামনে চলে আসে।',
         },
         {
-          id: 'q-appfile', type: 'dragMatch', questionBn: 'শব্দের সঙ্গে মানে মিলিয়ে দিন।',
+          id: 'q-appfile', type: 'dragMatch', questionBn: 'শব্দের সাথে মানে মিলিয়ে দিন।',
           pairs: [
             { id: 'app', leftBn: 'অ্যাপ', rightBn: 'কাজের হাতিয়ার' },
             { id: 'file', leftBn: 'ফাইল', rightBn: 'অ্যাপে বানানো জিনিস' },
@@ -269,7 +269,7 @@ const lesson: Lesson = {
           explanationBn: 'hello ফাইলে ডাবল ক্লিক করুন।',
           hintBn: 'নামের ওপর দুবার চটপট ক্লিক করুন। .txt লুকানো থাকলে শুধু “hello” দেখাবে।',
           simplerBn: 'একবার ক্লিক করে ফাইলটি বেছে নিন। তারপর আবার তাড়াতাড়ি দুবার ক্লিক করুন।',
-          successMessageBn: 'লেখা সহ আবার খুলল!',
+          successMessageBn: 'লেখাসহ আবার খুলল!',
         },
         // ---- Mac
         {
@@ -315,7 +315,7 @@ const lesson: Lesson = {
           explanationBn: 'hello ফাইলে ডাবল ক্লিক করুন।',
           hintBn: 'নামের ওপর দুবার চটপট ক্লিক করুন। .txt লুকানো থাকলে শুধু “hello” দেখাবে।',
           simplerBn: 'একবার ক্লিক করে ফাইলটি বেছে নিন। তারপর আবার তাড়াতাড়ি দুবার ক্লিক করুন।',
-          successMessageBn: 'লেখা সহ আবার খুলল!',
+          successMessageBn: 'লেখাসহ আবার খুলল!',
         },
       ],
       quiz: [
@@ -366,7 +366,7 @@ const lesson: Lesson = {
       hook: {
         id: 'h-warn',
         type: 'hook',
-        textBn: 'না-সেভ করে বন্ধ করতে গেলে কম্পিউটার **সাবধান** করে। শুনলে ভয় পাবেন না!',
+        textBn: 'সেভ না করে বন্ধ করতে গেলে কম্পিউটার **সাবধান** করে। দেখে ভয় পাবেন না!',
         visual: { kind: 'art', name: 'warning', captionBn: 'সাবধান!' },
       },
       setup: {
@@ -568,7 +568,7 @@ const lesson: Lesson = {
           explanationBn: 'Save As নতুন ফাইল বানায়; পুরোনোটি অক্ষত থাকে।',
         },
         {
-          id: 'q-match', type: 'dragMatch', questionBn: 'কাজের সঙ্গে মানে মিলিয়ে দিন।',
+          id: 'q-match', type: 'dragMatch', questionBn: 'কাজের সাথে মানে মিলিয়ে দিন।',
           pairs: [
             { id: 'save', leftBn: 'Save', rightBn: 'একই ফাইল বদলায়' },
             { id: 'saveas', leftBn: 'Save As', rightBn: 'নতুন নামে আরেকটি ফাইল' },
@@ -666,7 +666,7 @@ const lesson: Lesson = {
         {
           id: 'w-start2', osVariant: 'windows', titleBn: 'স্টার্ট মেনু খুলুন', target: 'start-button', expectedAction: { type: 'click', target: 'start-button' },
           explanationBn: 'আগে “ইনস্টলার” অ্যাপ খুঁজি। স্টার্ট বোতামে ক্লিক করুন।',
-          hintBn: 'টাস্কবারের চারকোনা স্টার্ট বোতাম।',
+          hintBn: 'টাস্কবারের চার-খোপের স্টার্ট বোতাম।',
         },
         {
           id: 'w-search-installer', osVariant: 'windows', titleBn: 'স্টার্ট সার্চে খুঁজুন', target: 'start-search', expectedAction: { type: 'type', target: 'start-search', text: 'installer', ignoreCase: true },
@@ -686,7 +686,7 @@ const lesson: Lesson = {
         {
           id: 'w-next', osVariant: 'windows', titleBn: 'Next চাপুন', target: 'installer-next', expectedAction: { type: 'click', target: 'installer-next' },
           explanationBn: 'নামানো শেষে “Next >” চাপুন।',
-          hintBn: 'বার পূর্ণ হতে একটু অপেক্ষা করুন, তারপর নিচের ডান দিকের Next।',
+          hintBn: 'বার ভরতে একটু অপেক্ষা করুন, তারপর নিচের ডান দিকের Next।',
         },
         {
           id: 'w-install', osVariant: 'windows', titleBn: 'Install চাপুন', target: 'installer-install', expectedAction: { type: 'click', target: 'installer-install' },
@@ -696,7 +696,7 @@ const lesson: Lesson = {
         {
           id: 'w-finish', osVariant: 'windows', titleBn: 'Finish চাপুন', target: 'installer-finish', expectedAction: { type: 'click', target: 'installer-finish' },
           explanationBn: 'শেষ হলে “Finish” চাপুন।',
-          hintBn: 'বার পূর্ণ হলে নিচে ডান দিকে Finish বোতাম আসবে।',
+          hintBn: 'বার ভরে গেলে নিচে ডান দিকে Finish বোতাম আসবে।',
           successMessageBn: 'ইনস্টল হয়ে গেছে!',
         },
         {
@@ -750,7 +750,7 @@ const lesson: Lesson = {
         {
           id: 'm-spotlight2', osVariant: 'mac', titleBn: 'স্পটলাইট খুলুন', target: 'menubar-search', expectedAction: { type: 'click', target: 'menubar-search' },
           explanationBn: 'আগে “ইনস্টলার” অ্যাপ খুঁজি। ওপরের 🔍 চিহ্নে ক্লিক করুন।',
-          hintBn: 'ওপরের সারির ডান দিকের ম্যাগনিফাইং গ্লাস।',
+          hintBn: 'ওপরের সারির ডান দিকের 🔍 চিহ্ন।',
         },
         {
           id: 'm-search-installer', osVariant: 'mac', titleBn: 'নাম লিখুন', target: 'spotlight-input', expectedAction: { type: 'type', target: 'spotlight-input', text: 'installer', ignoreCase: true },
@@ -770,7 +770,7 @@ const lesson: Lesson = {
         {
           id: 'm-next', osVariant: 'mac', titleBn: 'Next চাপুন', target: 'installer-next', expectedAction: { type: 'click', target: 'installer-next' },
           explanationBn: 'নামানো শেষে “Next >” চাপুন।',
-          hintBn: 'বার পূর্ণ হতে একটু অপেক্ষা করুন, তারপর নিচের ডান দিকের Next।',
+          hintBn: 'বার ভরতে একটু অপেক্ষা করুন, তারপর নিচের ডান দিকের Next।',
         },
         {
           id: 'm-install', osVariant: 'mac', titleBn: 'Install চাপুন', target: 'installer-install', expectedAction: { type: 'click', target: 'installer-install' },
@@ -780,7 +780,7 @@ const lesson: Lesson = {
         {
           id: 'm-finish', osVariant: 'mac', titleBn: 'Finish চাপুন', target: 'installer-finish', expectedAction: { type: 'click', target: 'installer-finish' },
           explanationBn: 'শেষ হলে “Finish” চাপুন।',
-          hintBn: 'বার পূর্ণ হলে নিচে ডান দিকে Finish বোতাম আসবে।',
+          hintBn: 'বার ভরে গেলে নিচে ডান দিকে Finish বোতাম আসবে।',
           successMessageBn: 'ইনস্টল হয়ে গেছে!',
         },
         {
@@ -791,7 +791,7 @@ const lesson: Lesson = {
         {
           id: 'm-open-calc', osVariant: 'mac', titleBn: 'Calculator Plus খুলুন', target: 'launchpad-app-calcplus', expectedAction: { type: 'openApp', app: 'calcplus' },
           explanationBn: 'নতুন “Calculator Plus”-এ ক্লিক করুন।',
-          hintBn: 'আইকনগুলোর মধ্যে সবুজাভ ক্যালকুলেটরের ছবি।',
+          hintBn: 'আইকনগুলোর মধ্যে সবুজ ক্যালকুলেটরের ছবি।',
           successMessageBn: 'নতুন অ্যাপ চলছে!',
         },
         {

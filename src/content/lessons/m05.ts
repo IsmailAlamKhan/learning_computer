@@ -25,7 +25,7 @@ const lesson: Lesson = {
     // =====================================================================================================
     {
       id: 'keys',
-      titleBn: 'কিবোর্ডের চাবিগুলো',
+      titleBn: 'কিবোর্ডের কী-গুলো',
       setup: { openApps: ['editor'] },
       hook: {
         id: 'h-keys',
@@ -37,7 +37,7 @@ const lesson: Lesson = {
         {
           id: 'c-groups',
           type: 'visual',
-          textBn: 'রান্নাঘরে হাতা-খুন্তি আর মশলা আলাদা তাকে থাকে। কিবোর্ডও গ্রুপে সাজানো — যেকোনো কী-তে চেপে দেখুন।',
+          textBn: 'রান্নাঘরে হাতা-খুন্তি আর মশলা আলাদা তাকে থাকে। কিবোর্ডও গ্রুপে সাজানো — একেকটা গ্রুপে চেপে দেখুন।',
           visual: { kind: 'widget', widget: 'keyboard-layout', captionBn: 'পারেন? একটা গ্রুপে চাপুন' },
           learnMoreBn: 'ওপরে F1–F12 (ফাংশন কী), মাঝে অক্ষর আর সংখ্যা, ডানে তীর কী আর নাম্বার প্যাড। প্রতি গ্রুপে কী আছে জানলে দরকারি কী চট করে পাবেন।',
         },
@@ -126,7 +126,7 @@ const lesson: Lesson = {
             { id: 'd', textBn: 'Backspace' },
           ],
           correct: ['a'],
-          hintBn: 'নামটা “ট্যাবলে” — একটা ঘর থেকে আরেক ঘরে লাফ।',
+          hintBn: 'কিবোর্ডের বাঁ দিকে, Caps Lock-এর ঠিক ওপরের কী — ঘর থেকে ঘরে লাফ দেয়।',
           explanationBn: 'Tab পরের ঘরে নিয়ে যায়।',
         },
         {
@@ -191,13 +191,13 @@ const lesson: Lesson = {
           type: 'visual',
           textBn: 'ভুল হয়েছে? **আনডু** শেষ কাজ ফিরিয়ে নেয়, অক্ষর **Z**।',
           visual: { kind: 'demo', gesture: 'keys', keys: 'mod+z', captionBn: 'আনডু' },
-          learnMoreBn: 'আনডু ফিরিয়ে আনা কাজ আবার ফেরাতে চাইলে রিডু: Windows-এ Ctrl + Y বা Ctrl + Shift + Z, Mac-এ ⌘ + Shift + Z।',
+          learnMoreBn: 'আনডু করা কাজ আবার ফিরিয়ে আনতে চাইলে রিডু: Windows-এ Ctrl + Y বা Ctrl + Shift + Z, Mac-এ ⌘ + Shift + Z।',
         },
         {
           id: 'c-table',
           type: 'visual',
           textBn: 'আরও শর্টকাট আছে — সব বাছা, সেভ, খোঁজা। নিজের কিবোর্ডে চেপে মিলিয়ে নিন।',
-          visual: { kind: 'widget', widget: 'shortcut-table', captionBn: 'পারেন? সারণি দেখুন' },
+          visual: { kind: 'widget', widget: 'shortcut-table', captionBn: 'পারেন? তালিকাটি দেখুন' },
           learnMoreBn: 'Ctrl/⌘ + A সব বেছে নেয়, + S সেভ করে, + F লেখার মধ্যে শব্দ খোঁজে। মুখস্থ করতে হবে না — কাজের মধ্যে একটি-দুটি করে ব্যবহার করলেই হাত শিখে যাবে।',
         },
       ],
@@ -219,7 +219,7 @@ const lesson: Lesson = {
         {
           id: 'w-copy', osVariant: 'windows', titleBn: 'কপি করুন: Ctrl + C', target: 'editor-text', expectedAction: { type: 'keyCombo', keys: 'mod+c' },
           explanationBn: 'Ctrl চেপে ধরে C চাপুন। পর্দায় কিছু বদলাবে না — এটাই স্বাভাবিক।',
-          hintBn: 'Ctrl চেপে ধরে C চাপুন। C for Copy।',
+          hintBn: 'Ctrl চেপে ধরে C চাপুন। C মানে Copy।',
           successMessageBn: 'কপি হয়েছে!',
         },
         {
@@ -257,7 +257,7 @@ const lesson: Lesson = {
         {
           id: 'm-copy', osVariant: 'mac', titleBn: 'কপি করুন: ⌘ + C', target: 'editor-text', expectedAction: { type: 'keyCombo', keys: 'mod+c' },
           explanationBn: '⌘ চেপে ধরে C চাপুন। পর্দায় কিছু বদলাবে না — এটাই স্বাভাবিক।',
-          hintBn: '⌘ চেপে ধরে C চাপুন। C for Copy।',
+          hintBn: '⌘ চেপে ধরে C চাপুন। C মানে Copy।',
           successMessageBn: 'কপি হয়েছে!',
         },
         {
@@ -291,7 +291,7 @@ const lesson: Lesson = {
             { id: 'a', leftBn: 'Ctrl / ⌘ + A', rightBn: 'সব বেছে নেওয়া' },
             { id: 's', leftBn: 'Ctrl / ⌘ + S', rightBn: 'সেভ (জমিয়ে রাখা)' },
           ],
-          hintBn: 'C for Copy, A for All, S for Save। বাকি: V পেস্ট, Z আনডু।',
+          hintBn: 'C = Copy, A = All (সব), S = Save। বাকি: V পেস্ট, Z আনডু।',
           explanationBn: 'শর্টকাট মুখস্থ লাগে না — হাত নিজেই শিখে যায়।',
         },
         {
@@ -334,7 +334,7 @@ const lesson: Lesson = {
       hook: {
         id: 'h-typing',
         type: 'hook',
-        textBn: 'অক্ষরের চেয়ে **চিহ্ন**ই কোডের আসল ভাষা। চলুন আঙুলকে চিনিয়ে নিই!',
+        textBn: 'কোডে অক্ষরের মতোই **চিহ্ন**ও জরুরি। চলুন আঙুলকে চিনিয়ে নিই!',
         visual: { kind: 'art', name: 'code-brackets' },
       },
       cards: [
@@ -356,7 +356,7 @@ const lesson: Lesson = {
         {
           id: 'c-code',
           type: 'code',
-          textBn: 'এই ছোট কোডে তিন ধরনের চিহ্ন আছে: **গোল ব্র্যাকেট**, **কোট** আর অক্ষর।',
+          textBn: 'এই ছোট কোডে আছে **গোল ব্র্যাকেট**, **কোট** আর অক্ষর।',
           visual: {
             kind: 'code',
             lang: 'python',
@@ -511,7 +511,7 @@ const lesson: Lesson = {
             right: { visual: { kind: 'big', emoji: '❌' }, labelBn: 'বাংলা', captionBn: 'কোডে নয়' },
             vs: 'বনাম',
           },
-          learnMoreBn: 'কোডের নির্দেশ আর চিহ্ন ইংরেজি কিবোর্ডে লিখতে হয় (Windows-এ ENG, Mac-এ ABC বা U.S.)। বাংলা লিখতে চাইলে বদলে নিন, শেষে আবার ইংরেজিতে ফিরুন। এই অনুশীলনে সিমুলেশনে বাংলা অক্ষর বসে না — আমরা শুধু যোগ করা আর বদলানো শিখছি।',
+          learnMoreBn: 'কোডের নির্দেশ আর চিহ্ন ইংরেজি কিবোর্ডে লিখতে হয় (Windows-এ ENG, Mac-এ ABC বা U.S.)। বাংলা লিখতে চাইলে বদলে নিন, শেষে আবার ইংরেজিতে ফিরুন। এখানকার নকল কম্পিউটারে বাংলা অক্ষর বসে না — আমরা শুধু যোগ করা আর বদলানো শিখছি।',
         },
       ],
       steps: [
@@ -551,7 +551,7 @@ const lesson: Lesson = {
           id: 'w-install', osVariant: 'windows', titleBn: '“Install”', target: 'settings-lang-install', expectedAction: { type: 'custom', event: 'keyboard-added' },
           explanationBn: '“Install” বোতামে ক্লিক করুন। “display language” ঘরে টিক দেবেন না।',
           hintBn: 'নিচের ডান কোণের নীল “Install”। টিকের ঘরটি ফাঁকা থাকুক।',
-          simplerBn: 'শুধু বাংলা লিখতে চাই, Windows-এর ভাষা বদলাতে নয় — তাই টিক নয়। নামাতে একটু সময় লাগে।',
+          simplerBn: 'আমরা শুধু বাংলা লিখব, Windows-এর ভাষা বদলাব না — তাই টিক দেবেন না। ইনস্টল হতে একটু সময় লাগে।',
           successMessageBn: 'বাংলা যোগ হয়েছে!',
         },
         {

@@ -86,7 +86,7 @@ export function MacDock() {
     return dist === 0 ? 1.5 : dist === 1 ? 1.25 : dist === 2 ? 1.08 : 1
   }
   const itemStyle = (i: number) => ({ transform: `scale(${scaleFor(i)})`, transformOrigin: 'bottom center', transition: reduced ? 'none' : 'transform 120ms ease-out' })
-  const btn = 'flex h-14 w-14 items-center justify-center rounded-xl focus-visible:outline-2'
+  const btn = 'sim-dock-btn flex h-14 w-14 items-center justify-center rounded-xl focus-visible:outline-2'
 
   const trashDrop = dropZoneProps(
     (p) => {
@@ -108,7 +108,7 @@ export function MacDock() {
         data-coach="dock"
         role="toolbar"
         aria-label="Dock"
-        className="pointer-events-auto flex items-end gap-1.5 rounded-2xl border border-white/40 bg-white/35 px-2.5 pt-2 pb-1.5 shadow-xl backdrop-blur-xl"
+        className="sim-dock pointer-events-auto flex items-end gap-1.5 rounded-2xl border border-white/40 bg-white/35 px-2.5 pt-2 pb-1.5 shadow-xl backdrop-blur-xl"
         onMouseLeave={() => setHover(null)}
       >
         {entries.map((e, i) => (
@@ -121,7 +121,7 @@ export function MacDock() {
             <span className={`mt-0.5 h-1 w-1 rounded-full ${e.running ? 'bg-gray-800' : 'bg-transparent'}`} data-running={e.running ? 'true' : 'false'} />
           </div>
         ))}
-        <div className="mx-1 h-12 w-px self-center bg-black/25" role="separator" />
+        <div className="sim-dock-sep mx-1 h-12 w-px self-center bg-black/25" role="separator" />
         <div className="relative flex flex-col items-center" onMouseEnter={() => setHover(trashIndex)} style={itemStyle(trashIndex)}>
           <Tooltip text="Trash" bn={BN.trash}>
             <button type="button" aria-label="Trash" data-coach="dock-trash" data-full={binFull ? 'true' : 'false'} className={btn} onClick={() => d.openApp('bin')} {...trashDrop}>

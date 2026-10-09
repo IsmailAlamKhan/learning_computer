@@ -31,7 +31,7 @@ export function VisualView({ visual }: { visual: Visual }) {
       )
     case 'flow':
       return (
-        <ol className="flex flex-wrap items-center justify-center gap-3" aria-label="ধাপগুলো">
+        <ol className="deck-flow flex flex-wrap items-center justify-center gap-3" aria-label="ধাপগুলো">
           {visual.items.map((it, i) => {
             const Art = ART[it.art]
             return (
