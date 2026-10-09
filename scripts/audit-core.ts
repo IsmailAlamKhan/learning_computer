@@ -101,12 +101,13 @@ export function auditLessons(lessons: Any[], opt: AuditOptions): AuditResult {
     cards++
     const where = `${uid} ${idx}`
     check(m, where, 'card', c.textBn, LIMITS.cardText)
+    const cardItem = items[items.length - 1]
     if (sentences(c.textBn) > LIMITS.cardSentences.max) violations.push({ module: m, where, rule: '> 2 sentences', detail: `${sentences(c.textBn)} sentences` })
     if (boldCount(c.textBn) > LIMITS.bold.max) violations.push({ module: m, where, rule: '> 2 bold words', detail: String(boldCount(c.textBn)) })
     if ((c.chipsBn?.length ?? 0) > LIMITS.chips.maxCount) violations.push({ module: m, where, rule: '> 3 chips', detail: String(c.chipsBn.length) })
     for (const ch of c.chipsBn ?? []) if (words(ch) > LIMITS.chips.maxWords) violations.push({ module: m, where, rule: 'chip too long', detail: ch })
     checkVisual(m, where, c.visual)
-    items[items.length - 1].hasVisual = !!c.visual
+    cardItem.hasVisual = !!c.visual?.kind
   }
 
   for (const l of lessons) {

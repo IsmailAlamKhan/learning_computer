@@ -73,6 +73,12 @@
 - Teacher dashboard (`/teacher`: progress, per-OS steps, quiz scores, weak topics, activity, certificates, JSON backup + HTML report export), README, QA checklist, architecture, offline and privacy docs.
 - Final pass: clean `npm ci`, `tsc -b` clean, lint (warnings only), 790 unit/component tests, production build, **171 Playwright tests pass** (all 20 modules, both OS, onboarding, export/import, offline, privacy, a11y, responsive, print).
 
+### UX overhaul — DONE (branch `ux/readability-overhaul`, see docs/UX_OVERHAUL.md)
+- Learner profile updated to an 18-year-old Gen-Z girl; mandatory UX RULES added to PROJECT_BRIEF.md.
+- All 20 modules rewritten as 75 short card decks (hook → cards → practice → 3-question quiz → celebration) in a friendly "didi" voice with a visual on every card; new illustration library, mini-screenshots, gesture demos, animated code; new Home/header/coach/glossary/onboarding; OS and pointing-device auto-detection.
+- Guardrails: `npm run audit:content` (in build and tests; 0 hard violations; avg card 11.8 words, was 41.6), Playwright guardrail spec, deck engine tests. Legacy lesson format and its code deleted.
+- Docs: UX_AUDIT_BEFORE/AFTER, UX_OVERHAUL, UX_CONTRACT, UX_AUTHORING, LESSON_SCHEMA, README updated.
+
 ## Decisions and assumptions
 
 - npm (not pnpm); Vite 8 + React 19 + TypeScript 6 + Tailwind CSS v4 (`@tailwindcss/vite`), Vitest 5, oxlint (from the Vite template).

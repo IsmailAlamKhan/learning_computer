@@ -4,7 +4,7 @@
  * "Screens" for the OLD lesson format: each explanation block, each guided step (instruction/hint/success), each quiz
  * question (question/options/explanation), summary card points and real-world tasks.
  */
-import { readdirSync, writeFileSync } from 'node:fs'
+import { existsSync, readFileSync, readdirSync, writeFileSync } from 'node:fs'
 import { join, dirname } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import { auditLessons, summarize } from './audit-core'
@@ -74,6 +74,20 @@ async function mainCards(lessons: any[]) {
   const tight = [...res.tight].sort((a, b) => over(b) - over(a)).slice(0, 20)
   md += `\n## Appendix: tight list (top 20 of ${res.tight.length}; over the target, under the hard cap)\n\n| module | where | rule | detail |\n|---|---|---|---|\n`
   for (const t of tight) md += `| ${t.module} | ${t.where} | ${t.rule} | ${t.detail} |\n`
+  // before/after comparison (the 'before' numbers were captured from the old lesson format before the overhaul)
+  const beforePath = join(root, 'docs/ux-audit-before.json')
+  if (existsSync(beforePath)) {
+    const b = JSON.parse(readFileSync(beforePath, 'utf8'))
+    const row = (k: string) => sum.rows.find((r) => r.kind === k)
+    const ins = row('instruction')
+    md += `\n## Before → after (the point of the overhaul)\n\n| metric | before (old format) | after (cards) |\n|---|---|---|\n`
+    md += `| explanation unit: avg words | ${b.explainAvgWords} (per paragraph/list block) | ${sum.cardAvg} (per card) |\n`
+    md += `| explanation unit: max words | ${b.explainMaxWords} | ${sum.cardMax} |\n`
+    md += `| explanation units with a visual | ${b.blocksWithVisual} of ${b.blocksTotal} | ${sum.cardsWithVisual} of ${sum.cards} |\n`
+    md += `| guided-step instruction: avg / max words | ${b.instructionAvg} / ${b.instructionMax} | ${ins?.avg} / ${ins?.max} |\n`
+    md += `| text items over the hard word caps | ${b.itemsOverCaps} | ${res.violations.length} |\n`
+    md += `| lessons × units (decks) | ${b.lessons} long pages | ${res.units} short decks |\n`
+  }
   const i = process.argv.indexOf('--report')
   if (i > 0) writeFileSync(join(root, process.argv[i + 1]), md)
   const j = process.argv.indexOf('--json')
