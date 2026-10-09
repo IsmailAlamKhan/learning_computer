@@ -1,0 +1,11 @@
+{
+  "explainBlocks": 274,
+  "explainAvgWords": 41.6,
+  "explainMaxWords": 200,
+  "blocksWithVisual": 50,
+  "blocksTotal": 324,
+  "instructionAvg": 17.7,
+  "instructionMax": 61,
+  "itemsOverCaps": 802,
+  "lessons": 20
+}

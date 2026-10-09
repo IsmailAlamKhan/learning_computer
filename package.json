@@ -13,7 +13,8 @@
     "typecheck": "tsc -b",
     "e2e": "playwright test",
     "check:privacy": "node scripts/check-privacy.mjs",
-    "icons": "node scripts/gen-icons.mjs"
+    "icons": "node scripts/gen-icons.mjs",
+    "audit:content": "tsx scripts/audit-content.ts --report docs/UX_AUDIT_AFTER.md --json docs/ux-audit-after.json"
   },
   "dependencies": {
     "@codemirror/commands": "^6.11.1",
